@@ -1,40 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
  <head>
-  <script>
-   (function () {
-  var proto = XMLHttpRequest.prototype;
-  var open = proto.open, setRequestHeader = proto.setRequestHeader, send = proto.send;
-  var TOKEN_KEY = 'base44_access_token';
-  var storedTokenHeader = function () {
-    try { return 'Bearer ' + localStorage.getItem(TOKEN_KEY); } catch (e) { return null; }
-  };
-  var forgetStoredToken = function () {
-    try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem('token'); } catch (e) {}
-  };
-
-  proto.open = function (method, url) {
-    this.__b44IsAuthCheck = /\/entities\/User\/me(\?|$)/.test(url);
-    return open.apply(this, arguments);
-  };
-
-  proto.setRequestHeader = function (name, value) {
-    if (this.__b44IsAuthCheck && name.toLowerCase() === 'authorization' && value === storedTokenHeader()) {
-      this.__b44SentToken = value;
-    }
-    return setRequestHeader.call(this, name, value);
-  };
-
-  proto.send = function () {
-    this.addEventListener('loadend', function () {
-      var rejectedTokenStillStored = this.status === 401 && this.__b44SentToken === storedTokenHeader();
-      if (rejectedTokenStillStored) forgetStoredToken();
-    });
-    return send.apply(this, arguments);
-  };
-})();
-  </script>
-  <meta charset="utf-8"/>
+<meta charset="utf-8"/>
   <link href="https://media.base44.com/images/public/6ab82d5a9e282007a035af77/a78f843ee_logo.png" rel="icon" type="image/svg+xml"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <link href="manifest.json" rel="manifest"/>
@@ -49,7 +16,8 @@
   <script async="" defer="" id="hs-script-loader" src="https://js.hs-scripts.com/7074074.js" type="text/javascript">
   </script>
   <!-- End of HubSpot Embed Code -->
-  <script crossorigin="" src="assets/index-DSos0XOI.js" type="module">
+  <script src="config-access.js"></script>
+  <script crossorigin="" src="assets/index-DSos0XOI.js?public-access=20261009" type="module">
   </script>
   <link crossorigin="" href="assets/rolldown-runtime-B0Z9INg1.js" rel="modulepreload"/>
   <link crossorigin="" href="assets/hw-D39xDX-e.js" rel="modulepreload"/>
@@ -101,7 +69,7 @@
   <meta content="https://config.nwkings.com/experience" name="twitter:url"/>
   <script>
    (function () {
-  var titles = {"/login": "Login | Config by Network Kings", "/register": "Register | Config by Network Kings", "/forgot-password": "Forgot Password | Config by Network Kings", "/reset-password": "Reset Password | Config by Network Kings", "/": "Config by Network Kings", "/tracks": "Tracks | Config by Network Kings", "/roadmap": "Roadmap | Config by Network Kings", "/experience": "Experience | Config by Network Kings", "/trial-center": "Trial Center | Config by Network Kings", "/invite": "Invite | Config by Network Kings", "/unsubscribe": "Unsubscribe | Config by Network Kings", "/verify": "Verify | Config by Network Kings", "/privacy": "Legal | Config by Network Kings", "/terms": "Legal | Config by Network Kings", "/labs": "Labs | Config by Network Kings", "/home": "Config by Network Kings"};
+  var titles = {"/": "Config by Network Kings", "/tracks": "Tracks | Config by Network Kings", "/roadmap": "Roadmap | Config by Network Kings", "/experience": "Experience | Config by Network Kings", "/trial-center": "Trial Center | Config by Network Kings", "/invite": "Invite | Config by Network Kings", "/unsubscribe": "Unsubscribe | Config by Network Kings", "/privacy": "Legal | Config by Network Kings", "/terms": "Legal | Config by Network Kings", "/labs": "Labs | Config by Network Kings", "/home": "Config by Network Kings"};
   // PascalCase boundaries -> "-", mirroring _PASCAL_BOUNDARY_RE without lookbehind
   // (old Safari fails to PARSE a lookbehind, taking the whole script down).
   var dashed = function (s) {
@@ -193,30 +161,6 @@
         </a>
        </li>
        <li>
-        <a href="login.html">
-         Login
-        </a>
-        — Login on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
-       </li>
-       <li>
-        <a href="register.html">
-         Register
-        </a>
-        — Register on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
-       </li>
-       <li>
-        <a href="forgot-password.html">
-         Forgot Password
-        </a>
-        — Forgot Password on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
-       </li>
-       <li>
-        <a href="reset-password.html">
-         Reset Password
-        </a>
-        — Reset Password on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
-       </li>
-       <li>
         <a href="tracks.html">
          Tracks
         </a>
@@ -251,12 +195,6 @@
          Unsubscribe
         </a>
         — Unsubscribe on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
-       </li>
-       <li>
-        <a href="verify.html">
-         Verify
-        </a>
-        — Verify on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco.
        </li>
        <li>
         <a href="privacy.html">
