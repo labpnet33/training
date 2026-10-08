@@ -23,38 +23,6 @@
   <link crossorigin="" href="assets/hw-D39xDX-e.js" rel="modulepreload"/>
   <link crossorigin="" href="assets/site-82rmjhQk.js" rel="modulepreload"/>
   <link crossorigin="" href="assets/index-CCFrDwDu.css" rel="stylesheet"/>
-  <script type="module">
-   if (window.self === window.top) {
-  let lastPath = "";
-  function getPageNameFromPath(path) {
-    const segments = path.split("/").filter(Boolean);
-    return segments[0] || null;
-  }
-  function trackPageView() {
-    const path = window.location.pathname;
-    if (path === lastPath) return;
-    lastPath = path;
-    const pageName = getPageNameFromPath(path) || "home";
-    const appId = "6ab82d5a9e282007a035af77";
-    if (!appId) return;
-    fetch(`/api/app-logs/${appId}/log-user-in-app/${pageName}`, {
-      method: "POST",
-    }).catch(() => {});
-  }
-  const originalPushState = history.pushState.bind(history);
-  history.pushState = function (...args) {
-    originalPushState(...args);
-    trackPageView();
-  };
-  const originalReplaceState = history.replaceState.bind(history);
-  history.replaceState = function (...args) {
-    originalReplaceState(...args);
-    trackPageView();
-  };
-  window.addEventListener("popstate", trackPageView);
-  trackPageView();
-}
-  </script>
   <meta content="Unsubscribe on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco." name="description"/>
   <meta content="Unsubscribe | Config by Network Kings" property="og:title"/>
   <meta content="Unsubscribe on Config by Network Kings. An interactive network simulator for CCNA and CCNP students to practice Cisco." property="og:description"/>

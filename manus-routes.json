@@ -1,0 +1,104 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "title": "Home"
+    },
+    {
+      "path": "/tracks",
+      "title": "Tracks"
+    },
+    {
+      "path": "/roadmap",
+      "title": "Roadmap"
+    },
+    {
+      "path": "/experience",
+      "title": "Experience"
+    },
+    {
+      "path": "/trial-center",
+      "title": "Trial Center"
+    },
+    {
+      "path": "/invite",
+      "title": "Invite"
+    },
+    {
+      "path": "/invite/:code",
+      "title": "Invite"
+    },
+    {
+      "path": "/unsubscribe",
+      "title": "Unsubscribe"
+    },
+    {
+      "path": "/privacy",
+      "title": "Privacy"
+    },
+    {
+      "path": "/terms",
+      "title": "Terms"
+    },
+    {
+      "path": "/verify",
+      "title": "Verify"
+    },
+    {
+      "path": "/labs",
+      "title": "Labs"
+    },
+    {
+      "path": "/lab/:module/:lab",
+      "title": "Lab"
+    },
+    {
+      "path": "/packets",
+      "title": "Packet Studio"
+    },
+    {
+      "path": "/sandbox",
+      "title": "Build a lab"
+    },
+    {
+      "path": "/track/:id",
+      "title": "Track"
+    },
+    {
+      "path": "/module/:id",
+      "title": "Module"
+    },
+    {
+      "path": "/exams",
+      "title": "Exams"
+    },
+    {
+      "path": "/exam/run",
+      "title": "Exam"
+    },
+    {
+      "path": "/dashboard",
+      "title": "Dashboard"
+    },
+    {
+      "path": "/leaderboard",
+      "title": "Leaderboard"
+    },
+    {
+      "path": "/certificates",
+      "title": "Certificates"
+    },
+    {
+      "path": "/profile",
+      "title": "Profile"
+    },
+    {
+      "path": "/resume",
+      "title": "Resume"
+    },
+    {
+      "path": "/subscriptions",
+      "title": "Subscriptions"
+    }
+  ]
+}
