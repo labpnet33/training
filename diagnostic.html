@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><body><div id="root"></div><pre id="out">starting\n</pre><script>
+const out=document.querySelector('#out');
+function log(x){out.textContent += x+'\n';}
+window.addEventListener('error',e=>log('ERROR '+(e.error?.stack||e.message||e.filename+':'+e.lineno)));
+window.addEventListener('unhandledrejection',e=>log('REJECTION '+(e.reason?.stack||e.reason)));
+</script><script src="/config-access.js"></script><script type="module">
+try { await import('/assets/index-DSos0XOI.js?diag=20261012'); log('import completed; root='+document.querySelector('#root').innerHTML.slice(0,500)); } catch(e) { log('IMPORT '+(e.stack||e)); }
+setTimeout(()=>log('after 2s root='+document.querySelector('#root').innerHTML.slice(0,1000)),2000);
+</script>
