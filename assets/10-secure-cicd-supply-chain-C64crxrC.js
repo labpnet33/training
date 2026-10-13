@@ -1,0 +1,209 @@
+var e={id:`secure-cicd-supply-chain`,h:{en:`Secure CI/CD and supply-chain basics`,hi:`Secure CI/CD aur supply-chain basics`},body:{en:`
+<p>Your code is only a small part of what runs in production. The rest comes from libraries you install, base images you pull and tools your pipeline runs. Together this is the <b>software supply chain</b>, and attackers increasingly target it because compromising one popular package or one build server reaches thousands of victims at once. The deployment mechanics (what a pipeline is, how containers are built) belong to the sibling module caut-deploy; here you learn how to make that path trustworthy.</p>
+
+<h3>Analogy: a food factory</h3>
+<p>A packaged meal is safe only if the farm, the delivery truck, the factory and the sealed package are all trusted. The factory checks ingredients on arrival (dependency scanning), records which batch went into which meal (an SBOM), seals the box with a tamper-evident label (a signature) and the shop checks the label before putting the box on the shelf (signature verification). A hole at any step makes the label meaningless.</p>
+
+<h3>Where the risks are</h3>
+<table class="cmp"><tr><th>Stage</th><th>Risk</th><th>Control</th></tr>
+<tr><td>Source</td><td>Secrets in commits, unreviewed changes, stolen developer account</td><td>Secret scanning, branch protection, code review, MFA</td></tr>
+<tr><td>Dependencies</td><td>Known-vulnerable or malicious packages, a lookalike package name</td><td>Dependency scanning, pinned versions and hashes, trusted registries</td></tr>
+<tr><td>Build</td><td>Compromised build server, pipeline script changed to leak secrets</td><td>Isolated, short-lived runners; least-privilege credentials; protected pipeline files</td></tr>
+<tr><td>Artifact / image</td><td>Image replaced or tampered with, vulnerable base image</td><td>Image scanning, small base images, signing, pinning by digest</td></tr>
+<tr><td>Deploy</td><td>Unsigned or unknown image runs, over-privileged deploy token</td><td>Verify signatures at admission, scoped deploy credentials</td></tr>
+<tr><td>Runtime</td><td>Container runs as root, secrets baked in the image</td><td>Non-root user, read-only file system, secrets injected at run time</td></tr>
+</table>
+<div class="dia"><svg viewBox="0 0 640 210" role="img" aria-label="Secure pipeline with gates">
+<rect x="10" y="60" width="90" height="60" rx="8" fill="#e2e8f0"/><text x="55" y="95" text-anchor="middle" class="svg-ink" font-size="12">Commit</text>
+<rect x="125" y="60" width="95" height="60" rx="8" fill="#fde68a"/><text x="172" y="86" text-anchor="middle" class="svg-ink" font-size="12">Secret +</text><text x="172" y="102" text-anchor="middle" class="svg-ink" font-size="12">dep scan</text>
+<rect x="245" y="60" width="90" height="60" rx="8" fill="#bae6fd"/><text x="290" y="95" text-anchor="middle" class="svg-ink" font-size="12">Build + test</text>
+<rect x="360" y="60" width="95" height="60" rx="8" fill="#ddd6fe"/><text x="407" y="86" text-anchor="middle" class="svg-ink" font-size="12">Image scan</text><text x="407" y="102" text-anchor="middle" class="svg-ink" font-size="12">+ sign</text>
+<rect x="480" y="60" width="150" height="60" rx="8" fill="#bbf7d0"/><text x="555" y="86" text-anchor="middle" class="svg-ink" font-size="12">Deploy: verify</text><text x="555" y="102" text-anchor="middle" class="svg-ink" font-size="12">signature first</text>
+<line x1="100" y1="90" x2="123" y2="90" stroke="#64748b" stroke-width="2"/><line x1="220" y1="90" x2="243" y2="90" stroke="#64748b" stroke-width="2"/><line x1="335" y1="90" x2="358" y2="90" stroke="#64748b" stroke-width="2"/><line x1="455" y1="90" x2="478" y2="90" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="165" text-anchor="middle" class="svg-muted" font-size="12">Each gate can fail the pipeline. A failed gate stops the release.</text>
+</svg><p class="cap">Security gates are ordinary pipeline stages: they run on every change and break the build when they find a problem.</p></div>
+
+<h3>Dependency scanning and pinning</h3>
+<p>A <b>dependency scanner</b> compares the libraries you use (and the libraries they use) with databases of published vulnerabilities and reports the affected versions and the fixed ones. Make it a pipeline stage that fails on high-severity findings. <b>Pin</b> versions in a lock file so every build uses exactly the same code, and consider hash pinning so a swapped package fails the install. Keep the list of components as an <b>SBOM</b> so that when a new flaw is announced you can answer "are we affected?" in minutes.</p>
+<pre class="code"><span class="c"># Reference code (not run in the simulator)</span>
+$ pip install pip-audit
+$ pip-audit -r requirements.txt                    <span class="c"># lists known-vulnerable pinned packages</span>
+$ pip install --require-hashes -r requirements.txt <span class="c"># install only exact, hash-matched files</span>
+
+<span class="c"># requirements.txt (pinned, with hashes generated by a tool such as pip-compile)</span>
+requests==2.32.3 \\
+    --hash=sha256:&lt;hash-of-the-file&gt;</pre>
+<p>Beware of <b>typosquatting</b> (a package named almost like a popular one) and of dependency-confusion tricks where a public package shadows an internal name; install internal packages from your own registry and review new dependencies like new code.</p>
+
+<h3>Secret scanning and code review</h3>
+<p>Run a scanner that looks for key-like strings in every commit and fail the pipeline, or better block the push, when it finds one. Require pull requests, at least one reviewer who is not the author, and passing checks before merge. Protect the branch that deploys to production and the pipeline definition file itself, because whoever can edit the pipeline can read its secrets.</p>
+
+<h3>Container image hygiene and signing</h3>
+<ul>
+<li><b>Small, maintained base images</b> have fewer packages and therefore fewer flaws. Scan the final image, not only the source.</li>
+<li><b>Pin the base image by digest</b>, not only by a moving tag such as <code>latest</code>, so a rebuild cannot silently pull different content.</li>
+<li><b>Run as a non-root user</b> and drop capabilities the app does not need.</li>
+<li><b>Never bake secrets into an image</b>: image layers can be read by anyone who can pull the image. Inject secrets at run time.</li>
+<li><b>Sign the image</b> after it passes the checks; the deploy step <b>verifies</b> the signature and refuses to run anything unsigned or signed by the wrong key.</li>
+</ul>
+<pre class="code"><span class="c"># Reference code (not run in the simulator)</span>
+FROM python:3.12-slim@sha256:&lt;digest-from-the-registry&gt;
+RUN useradd --create-home app
+USER app                                           <span class="c"># not root</span>
+COPY --chown=app:app . /home/app
+
+$ trivy image registry.nwk.example/shop:1.4.2      <span class="c"># scan the built image for known flaws</span>
+$ cosign sign --key cosign.key registry.nwk.example/shop@sha256:&lt;digest&gt;
+$ cosign verify --key cosign.pub registry.nwk.example/shop@sha256:&lt;digest&gt;</pre>
+<p>A <b>digital signature</b> uses a private key to sign and a public key to verify, exactly as in chapter 3: it proves who produced the artifact and that it was not changed since. Keep the signing key in a secret manager or a hardware module, never in the repository.</p>
+
+<h3>A pipeline with the gates</h3>
+<pre class="code"><span class="c"># Reference code (not run in the simulator): generic pipeline file</span>
+stages:
+  - scan
+  - build
+  - test
+  - publish
+  - deploy
+
+secret_scan:
+  stage: scan
+  script:
+    - gitleaks detect --source . --no-banner
+dependency_scan:
+  stage: scan
+  script:
+    - pip-audit -r requirements.txt
+build_image:
+  stage: build
+  script:
+    - docker build -t registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA .
+image_scan:
+  stage: test
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA
+sign_and_push:
+  stage: publish
+  script:
+    - docker push registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA
+    - cosign sign --key env://COSIGN_KEY registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA</pre>
+<p>Notice that the signing key arrives as a protected CI variable, not as a file in the repository. The CI/CD secret store masks it in logs and exposes it only to jobs on protected branches.</p>
+<div class="warn"><p><b>Common mistakes.</b> Using <code>latest</code> tags in production; a deploy token with admin rights to the whole cluster; scanners that run but whose failures are ignored; building on a shared runner that other projects can reach; copying a <code>.env</code> file into an image; trusting a package because it has many downloads.</p></div>
+<div class="exam"><p><b>Exam traps.</b> Scanning finds <i>known</i> vulnerabilities; it does not find unknown ones. Signing proves origin and integrity, it does not prove the software is free of flaws. A pinned version is repeatable but must still be updated when a fix appears.</p></div>
+
+<div class="scn"><h4>The library that changed overnight</h4><p>A team's build pulled "the newest version" of a small helper library every night. One morning the pipeline's outbound traffic to an unknown host triggered an alert: a maintainer's account had been taken over and a new release contained code that tried to read environment variables. Because secrets were scoped to protected jobs and the runner had no access to production, nothing leaked, but the team spent a day proving it. They pinned versions with hashes, added an allow-list for outbound traffic from runners, and reviewed new releases through a staged update.</p><p><b>Lesson:</b> an unpinned dependency is code you did not review, running with your credentials.</p></div>
+
+<div class="iv"><p class="q">"What would you add to a CI/CD pipeline to make it more secure?"</p><p>Secret scanning and branch protection on the source; dependency scanning with pinned, hashed versions; image scanning, a minimal non-root base image pinned by digest; signing the image and verifying the signature at deploy; isolated, short-lived runners with least-privilege, masked credentials; and an SBOM plus logs of who deployed what. Say that the gates must fail the build, not just warn.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>The supply chain includes libraries, base images, build servers and the pipeline itself; each needs a control.</li>
+<li>Scan dependencies and images, pin versions (and hashes, and digests), keep an SBOM.</li>
+<li>Scan for secrets in every commit; protect branches and the pipeline file; use least-privilege masked credentials.</li>
+<li>Sign images and verify the signature before deploy; run containers as non-root and inject secrets at run time.</li>
+<li>Scanning finds known flaws only, and signing proves origin, not safety.</li>
+</ul></div>
+`,hi:`
+<p>Production mein jo chalta hai usme aapka code sirf chhota hissa hai. Baaki libraries se aata hai jo aap install karte ho, base images jo aap pull karte ho aur tools jo aapki pipeline chalati hai. Yeh sab milakar <b>software supply chain</b> hai, aur attackers ise zyada target karte hain kyunki ek popular package ya ek build server compromise karne se ek saath hazaaron victims tak pahunch jaate hain. Deployment mechanics (pipeline kya hai, containers kaise bante hain) sibling module caut-deploy mein hain; yahan aap seekhte ho ki us raaste ko bharosemand kaise banaya jaye.</p>
+
+<h3>Analogy: food factory</h3>
+<p>Packaged meal tabhi safe hai jab farm, delivery truck, factory aur sealed package sab trusted ho. Factory ingredients aate hi check karti hai (dependency scanning), record rakhti hai kaunsa batch kis meal mein gaya (SBOM), box ko tamper-evident label se seal karti hai (signature) aur shop box ko shelf par rakhne se pehle label check karti hai (signature verification). Kisi bhi step par chhed label ko bekaar bana deta hai.</p>
+
+<h3>Risks kahan hain</h3>
+<table class="cmp"><tr><th>Stage</th><th>Risk</th><th>Control</th></tr>
+<tr><td>Source</td><td>Commits mein secrets, bina review ke changes, chori hua developer account</td><td>Secret scanning, branch protection, code review, MFA</td></tr>
+<tr><td>Dependencies</td><td>Known-vulnerable ya malicious packages, lookalike package name</td><td>Dependency scanning, pinned versions aur hashes, trusted registries</td></tr>
+<tr><td>Build</td><td>Compromised build server, pipeline script badli gayi ki secrets leak ho</td><td>Isolated, short-lived runners; least-privilege credentials; protected pipeline files</td></tr>
+<tr><td>Artifact / image</td><td>Image badal di gayi ya tamper hui, vulnerable base image</td><td>Image scanning, chhoti base images, signing, digest se pinning</td></tr>
+<tr><td>Deploy</td><td>Unsigned ya unknown image chalti hai, over-privileged deploy token</td><td>Admission par signatures verify, scoped deploy credentials</td></tr>
+<tr><td>Runtime</td><td>Container root se chalta hai, image mein secrets baked</td><td>Non-root user, read-only file system, run time par secrets inject</td></tr>
+</table>
+<div class="dia"><svg viewBox="0 0 640 210" role="img" aria-label="Gates ke saath secure pipeline">
+<rect x="10" y="60" width="90" height="60" rx="8" fill="#e2e8f0"/><text x="55" y="95" text-anchor="middle" class="svg-ink" font-size="12">Commit</text>
+<rect x="125" y="60" width="95" height="60" rx="8" fill="#fde68a"/><text x="172" y="86" text-anchor="middle" class="svg-ink" font-size="12">Secret +</text><text x="172" y="102" text-anchor="middle" class="svg-ink" font-size="12">dep scan</text>
+<rect x="245" y="60" width="90" height="60" rx="8" fill="#bae6fd"/><text x="290" y="95" text-anchor="middle" class="svg-ink" font-size="12">Build + test</text>
+<rect x="360" y="60" width="95" height="60" rx="8" fill="#ddd6fe"/><text x="407" y="86" text-anchor="middle" class="svg-ink" font-size="12">Image scan</text><text x="407" y="102" text-anchor="middle" class="svg-ink" font-size="12">+ sign</text>
+<rect x="480" y="60" width="150" height="60" rx="8" fill="#bbf7d0"/><text x="555" y="86" text-anchor="middle" class="svg-ink" font-size="12">Deploy: pehle</text><text x="555" y="102" text-anchor="middle" class="svg-ink" font-size="12">signature verify</text>
+<line x1="100" y1="90" x2="123" y2="90" stroke="#64748b" stroke-width="2"/><line x1="220" y1="90" x2="243" y2="90" stroke="#64748b" stroke-width="2"/><line x1="335" y1="90" x2="358" y2="90" stroke="#64748b" stroke-width="2"/><line x1="455" y1="90" x2="478" y2="90" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="165" text-anchor="middle" class="svg-muted" font-size="12">Har gate pipeline fail kar sakta hai. Failed gate release rok deta hai.</text>
+</svg><p class="cap">Security gates aam pipeline stages hain: har change par chalte hain aur problem milne par build tod dete hain.</p></div>
+
+<h3>Dependency scanning aur pinning</h3>
+<p><b>Dependency scanner</b> aapki use ki hui libraries (aur unki libraries) ko published vulnerabilities ke databases se compare karta hai aur affected versions aur fixed versions report karta hai. Ise pipeline stage banao jo high-severity findings par fail ho. Lock file mein versions <b>pin</b> karo taaki har build bilkul wahi code use kare, aur hash pinning bhi socho taaki badla hua package install fail kar de. Components ki list <b>SBOM</b> ki tarah rakho taaki naya flaw announce ho to "kya hum affected hain?" ka jawab minutes mein de sako.</p>
+<pre class="code"><span class="c"># Reference code (not run in the simulator)</span>
+$ pip install pip-audit
+$ pip-audit -r requirements.txt                    <span class="c"># known-vulnerable pinned packages ki list</span>
+$ pip install --require-hashes -r requirements.txt <span class="c"># sirf exact, hash-matched files install</span>
+
+<span class="c"># requirements.txt (pinned, hashes pip-compile jaise tool se generated)</span>
+requests==2.32.3 \\
+    --hash=sha256:&lt;hash-of-the-file&gt;</pre>
+<p><b>Typosquatting</b> (popular package se milta-julta naam) aur dependency-confusion tricks se savdhan raho jahan public package internal naam ko shadow karta hai; internal packages apni registry se install karo aur naye dependencies ko naye code ki tarah review karo.</p>
+
+<h3>Secret scanning aur code review</h3>
+<p>Aisa scanner chalao jo har commit mein key jaisi strings dhoondhta hai aur milne par pipeline fail kare, ya behtar push block kare. Pull requests, kam se kam ek reviewer jo author na ho, aur merge se pehle passing checks maango. Jo branch production deploy karti hai aur pipeline definition file ko protect karo, kyunki jo pipeline edit kar sakta hai woh uske secrets padh sakta hai.</p>
+
+<h3>Container image hygiene aur signing</h3>
+<ul>
+<li><b>Chhoti, maintained base images</b> mein kam packages hote hain aur isliye kam flaws. Sirf source nahi, final image scan karo.</li>
+<li><b>Base image ko digest se pin karo</b>, sirf <code>latest</code> jaise badalte tag se nahi, taaki rebuild chupke se alag content na khinch le.</li>
+<li><b>Non-root user se chalao</b> aur jo capabilities app ko nahi chahiye woh hatao.</li>
+<li><b>Image mein secrets kabhi bake mat karo</b>: image layers har woh padh sakta hai jo image pull kar sake. Secrets run time par inject karo.</li>
+<li><b>Image sign karo</b> jab woh checks pass kar le; deploy step signature <b>verify</b> karta hai aur kuch bhi unsigned ya galat key se signed chalane se mana kar deta hai.</li>
+</ul>
+<pre class="code"><span class="c"># Reference code (not run in the simulator)</span>
+FROM python:3.12-slim@sha256:&lt;digest-from-the-registry&gt;
+RUN useradd --create-home app
+USER app                                           <span class="c"># root nahi</span>
+COPY --chown=app:app . /home/app
+
+$ trivy image registry.nwk.example/shop:1.4.2      <span class="c"># built image ko known flaws ke liye scan</span>
+$ cosign sign --key cosign.key registry.nwk.example/shop@sha256:&lt;digest&gt;
+$ cosign verify --key cosign.pub registry.nwk.example/shop@sha256:&lt;digest&gt;</pre>
+<p><b>Digital signature</b> private key se sign aur public key se verify karta hai, bilkul chapter 3 ki tarah: yeh sabit karta hai ki artifact kisne banaya aur tab se badla nahi. Signing key ko secret manager ya hardware module mein rakho, repository mein kabhi nahi.</p>
+
+<h3>Gates ke saath pipeline</h3>
+<pre class="code"><span class="c"># Reference code (not run in the simulator): generic pipeline file</span>
+stages:
+  - scan
+  - build
+  - test
+  - publish
+  - deploy
+
+secret_scan:
+  stage: scan
+  script:
+    - gitleaks detect --source . --no-banner
+dependency_scan:
+  stage: scan
+  script:
+    - pip-audit -r requirements.txt
+build_image:
+  stage: build
+  script:
+    - docker build -t registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA .
+image_scan:
+  stage: test
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA
+sign_and_push:
+  stage: publish
+  script:
+    - docker push registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA
+    - cosign sign --key env://COSIGN_KEY registry.nwk.example/shop:$CI_COMMIT_SHORT_SHA</pre>
+<p>Dhyan do ki signing key protected CI variable ki tarah aati hai, repository mein file ki tarah nahi. CI/CD secret store use logs mein mask karta hai aur sirf protected branches ke jobs ko deta hai.</p>
+<div class="warn"><p><b>Common mistakes.</b> Production mein <code>latest</code> tags; poore cluster ke admin rights wala deploy token; scanners jo chalte hain par jinki failures ignore hoti hain; shared runner par build jahan doosre projects pahunch sakte hain; image mein <code>.env</code> file copy karna; kisi package par isliye bharosa ki uske bahut downloads hain.</p></div>
+<div class="exam"><p><b>Exam traps.</b> Scanning <i>known</i> vulnerabilities dhoondhti hai; anjaane nahi. Signing origin aur integrity sabit karti hai, yeh nahi ki software flaws se free hai. Pinned version repeatable hai par fix aane par update karna zaroori hai.</p></div>
+
+<div class="scn"><h4>Library jo raat bhar mein badal gayi</h4><p>Ek team ki build har raat ek chhoti helper library ka "sabse naya version" khinchti thi. Ek subah pipeline se anjaane host ko outbound traffic ne alert diya: maintainer ka account hijack ho gaya tha aur naye release mein aisa code tha jo environment variables padhne ki koshish karta tha. Kyunki secrets protected jobs tak scoped the aur runner ke paas production ka access nahi tha, kuch leak nahi hua, par team ne ek din yeh sabit karne mein lagaya. Unhone hashes ke saath versions pin kiye, runners se outbound traffic ki allow-list lagayi, aur naye releases staged update se review kiye.</p><p><b>Lesson:</b> unpinned dependency aisa code hai jo aapne review nahi kiya aur jo aapke credentials ke saath chalta hai.</p></div>
+
+<div class="iv"><p class="q">"CI/CD pipeline ko zyada secure banane ke liye aap kya jodoge?"</p><p>Source par secret scanning aur branch protection; pinned, hashed versions ke saath dependency scanning; image scanning, digest se pinned minimal non-root base image; image signing aur deploy par signature verification; isolated, short-lived runners jinke paas least-privilege, masked credentials hon; aur SBOM plus kisne kya deploy kiya uske logs. Kaho ki gates build ko fail karein, sirf warn nahi.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Supply chain mein libraries, base images, build servers aur pipeline khud shamil hain; har ek ko control chahiye.</li>
+<li>Dependencies aur images scan karo, versions (aur hashes, aur digests) pin karo, SBOM rakho.</li>
+<li>Har commit mein secrets scan karo; branches aur pipeline file protect karo; least-privilege masked credentials use karo.</li>
+<li>Images sign karo aur deploy se pehle signature verify karo; containers non-root chalao aur secrets run time par inject karo.</li>
+<li>Scanning sirf known flaws dhoondhti hai, aur signing origin sabit karti hai, safety nahi.</li>
+</ul></div>
+`}};export{e as default};

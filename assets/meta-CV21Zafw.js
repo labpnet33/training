@@ -1,0 +1,1 @@
+var e={read:75,blurb:{en:`Candidate versus running, commit versus push, push options, order of operations, per-firewall failures, merge risk, and a safe change routine for Panorama.`,hi:`Candidate versus running, commit versus push, push options, operations ka order, per-firewall failures, merge risk, aur Panorama ke liye safe change routine.`}};export{e as default};

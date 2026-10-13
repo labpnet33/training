@@ -1,0 +1,1 @@
+var e={read:90,blurb:{en:`Advertise LANs, understand transport and LAN VRs, MP-BGP, tenants and topologies, and repair underlay and tenant faults.`,hi:`LANs advertise karo, transport aur LAN VRs, MP-BGP, tenants aur topologies samjho, aur underlay aur tenant faults repair karo.`}};export{e as default};

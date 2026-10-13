@@ -1,0 +1,81 @@
+var e={id:`polling-vs-streaming`,h:{en:`Polling versus streaming: SNMP, syslog, flows and telemetry`,hi:`Polling versus streaming: SNMP, syslog, flows aur telemetry`},body:{en:`
+<p><b>One idea:</b> there are several ways to learn what a device is doing, and each answers a different question. A network engineer needs to know which tool fits which question. We will compare four: SNMP polling, syslog, flow export and streaming telemetry.</p>
+<table class="cmp"><tr><th>Method</th><th>Question it answers</th><th>Direction</th><th>Data shape</th></tr><tr><td>SNMP polling</td><td>What is this counter now?</td><td>Manager asks, device answers</td><td>MIB objects (OIDs)</td></tr><tr><td>Syslog</td><td>What just happened?</td><td>Device sends text messages</td><td>Free text with a severity</td></tr><tr><td>Flow export (NetFlow, IPFIX)</td><td>Who talked to whom, how much?</td><td>Device exports flow records</td><td>Flow records (5-tuple and counters)</td></tr><tr><td>Streaming telemetry</td><td>What are the values and changes of this model path?</td><td>Device pushes (or you subscribe)</td><td>YANG-modelled, structured</td></tr></table>
+<h3>How SNMP polling works and where it hurts</h3>
+<p>The manager sends a <b>GET</b> request containing object identifiers (OIDs) such as the interface input byte count, and the device answers with the current value. The manager repeats this on a timer. The numbers you graph are really the <i>difference</i> between two readings divided by the time between them. That arithmetic hides three classic traps.</p>
+<ol><li><b>Counter wrap.</b> A 32-bit byte counter holds at most 4,294,967,295 and then restarts at zero. On a busy 10-gigabit link this can happen in seconds, so a naive subtraction gives a huge negative number. Newer 64-bit counters (the high-capacity ones) avoid it.</li><li><b>Missed events.</b> Anything shorter than the polling interval can disappear between two readings.</li><li><b>Load.</b> Each poll makes the device walk its tables and answer, which uses CPU. Poll too hard and you cause the problem you wanted to detect.</li></ol>
+<pre class="code">def rate_bps(old, new, seconds, bits=32):
+    """bits per second between two readings of a byte counter"""
+    if new &lt; old:                       # the counter passed its maximum and started again at 0
+        new = new + 2 ** bits
+    return (new - old) * 8 / seconds
+
+print(rate_bps(1_000, 126_000, 10))               # an ordinary reading
+print(rate_bps(4_294_000_000, 5_000_000, 10))     # the 32-bit counter wrapped between the readings
+print(2 ** 32)                                    # the largest 32-bit counter value plus one</pre>
+<pre class="out">100000.0
+4773836.8
+4294967296</pre>
+<p><code>rate_bps</code> is a function (see the <i>py-ipaddr</i> module for functions). The <code>if new &lt; old</code> line detects a wrap: the new reading is smaller than the old one, which a counter should never do, so the function adds 2 to the power of 32 and carries on. The second call shows a counter that went from near the maximum to a small number and still gives a sensible rate. The underscores in <code>1_000</code> are only for readability.</p>
+<h3>The cost of polling at scale</h3>
+<pre class="code">devices = 500
+interfaces_per_device = 48
+counters_per_interface = 6
+interval_seconds = 60
+
+requests = devices * interfaces_per_device * counters_per_interface
+print("values to fetch each round:", requests)
+print("values per second on average:", requests / interval_seconds)</pre>
+<pre class="out">values to fetch each round: 144000
+values per second on average: 2400.0</pre>
+<p>With 500 devices, 48 interfaces and six counters, every minute you ask for 144,000 values. Make the interval 10 seconds and you multiply the load by six. Streaming telemetry is cheaper per value because the device builds one message from the model it already holds, encodes it compactly, and sends it over one long-lived connection. You do not repeat a request for every value.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Polling ask, answer, repeat to Syslog event text to Flows who talks to whom to Telemetry model data pushed"><rect x="20" y="40" width="124" height="76" rx="10" fill="#fed7aa"/><text x="82" y="74" text-anchor="middle" class="svg-ink" font-size="13">Polling</text><text x="82" y="90" text-anchor="middle" class="svg-muted" font-size="12">ask, answer, repeat</text><line x1="144" y1="78" x2="174" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="178,78 170,73 170,83" fill="#64748b"/><rect x="178" y="40" width="124" height="76" rx="10" fill="#fde68a"/><text x="240" y="74" text-anchor="middle" class="svg-ink" font-size="13">Syslog</text><text x="240" y="90" text-anchor="middle" class="svg-muted" font-size="12">event text</text><line x1="302" y1="78" x2="332" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="336,78 328,73 328,83" fill="#64748b"/><rect x="336" y="40" width="124" height="76" rx="10" fill="#bae6fd"/><text x="398" y="74" text-anchor="middle" class="svg-ink" font-size="13">Flows</text><text x="398" y="90" text-anchor="middle" class="svg-muted" font-size="12">who talks to whom</text><line x1="460" y1="78" x2="490" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="494,78 486,73 486,83" fill="#64748b"/><rect x="494" y="40" width="124" height="76" rx="10" fill="#bbf7d0"/><text x="556" y="74" text-anchor="middle" class="svg-ink" font-size="13">Telemetry</text><text x="556" y="90" text-anchor="middle" class="svg-muted" font-size="12">model data pushed</text></svg><p class="cap">Four tools, four questions. Mature operations use all four and correlate them.</p></div>
+<h3>When polling is still the right answer</h3>
+<ul><li>The device is old and has no YANG-based telemetry.</li><li>You need a simple up/down check once a minute (a ping or a single OID).</li><li>The value changes rarely and a slow poll is enough, such as software version or serial number.</li></ul>
+<p>Most real networks run a hybrid: streaming for high-value metrics on modern devices, SNMP for the rest, syslog for events and flows for traffic analysis.</p>
+<div class="warn"><p><b>Common mistake.</b> Switching off SNMP the day telemetry works on one platform. Other devices, hardware sensors and many monitoring tools still depend on it. Migrate platform by platform and keep alerts equivalent.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Be ready to name the traps of polling (wrap, missed events, load) and the strengths of streaming (push, structured model data, finer resolution, one connection). Also know that syslog and flows are separate signals, not replacements for telemetry.</p></div>
+<div class="scn"><h4>The graph with a giant negative spike</h4><p>A dashboard showed a deep negative dip on one interface once a day. The cause was a 32-bit counter wrapping between two polls; the tool subtracted without handling the wrap. Switching to 64-bit counters (and, on newer devices, to streaming of the interface statistics model, which uses 64-bit values) removed the dip.</p><p><b>Lesson:</b> Always handle counter wrap or use 64-bit counters.</p></div>
+<div class="iv"><p class="q">"When would you still choose SNMP polling over streaming telemetry?"</p><p>For legacy devices without model-driven telemetry, for simple health checks, and for slow-changing inventory data. I also keep it as a fallback during migration. For high-resolution counters, state changes and large fleets, I choose streaming. Most estates run both, and I make sure the alerts built on each side agree.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>SNMP, syslog, flows and telemetry answer different questions.</li><li>Polling hides events between polls, can wrap 32-bit counters and loads the device.</li><li>Rate equals the difference between readings divided by the time between them.</li><li>Streaming is structured, pushed and cheaper per value at scale.</li><li>Real networks use a hybrid of all four signals.</li></ul></div>
+`,hi:`
+<p><b>Ek idea:</b> device kya kar raha hai yeh jaanne ke kai tareeke hain, aur har ek alag sawaal ka jawab deta hai. Network engineer ko pata hona chahiye ki kaun sa tool kis sawaal ke liye hai. Hum chaar compare karenge: SNMP polling, syslog, flow export aur streaming telemetry.</p>
+<table class="cmp"><tr><th>Method</th><th>Kaunsa sawaal</th><th>Direction</th><th>Data shape</th></tr><tr><td>SNMP polling</td><td>Yeh counter abhi kitna hai?</td><td>Manager poochhta hai, device jawab deta hai</td><td>MIB objects (OIDs)</td></tr><tr><td>Syslog</td><td>Abhi kya hua?</td><td>Device text messages bhejta hai</td><td>Severity ke saath free text</td></tr><tr><td>Flow export (NetFlow, IPFIX)</td><td>Kisne kisse kitni baat ki?</td><td>Device flow records export karta hai</td><td>Flow records (5-tuple aur counters)</td></tr><tr><td>Streaming telemetry</td><td>Is model path ki values aur badlaav kya hain?</td><td>Device push karta hai (ya aap subscribe karte ho)</td><td>YANG-modelled, structured</td></tr></table>
+<h3>SNMP polling kaise kaam karti hai aur kahan dard deti hai</h3>
+<p>Manager ek <b>GET</b> request bhejta hai jisme object identifiers (OIDs) hote hain, jaise interface input byte count, aur device current value se jawab deta hai. Manager yeh timer par dohrata hai. Jo numbers aap graph karte ho woh asal mein do readings ka <i>difference</i> hota hai, unke beech ke time se divide kiya hua. Yeh arithmetic teen classic jaal chhupata hai.</p>
+<ol><li><b>Counter wrap.</b> 32-bit byte counter zyada se zyada 4,294,967,295 rakh sakta hai aur phir zero se dobara shuru hota hai. Busy 10-gigabit link par yeh seconds mein ho sakta hai, isliye seedha subtraction bahut bada negative number deta hai. Naye 64-bit counters (high-capacity wale) isse bachate hain.</li><li><b>Missed events.</b> Polling interval se chhoti koi bhi cheez do readings ke beech gayab ho sakti hai.</li><li><b>Load.</b> Har poll device ko apni tables walk karwa kar jawab dene par majboor karti hai, jisme CPU lagta hai. Zyada poll karoge to wahi problem banaoge jise aap detect karna chahte the.</li></ol>
+<pre class="code">def rate_bps(old, new, seconds, bits=32):
+    """bits per second between two readings of a byte counter"""
+    if new &lt; old:                       # the counter passed its maximum and started again at 0
+        new = new + 2 ** bits
+    return (new - old) * 8 / seconds
+
+print(rate_bps(1_000, 126_000, 10))               # an ordinary reading
+print(rate_bps(4_294_000_000, 5_000_000, 10))     # the 32-bit counter wrapped between the readings
+print(2 ** 32)                                    # the largest 32-bit counter value plus one</pre>
+<pre class="out">100000.0
+4773836.8
+4294967296</pre>
+<p><code>rate_bps</code> ek function hai (functions ke liye <i>py-ipaddr</i> module dekho). <code>if new &lt; old</code> line wrap pakadti hai: nayi reading purani se chhoti hai, jo counter ko kabhi nahi karna chahiye, isliye function 2 ki power 32 jodta hai aur aage badhta hai. Doosri call aisa counter dikhati hai jo maximum ke paas se chhote number par gaya aur phir bhi sahi rate deta hai. <code>1_000</code> ke underscores sirf padhne mein aasani ke liye hain.</p>
+<h3>Scale par polling ki keemat</h3>
+<pre class="code">devices = 500
+interfaces_per_device = 48
+counters_per_interface = 6
+interval_seconds = 60
+
+requests = devices * interfaces_per_device * counters_per_interface
+print("values to fetch each round:", requests)
+print("values per second on average:", requests / interval_seconds)</pre>
+<pre class="out">values to fetch each round: 144000
+values per second on average: 2400.0</pre>
+<p>500 devices, 48 interfaces aur chhe counters ke saath, har minute aap 144,000 values maangte ho. Interval 10 second kar do to load chhe guna ho jaata hai. Streaming telemetry har value ke hisaab se sasti hai kyunki device apne paas ke model se ek message banata hai, use compact encode karta hai, aur ek lambe chalne wale connection par bhejta hai. Har value ke liye request dohrani nahi padti.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Polling pucho, jawab, dohrao to Syslog event text to Flows kaun kisse baat karta to Telemetry model data push"><rect x="20" y="40" width="124" height="76" rx="10" fill="#fed7aa"/><text x="82" y="74" text-anchor="middle" class="svg-ink" font-size="13">Polling</text><text x="82" y="90" text-anchor="middle" class="svg-muted" font-size="12">pucho, jawab, dohrao</text><line x1="144" y1="78" x2="174" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="178,78 170,73 170,83" fill="#64748b"/><rect x="178" y="40" width="124" height="76" rx="10" fill="#fde68a"/><text x="240" y="74" text-anchor="middle" class="svg-ink" font-size="13">Syslog</text><text x="240" y="90" text-anchor="middle" class="svg-muted" font-size="12">event text</text><line x1="302" y1="78" x2="332" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="336,78 328,73 328,83" fill="#64748b"/><rect x="336" y="40" width="124" height="76" rx="10" fill="#bae6fd"/><text x="398" y="74" text-anchor="middle" class="svg-ink" font-size="13">Flows</text><text x="398" y="90" text-anchor="middle" class="svg-muted" font-size="12">kaun kisse baat karta</text><line x1="460" y1="78" x2="490" y2="78" stroke="#64748b" stroke-width="2"/><polygon points="494,78 486,73 486,83" fill="#64748b"/><rect x="494" y="40" width="124" height="76" rx="10" fill="#bbf7d0"/><text x="556" y="74" text-anchor="middle" class="svg-ink" font-size="13">Telemetry</text><text x="556" y="90" text-anchor="middle" class="svg-muted" font-size="12">model data push</text></svg><p class="cap">Chaar tools, chaar sawaal. Mature operations chaaron use karti hai aur unhe correlate karti hai.</p></div>
+<h3>Jab polling abhi bhi sahi jawab hai</h3>
+<ul><li>Device purana hai aur uspe YANG-based telemetry nahi hai.</li><li>Aapko minute mein ek baar simple up/down check chahiye (ping ya ek OID).</li><li>Value kam badalti hai aur dheemi poll kaafi hai, jaise software version ya serial number.</li></ul>
+<p>Zyadatar asli networks hybrid chalate hain: modern devices ke high-value metrics ke liye streaming, baaki ke liye SNMP, events ke liye syslog aur traffic analysis ke liye flows.</p>
+<div class="warn"><p><b>Aam galti.</b> Ek platform par telemetry chalte hi SNMP band kar dena. Doosre devices, hardware sensors aur kai monitoring tools abhi bhi usi par depend karte hain. Platform-by-platform migrate karo aur alerts equivalent rakho.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Polling ke jaal (wrap, missed events, load) aur streaming ki taakat (push, structured model data, finer resolution, ek connection) naam se batana aana chahiye. Yeh bhi jaano ki syslog aur flows alag signals hain, telemetry ke replacement nahi.</p></div>
+<div class="scn"><h4>Giant negative spike wala graph</h4><p>Dashboard par ek interface par din mein ek baar gehra negative dip dikhta tha. Wajah thi do polls ke beech 32-bit counter ka wrap hona; tool ne wrap sambhale bina subtract kiya. 64-bit counters par jaane se (aur naye devices par interface statistics model ki streaming se, jo 64-bit values use karti hai) dip gaya.</p><p><b>Lesson:</b> Counter wrap hamesha handle karo ya 64-bit counters use karo.</p></div>
+<div class="iv"><p class="q">"Kab streaming telemetry ki jagah SNMP polling chunoge?"</p><p>Legacy devices jinme model-driven telemetry nahi hai, simple health checks, aur dheere badalne wale inventory data ke liye. Migration ke dauran fallback ke roop mein bhi rakhta hoon. High-resolution counters, state changes aur bade fleets ke liye streaming chunta hoon. Zyadatar estates dono chalate hain, aur main dhyan rakhta hoon ki dono taraf ke alerts aapas mein agree karein.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>SNMP, syslog, flows aur telemetry alag sawaalon ke jawab dete hain.</li><li>Polling polls ke beech ke events chhupati hai, 32-bit counters wrap kar sakti hai aur device par load daalti hai.</li><li>Rate do readings ke difference ko unke beech ke time se divide karne par milta hai.</li><li>Streaming structured, pushed aur scale par har value ke hisaab se sasti hai.</li><li>Asli networks chaaron signals ka hybrid use karte hain.</li></ul></div>
+`}};export{e as default};

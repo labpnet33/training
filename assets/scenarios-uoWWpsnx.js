@@ -1,0 +1,43 @@
+var e=[{title:{en:`Sessions up, no remote MACs`,hi:`Sessions up, remote MACs nahi`},ticket:{en:`LEAF1 cannot see any remote MAC. BGP shows both spines Established. SPINE1 has the routes from LEAF2.`,hi:`LEAF1 ko koi remote MAC nahi dikhta. BGP dono spines Established dikhata hai. SPINE1 ke paas LEAF2 ke routes hain.`},out:`SPINE1# show bgp l2vpn evpn route-type 2
+ *>i [2][65001:10][0][48][0050.56aa.0002][32][10.10.10.12]/24
+                    10.255.1.12              0    100      0 i
+LEAF2# show running-config | section router bgp
+ address-family l2vpn evpn
+  neighbor 10.255.0.101 activate
+  neighbor 10.255.0.101 send-community
+  neighbor 10.255.0.102 activate
+  neighbor 10.255.0.102 send-community`,q:{en:`What is missing?`,hi:`Kya missing hai?`},o:[{en:`send-community both on LEAF2, so RT and encapsulation are stripped`,hi:`LEAF2 par send-community both, isliye RT aur encapsulation hat jaate hain`},{en:`A third spine`,hi:`Teesra spine`},{en:`mtu 9198 on LEAF1`,hi:`LEAF1 par mtu 9198`},{en:`ip routing on the spines`,hi:`Spines par ip routing`}],a:0,w:{en:`The route on SPINE1 has no Extended Community line. LEAF2 sends only standard communities. Add send-community both for both neighbors.`,hi:`SPINE1 par route mein Extended Community line nahi hai. LEAF2 sirf standard communities bhejta hai. Dono neighbors ke liye send-community both jodo.`}},{title:{en:`Route in BGP but not installed`,hi:`BGP mein route hai lekin installed nahi`},ticket:{en:`H3's MAC is visible in show bgp l2vpn evpn on LEAF3 but not in the MAC table. LEAF2 originates it.`,hi:`H3 ka MAC LEAF3 par show bgp l2vpn evpn mein dikhta hai lekin MAC table mein nahi. LEAF2 use originate karta hai.`},out:`LEAF3# show bgp l2vpn evpn route-type 2
+ *>i [2][65001:20][0][48][0050.56aa.0003][32][10.10.20.13]/24  NH 10.255.1.12
+      Extended Community: RT:65001:21 ENCAP:8
+LEAF3# show l2vpn evpn evi 20 detail
+  RD:                65001:20 (manual)
+  Import-RTs:        65001:20
+  Export-RTs:        65001:20`,q:{en:`What explains it?`,hi:`Iska kya kaaran hai?`},o:[{en:`VNI 10020 is missing from OSPF`,hi:`VNI 10020 OSPF se missing hai`},{en:`The spines dropped the route`,hi:`Spines ne route drop kiya`},{en:`RT mismatch: route carries 65001:21, EVI imports 65001:20`,hi:`RT mismatch: route 65001:21 carry karta hai, EVI 65001:20 import karta hai`},{en:`The RD must be equal`,hi:`RD barabar hona chahiye`}],a:2,w:{en:`The import RT does not match the route's RT, so the route stays in BGP only. Align the export on LEAF2 or the import on LEAF3. RDs need not match.`,hi:`Import RT route ke RT se match nahi karta, isliye route sirf BGP mein rehta hai. LEAF2 par export ya LEAF3 par import align karo. RDs ka match karna zaroori nahi.`}},{title:{en:`Hosts fine, prefixes missing`,hi:`Hosts theek, prefixes missing`},ticket:{en:`Hosts of TENANT-A reach each other across leaves, but the 172.31.0.0/16 network behind LEAF3 is unreachable from LEAF1.`,hi:`TENANT-A ke hosts leaves ke beech ek doosre tak pahunchte hain, lekin LEAF3 ke peeche ka 172.31.0.0/16 network LEAF1 se unreachable hai.`},out:`LEAF3# show ip route vrf TENANT-A 172.31.0.0
+S  172.31.0.0/16 [1/0] via 10.10.20.250
+LEAF1# show bgp l2vpn evpn route-type 5
+(no entries)
+LEAF3# show running-config | section address-family ipv4 vrf
+ address-family ipv4 vrf TENANT-A
+  redistribute connected`,q:{en:`Which change fixes it?`,hi:`Kaunsa change fix karta hai?`},o:[{en:`Change the L2VNI`,hi:`L2VNI badlo`},{en:`Add advertise l2vpn evpn and a redistribution of the static route`,hi:`advertise l2vpn evpn aur static route ki redistribution jodo`},{en:`Move the spines to another AS`,hi:`Spines ko doosre AS mein daalo`},{en:`Disable the anycast gateway`,hi:`Anycast gateway disable karo`}],a:1,w:{en:`No type-5 is originated: the VRF lacks advertise l2vpn evpn and the static prefix is not redistributed. Hosts work through type 2.`,hi:`Koi type-5 originate nahi hota: VRF mein advertise l2vpn evpn nahi hai aur static prefix redistribute nahi hota. Hosts type 2 se chalte hain.`}},{title:{en:`Same VLAN, wrong VNI`,hi:`Same VLAN, galat VNI`},ticket:{en:`VLAN 10 hosts on LEAF1 and LEAF2 cannot communicate. BGP and communities look right.`,hi:`LEAF1 aur LEAF2 ke VLAN 10 hosts communicate nahi kar paate. BGP aur communities sahi dikhte hain.`},out:`LEAF1# show l2vpn evpn evi 10
+EVI   VLAN  L2 VNI
+10    10    10010
+LEAF2# show l2vpn evpn evi 10
+EVI   VLAN  L2 VNI
+10    10    10001`,q:{en:`What is the fix?`,hi:`Fix kya hai?`},o:[{en:`Change the BGP AS`,hi:`BGP AS badlo`},{en:`Renumber VLAN 10`,hi:`VLAN 10 renumber karo`},{en:`Change the RD on both leaves`,hi:`Dono leaves par RD badlo`},{en:`Correct the VNI on LEAF2 to 10010 in vlan configuration and nve1`,hi:`LEAF2 par vlan configuration aur nve1 mein VNI 10010 theek karo`}],a:3,w:{en:`The VLAN IDs match but the VNIs differ, so the forwarding state of one leaf never matches the other's VNI.`,hi:`VLAN IDs match karte hain lekin VNIs alag hain, isliye ek leaf ki forwarding state doosre ke VNI se match nahi karti.`}},{title:{en:`Routing fails from LEAF3`,hi:`LEAF3 se routing fail`},ticket:{en:`From LEAF3, hosts reach their own VLAN peers but not other VLANs. LEAF1 and LEAF2 route fine.`,hi:`LEAF3 se hosts apne VLAN peers tak pahunchte hain lekin doosre VLANs tak nahi. LEAF1 aur LEAF2 theek route karte hain.`},out:`LEAF3# show nve vni
+nve1       10020      N/A              Up         L2CP  20    CLI   N/A
+LEAF1# show nve vni
+nve1       10010      N/A              Up         L2CP  10    CLI   N/A
+nve1       50901      N/A              Up         L3CP  901   CLI   TENANT-A`,q:{en:`What is absent on LEAF3?`,hi:`LEAF3 par kya absent hai?`},o:[{en:`member vni 50901 vrf TENANT-A under nve1`,hi:`nve1 ke neeche member vni 50901 vrf TENANT-A`},{en:`A second loopback`,hi:`Doosra loopback`},{en:`Static ingress replication`,hi:`Static ingress replication`},{en:`OSPF area 1`,hi:`OSPF area 1`}],a:0,w:{en:`The L3CP row for 50901 is missing, so LEAF3 cannot send or receive routed (L3VNI) traffic. Add the VRF-bound member VNI.`,hi:`50901 ki L3CP row missing hai, isliye LEAF3 routed (L3VNI) traffic bhej ya receive nahi kar sakta. VRF-bound member VNI jodo.`}},{title:{en:`BGP good, nve peers empty`,hi:`BGP theek, nve peers khaali`},ticket:{en:`After an upgrade LEAF3 has EVPN routes in BGP but no VTEP peers and no remote MACs.`,hi:`Upgrade ke baad LEAF3 ke BGP mein EVPN routes hain lekin VTEP peers aur remote MACs nahi.`},out:`LEAF3# show bgp l2vpn evpn summary
+10.255.0.101    4 65001  ... 00:30:12   9
+LEAF3# show nve interface nve1
+Interface: nve1, State: Admin Up, Oper Up, Encapsulation: Vxlan,
+ BGP host reachability: Disabled
+LEAF3# show nve peers
+(empty)`,q:{en:`What is the cause?`,hi:`Kaaran kya hai?`},o:[{en:`The spines are not RRs`,hi:`Spines RR nahi hain`},{en:`host-reachability protocol bgp is missing under nve1`,hi:`nve1 ke neeche host-reachability protocol bgp missing hai`},{en:`The route target is wrong`,hi:`Route target galat hai`},{en:`Jumbo MTU is missing`,hi:`Jumbo MTU missing hai`}],a:1,w:{en:`BGP host reachability is Disabled, so nve1 stays in data-plane mode and ignores EVPN routes. Add host-reachability protocol bgp.`,hi:`BGP host reachability Disabled hai, isliye nve1 data-plane mode mein rehta hai aur EVPN routes ignore karta hai. host-reachability protocol bgp jodo.`}},{title:{en:`Spine keeps routes, leaves see nothing`,hi:`Spine routes rakhta hai, leaves ko kuch nahi dikhta`},ticket:{en:`LEAF1's routes appear in SPINE2's EVPN table but never on LEAF2 or LEAF3. SPINE1 works.`,hi:`LEAF1 ke routes SPINE2 ki EVPN table mein dikhte hain lekin LEAF2 ya LEAF3 par kabhi nahi. SPINE1 theek hai.`},out:`SPINE2# show bgp l2vpn evpn summary
+10.255.0.11     4 65001 ... 00:50:00   8
+10.255.0.12     4 65001 ... 00:50:00   8
+SPINE2# show running-config | section address-family l2vpn
+  neighbor 10.255.0.11 activate
+  neighbor 10.255.0.11 send-community both
+  neighbor 10.255.0.12 activate
+  neighbor 10.255.0.12 send-community both`,q:{en:`What is missing on SPINE2?`,hi:`SPINE2 par kya missing hai?`},o:[{en:`VNI configuration`,hi:`VNI configuration`},{en:`route-reflector-client for the leaf neighbors`,hi:`Leaf neighbors ke liye route-reflector-client`},{en:`A VRF`,hi:`Ek VRF`},{en:`nve1`,hi:`nve1`}],a:1,w:{en:`Without route-reflector-client, an iBGP speaker will not pass one iBGP peer's routes to another. SPINE2 stores them but reflects nothing.`,hi:`route-reflector-client ke bina iBGP speaker ek iBGP peer ke routes doosre ko pass nahi karta. SPINE2 unhe store karta hai lekin kuch reflect nahi karta.`}}];export{e as default};

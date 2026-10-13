@@ -1,0 +1,36 @@
+var e=[{title:{en:`Off by one`,hi:`Ek se chook`},ticket:{en:`A loop meant to print three routers crashes on the last one. Read the script and the output.`,hi:`Teen routers print karne wala loop aakhri par crash hota hai. Script aur output padho.`},out:`python3 e1.py
+10.99.0.2
+10.99.0.3
+Traceback (most recent call last):
+  File "e1.py", line 3
+    print(routers[i])
+IndexError: list index out of range`,q:{en:`What is the cause?`,hi:`Wajah kya hai?`},o:[{en:`range(1, 4) starts at index 1 and reaches index 3, which does not exist in a 3-item list`,hi:`range(1, 4) index 1 se shuru hokar index 3 tak jaata hai, jo 3-item list mein nahi hai`},{en:`The list is empty`,hi:`List khaali hai`},{en:`print cannot show IPs`,hi:`print IPs nahi dikha sakta`},{en:`The router is down`,hi:`Router down hai`}],a:0,w:{en:`Indexes of a 3-item list are 0, 1, 2. The loop skipped index 0 and ran past the end. Loop over the list itself with for ip in routers.`,hi:`3-item list ke indexes 0, 1, 2 hain. Loop ne index 0 skip kiya aur end ke aage chala gaya. List par seedha for ip in routers se loop karo.`}},{title:{en:`One device without a role`,hi:`Ek device bina role ke`},ticket:{en:`The inventory report stops after the first device. Read the script and the output.`,hi:`Inventory report pehle device ke baad ruk jaati hai. Script aur output padho.`},out:`python3 e2.py
+Traceback (most recent call last):
+  File "e2.py", line 3
+    print(name, info["role"])
+KeyError: 'role'`,q:{en:`How do you fix it so the report finishes?`,hi:`Report poori ho iske liye ise kaise fix karoge?`},o:[{en:`Add quotes around R1`,hi:`R1 ke around quotes lagao`},{en:`Read the field with info.get("role", "unknown")`,hi:`Field ko info.get("role", "unknown") se padho`},{en:`Use a list instead of a dictionary`,hi:`Dictionary ki jagah list use karo`},{en:`Delete the loop`,hi:`Loop delete karo`}],a:1,w:{en:`R1 has no "role" key, so info["role"] raises KeyError. get() with a default lets the loop continue and shows the device as unknown.`,hi:`R1 mein "role" key nahi hai, isliye info["role"] KeyError deta hai. Default ke saath get() loop ko chalne deta hai aur device ko unknown dikhata hai.`}},{title:{en:`Every device is a core device?`,hi:`Har device core hai?`},ticket:{en:`The inventory script lists all devices under "Core devices", but two are access switches. Read the output.`,hi:`Inventory script "Core devices" ke neeche saare devices list karta hai, lekin do access switches hain. Output padho.`},out:`All devices:
+  PUN-CORE-01 -> 10.10.0.1
+  PUN-ACC-01 -> 10.10.0.11
+  BLR-CORE-01 -> 10.20.0.1
+  BLR-ACC-01 -> 10.20.0.11
+Total: 4
+Core devices:
+  PUN-CORE-01
+  PUN-ACC-01
+  BLR-CORE-01
+  BLR-ACC-01
+Per site: {'Pune': 0, 'Bengaluru': 0}`,q:{en:`What is missing in section 2?`,hi:`Section 2 mein kya missing hai?`},o:[{en:`A second dictionary`,hi:`Doosri dictionary`},{en:`A new import line`,hi:`Nayi import line`},{en:`An if that tests info["role"] == "core" before the print`,hi:`print se pehle info["role"] == "core" test karne wala if`},{en:`A larger range()`,hi:`Bada range()`}],a:2,w:{en:`The loop prints every device because there is no condition. Add the if and indent the print under it.`,hi:`Loop har device print karta hai kyunki koi condition nahi. if jodo aur print ko uske neeche indent karo.`}},{title:{en:`Per-site counts are zero`,hi:`Site-wise counts zero hain`},ticket:{en:`The "Per site" line shows zeros. Read the lines of the script and the output.`,hi:`"Per site" line zero dikhati hai. Script ki lines aur output padho.`},out:`    24  for name, info in inventory.items():
+    25      site = info["site"]
+    26      if site not in counts:
+    27          counts[site] = 0         # first time we see this site
+    28      counts[site] = counts[site]  # TODO: add 1 here
+    29  print("Per site:", counts)
+
+Per site: {'Pune': 0, 'Bengaluru': 0}`,q:{en:`Which fix gives correct counts?`,hi:`Kaunsa fix sahi counts deta hai?`},o:[{en:`counts[site] = 0`,hi:`counts[site] = 0`},{en:`counts = site`,hi:`counts = site`},{en:`del counts[site]`,hi:`del counts[site]`},{en:`counts[site] = counts[site] + 1`,hi:`counts[site] = counts[site] + 1`}],a:3,w:{en:`The line stored the old value back, adding nothing. Adding 1 inside the loop counts each device in its site.`,hi:`Line ne purani value wapas store ki, kuch jodta nahi tha. Loop ke andar 1 jodne se har device apni site mein gina jaata hai.`}},{title:{en:`All routers show 0 up`,hi:`Saare routers 0 up dikhate hain`},ticket:{en:`The interface check ran against three healthy routers and printed this. Read the output.`,hi:`Interface check teen healthy routers par chala aur yeh print hua. Output padho.`},out:`MUM-R1: 0 interfaces up
+MUM-R2: 0 interfaces up
+MUM-R3: 0 interfaces up
+Check finished`,q:{en:`What explains the zeros?`,hi:`Zeros ka kya explain karta hai?`},o:[{en:`The inner loop body is only pass, so nothing is counted yet`,hi:`Inner loop body sirf pass hai, isliye abhi kuch gina nahi gaya`},{en:`All interfaces are down`,hi:`Saare interfaces down hain`},{en:`SSH failed`,hi:`SSH fail hua`},{en:`The routers have no interfaces`,hi:`Routers ke paas interfaces nahi hain`}],a:0,w:{en:`The script connected and read the table, but the counting TODO is not implemented, so the counter stays at 0.`,hi:`Script connect hui aur table padha, lekin counting TODO implement nahi hua, isliye counter 0 par rehta hai.`}},{title:{en:`Too many alerts`,hi:`Bahut zyada alerts`},ticket:{en:`A script uses if "down" in status to raise an ALERT. Read the output.`,hi:`Script ALERT dene ke liye if "down" in status use karta hai. Output padho.`},out:`python3 e3.py
+ALERT down
+ALERT administratively down`,q:{en:`What is wrong with the logic?`,hi:`Logic mein kya galat hai?`},o:[{en:`The list has too many items`,hi:`List mein bahut items hain`},{en:`"in" also matches administratively down, so ports shut on purpose raise alerts`,hi:`"in" administratively down ko bhi match karta hai, isliye jaan-boojh kar shut ports alert dete hain`},{en:`print is not allowed in if`,hi:`if mein print allowed nahi`},{en:`status must be an int`,hi:`status int hona chahiye`}],a:1,w:{en:`Use status == "down" for an exact match so only real link failures alert.`,hi:`Exact match ke liye status == "down" use karo taaki sirf asli link failures alert dein.`}},{title:{en:`The counter that never counts`,hi:`Counter jo kabhi gintta nahi`},ticket:{en:`A script should count two routers but prints 1 for the counter. Read the script and the output.`,hi:`Script ko do routers ginne chahiye lekin counter 1 print karta hai. Script aur output padho.`},out:`python3 e4.py
+1
+checked 2`,q:{en:`What is the bug?`,hi:`Bug kya hai?`},o:[{en:`len() is wrong`,hi:`len() galat hai`},{en:`The list needs three items`,hi:`List mein teen items chahiye`},{en:`count = 0 sits inside the loop, so it resets on every pass`,hi:`count = 0 loop ke andar hai, isliye har pass par reset hota hai`},{en:`print must be inside the loop`,hi:`print loop ke andar hona chahiye`}],a:2,w:{en:`Initialise the counter before the loop. Inside the loop it restarts from 0 for every item.`,hi:`Counter ko loop se pehle initialise karo. Loop ke andar woh har item ke liye 0 se restart hota hai.`}}];export{e as default};

@@ -1,0 +1,81 @@
+var e={id:`redistribution`,h:{en:`Redistribution profiles, filters and BGP route policy`,hi:`Redistribution profiles, filters aur BGP route policy`},body:{en:`
+<p>Redistribution means advertising routes from one source into another protocol. A branch firewall may own static routes and connected networks that the core must learn. Without redistribution, those networks stay invisible.</p>
+<div class="note"><p><b>Note.</b> Everything in this chapter is a reference configuration (not run in the simulator). Practise the protocol side in enarsi-ospf, enarsi-bgp and enarsi-redistribution; the PAN-OS objects below are the platform-specific part.</p></div>
+<h3>Two objects work together</h3>
+<p>1. A <b>redistribution profile</b> under the virtual router selects which routes qualify: by source type (static, connected, OSPF, BGP, RIP), by destination prefix, by interface or by next hop, with a <b>priority</b> number and an action of redist or no-redist.</p>
+<p>2. An <b>export rule</b> (OSPF) or a <b>redistribution rule</b> (BGP) names that profile and tells the protocol to advertise the matching routes.</p>
+<p>Profiles are evaluated by priority, lowest number first, and the first match decides. A no-redist entry with a low priority works as a filter that blocks specific routes before a general permit.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="A redistribution profile selects routes; an export rule or BGP redistribution rule decides where they go."><rect x="20" y="40" width="132" height="80" rx="10" fill="#bae6fd"/><text x="86" y="76" text-anchor="middle" class="svg-ink" font-size="14">Static / connected</text><text x="86" y="98" text-anchor="middle" class="svg-muted" font-size="12">source routes</text><line x1="152" y1="80" x2="176" y2="80" stroke="#64748b" stroke-width="2"/><rect x="176" y="40" width="132" height="80" rx="10" fill="#bbf7d0"/><text x="242" y="76" text-anchor="middle" class="svg-ink" font-size="14">Redist profile</text><text x="242" y="98" text-anchor="middle" class="svg-muted" font-size="12">filter + priority</text><line x1="308" y1="80" x2="332" y2="80" stroke="#64748b" stroke-width="2"/><rect x="332" y="40" width="132" height="80" rx="10" fill="#ddd6fe"/><text x="398" y="76" text-anchor="middle" class="svg-ink" font-size="14">OSPF export rule</text><text x="398" y="98" text-anchor="middle" class="svg-muted" font-size="12">ext type 2</text><line x1="464" y1="80" x2="488" y2="80" stroke="#64748b" stroke-width="2"/><rect x="488" y="40" width="132" height="80" rx="10" fill="#fde68a"/><text x="554" y="76" text-anchor="middle" class="svg-ink" font-size="14">Neighbours</text><text x="554" y="98" text-anchor="middle" class="svg-muted" font-size="12">see external routes</text></svg><p class="cap">A redistribution profile selects routes; an export rule or BGP redistribution rule decides where they go.</p></div>
+<h3>Static and connected into OSPF</h3>
+<pre class="code">set network virtual-router default protocol redist-profile STATIC-AND-LAN priority 10
+set network virtual-router default protocol redist-profile STATIC-AND-LAN filter type static
+set network virtual-router default protocol redist-profile STATIC-AND-LAN filter type connect
+set network virtual-router default protocol redist-profile STATIC-AND-LAN action redist
+set network virtual-router default protocol ospf export-rules STATIC-AND-LAN new-path-type ext-2
+set network virtual-router default protocol ospf export-rules STATIC-AND-LAN metric 100
+commit</pre>
+<p>With <b>ext-2</b> the metric stays as set and does not grow along the path; with ext-1 the internal cost is added. The firewall now acts as an ASBR and the routes appear in neighbours as external (O2) routes.</p>
+<h3>Into BGP</h3>
+<pre class="code">set network virtual-router default protocol bgp redist-rules 10.10.1.0/24 address-family-identifier ipv4
+set network virtual-router default protocol bgp redist-rules 10.10.1.0/24 enable yes</pre>
+<p>In a BGP redistribution rule you can name a profile or an exact prefix. Many teams prefer explicit prefixes and aggregates to a broad profile, so a mistake does not leak internal networks to a provider. An export policy toward an ISP should advertise only your public prefixes, never private ranges.</p>
+<h3>Controlling what a peer may send you</h3>
+<ul>
+<li>An <b>import rule</b> in the BGP policy section matches on prefix, AS path, community or the sending peer, and then allows or denies, and can set local preference, MED or communities.</li>
+<li>An <b>export rule</b> controls what you send, and can prepend your AS to make a path less attractive.</li>
+<li><b>Aggregation</b> advertises a summary such as 198.51.100.0/24 and can suppress the more specifics.</li>
+<li><b>Conditional advertisement</b> advertises a prefix only if another prefix is present or absent in the table; it is useful for steering inbound traffic during failures.</li>
+</ul>
+<pre class="code">set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT action allow
+set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT match address-prefix 0.0.0.0/0
+set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT action allow update local-preference 200</pre>
+<p>The three lines above show the idea of a narrow import rule; the exact keywords differ by version, so use the CLI question mark to complete them.</p>
+<h3>Default route origination and loops</h3>
+<p>OSPF and BGP can originate a default route, and the route table must contain one before the protocol advertises it, unless an option forces origination. If two points redistribute in both directions between OSPF and BGP, a route can come back and loop. Prevent it with filters on the profiles, tags where supported, and a rule of thumb: <b>redistribute in one direction at a time, from the more trusted source</b>.</p>
+<div class="eg"><p><b>Worked example.</b> Branch firewall owns 10.10.1.0/24 (connected) and 10.30.0.0/16 (static to a lab router). A profile with action redist for static and connected, an ext-2 export rule, and a second profile with action no-redist for 10.30.0.0/16 at priority 5 together advertise the LAN but not the lab.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Redistributing connected routes without a filter. Management, DMZ and lab ranges can leak to the core or the ISP. Always filter by prefix.</p></div>
+<div class="exam"><p><b>Exam trap.</b> The profile selects, the export rule or redistribution rule advertises. A profile alone changes nothing. Lower priority is evaluated first.</p></div>
+<div class="scn"><h4>The lab subnet reached the ISP</h4><p>A branch redistributed all connected routes into BGP. For two days the ISP carried a private lab range in its table until the provider's filter dropped it and a customer complained about the leak. The team replaced the profile with an explicit export policy for the single public prefix, plus an ISP-side prefix filter.</p><p><b>Lesson:</b> leaking is cheap to cause and slow to notice. Allow-list what you advertise.</p></div>
+<div class="iv"><p class="q">"How do you advertise a static route into OSPF on a Palo Alto firewall?"</p><p>Create a redistribution profile that matches the static route, then reference that profile in an OSPF export rule with an external type and metric. Mention that the firewall becomes an ASBR and that filters stop unwanted routes from leaking.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>A redistribution profile selects routes; an export or redistribution rule advertises them.</li><li>Priority is evaluated lowest first; no-redist entries work as filters.</li><li>ext-2 keeps a fixed metric; ext-1 adds the internal cost.</li><li>BGP import and export rules set local preference, MED, communities and prepends.</li><li>Filter by prefix; never advertise private ranges to an ISP.</li></ul></div>
+`,hi:`
+<p>Redistribution ka matlab ek source ke routes ko dusre protocol mein advertise karna. Branch firewall ke paas static routes aur connected networks ho sakte hain jo core ko seekhne hain. Redistribution ke bina yeh networks invisible rehte hain.</p>
+<div class="note"><p><b>Note.</b> Is chapter ka sab kuch reference configuration hai (simulator mein nahi chalta). Protocol wala hissa enarsi-ospf, enarsi-bgp aur enarsi-redistribution mein practise karo; neeche ke PAN-OS objects platform-specific hissa hain.</p></div>
+<h3>Do objects saath kaam karte hain</h3>
+<p>1. Virtual router ke andar <b>redistribution profile</b> chunta hai ki kaunse routes qualify karte hain: source type (static, connected, OSPF, BGP, RIP), destination prefix, interface ya next hop se, ek <b>priority</b> number aur redist ya no-redist action ke saath.</p>
+<p>2. <b>Export rule</b> (OSPF) ya <b>redistribution rule</b> (BGP) us profile ka naam leta hai aur protocol ko batata hai ki matching routes advertise karo.</p>
+<p>Profiles priority se evaluate hote hain, sabse chhota number pehle, aur pehla match decide karta hai. Kam priority wala no-redist entry general permit se pehle specific routes block karne wale filter ki tarah kaam karta hai.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Redistribution profile routes chunta hai; export rule ya BGP redistribution rule decide karta hai ki woh kahan jaayein."><rect x="20" y="40" width="132" height="80" rx="10" fill="#bae6fd"/><text x="86" y="76" text-anchor="middle" class="svg-ink" font-size="14">Static / connected</text><text x="86" y="98" text-anchor="middle" class="svg-muted" font-size="12">source routes</text><line x1="152" y1="80" x2="176" y2="80" stroke="#64748b" stroke-width="2"/><rect x="176" y="40" width="132" height="80" rx="10" fill="#bbf7d0"/><text x="242" y="76" text-anchor="middle" class="svg-ink" font-size="14">Redist profile</text><text x="242" y="98" text-anchor="middle" class="svg-muted" font-size="12">filter + priority</text><line x1="308" y1="80" x2="332" y2="80" stroke="#64748b" stroke-width="2"/><rect x="332" y="40" width="132" height="80" rx="10" fill="#ddd6fe"/><text x="398" y="76" text-anchor="middle" class="svg-ink" font-size="14">OSPF export rule</text><text x="398" y="98" text-anchor="middle" class="svg-muted" font-size="12">ext type 2</text><line x1="464" y1="80" x2="488" y2="80" stroke="#64748b" stroke-width="2"/><rect x="488" y="40" width="132" height="80" rx="10" fill="#fde68a"/><text x="554" y="76" text-anchor="middle" class="svg-ink" font-size="14">Neighbours</text><text x="554" y="98" text-anchor="middle" class="svg-muted" font-size="12">external routes dekhte hain</text></svg><p class="cap">Redistribution profile routes chunta hai; export rule ya BGP redistribution rule decide karta hai ki woh kahan jaayein.</p></div>
+<h3>Static aur connected ko OSPF mein</h3>
+<pre class="code">set network virtual-router default protocol redist-profile STATIC-AND-LAN priority 10
+set network virtual-router default protocol redist-profile STATIC-AND-LAN filter type static
+set network virtual-router default protocol redist-profile STATIC-AND-LAN filter type connect
+set network virtual-router default protocol redist-profile STATIC-AND-LAN action redist
+set network virtual-router default protocol ospf export-rules STATIC-AND-LAN new-path-type ext-2
+set network virtual-router default protocol ospf export-rules STATIC-AND-LAN metric 100
+commit</pre>
+<p><b>ext-2</b> ke saath metric wahi rehta hai jo set kiya, path ke saath badhta nahi; ext-1 mein internal cost judta hai. Firewall ab ASBR hai aur routes neighbours mein external (O2) routes ki tarah dikhte hain.</p>
+<h3>BGP mein</h3>
+<pre class="code">set network virtual-router default protocol bgp redist-rules 10.10.1.0/24 address-family-identifier ipv4
+set network virtual-router default protocol bgp redist-rules 10.10.1.0/24 enable yes</pre>
+<p>BGP redistribution rule mein profile ka naam ya exact prefix de sakte ho. Bahut se teams broad profile ke bajay explicit prefixes aur aggregates pasand karte hain, taaki galti se internal networks provider ko leak na hon. ISP ki taraf export policy sirf aapke public prefixes advertise kare, private ranges kabhi nahi.</p>
+<h3>Peer aapko kya bhej sakta hai, control karo</h3>
+<ul>
+<li>BGP policy section mein <b>import rule</b> prefix, AS path, community ya sending peer par match karke allow ya deny karta hai, aur local preference, MED ya communities set kar sakta hai.</li>
+<li><b>Export rule</b> control karta hai ki aap kya bhejo, aur path ko kam attractive banane ke liye apna AS prepend kar sakta hai.</li>
+<li><b>Aggregation</b> 198.51.100.0/24 jaisa summary advertise karta hai aur more specifics suppress kar sakta hai.</li>
+<li><b>Conditional advertisement</b> prefix tab hi advertise karta hai jab doosra prefix table mein ho ya na ho; failures ke dauran inbound traffic steer karne mein kaam aata hai.</li>
+</ul>
+<pre class="code">set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT action allow
+set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT match address-prefix 0.0.0.0/0
+set network virtual-router default protocol bgp policy import rules ACCEPT-DEFAULT action allow update local-preference 200</pre>
+<p>Upar ki teen lines narrow import rule ka idea dikhati hain; exact keywords version ke hisaab se alag hote hain, isliye unhe complete karne ke liye CLI mein question mark use karo.</p>
+<h3>Default route origination aur loops</h3>
+<p>OSPF aur BGP default route originate kar sakte hain, aur protocol ke advertise karne se pehle route table mein ek hona chahiye, jab tak koi option origination force na kare. Agar do points OSPF aur BGP ke beech dono directions mein redistribute karein to route wapas aakar loop kar sakta hai. Rokne ke liye profiles par filters, jahan supported ho tags, aur thumb rule: <b>ek samay mein ek hi direction mein redistribute karo, zyada trusted source se</b>.</p>
+<div class="eg"><p><b>Worked example.</b> Branch firewall ke paas 10.10.1.0/24 (connected) aur 10.30.0.0/16 (lab router ki taraf static) hai. Static aur connected ke liye redist action wala profile, ext-2 export rule, aur priority 5 par 10.30.0.0/16 ke liye no-redist profile milkar LAN advertise karte hain, lab nahi.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Bina filter ke connected routes redistribute karna. Management, DMZ aur lab ranges core ya ISP tak leak ho sakti hain. Hamesha prefix se filter karo.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Profile chunta hai, export rule ya redistribution rule advertise karta hai. Sirf profile kuch nahi badalta. Kam priority pehle evaluate hoti hai.</p></div>
+<div class="scn"><h4>Lab subnet ISP tak pahunch gaya</h4><p>Ek branch ne saare connected routes BGP mein redistribute kar diye. Do din tak ISP ke table mein private lab range raha, jab tak provider ke filter ne use drop nahi kiya aur ek customer ne leak ki shikayat nahi ki. Team ne profile ko ek public prefix ki explicit export policy aur ISP-side prefix filter se badal diya.</p><p><b>Lesson:</b> leak karna aasaan hai aur dikhna dheere. Jo advertise karte ho uski allow-list banao.</p></div>
+<div class="iv"><p class="q">"Palo Alto firewall par static route ko OSPF mein kaise advertise karte ho?"</p><p>Static route match karne wala redistribution profile banao, phir use OSPF export rule mein external type aur metric ke saath reference karo. Batao ki firewall ASBR ban jaata hai aur filters unwanted routes ko leak hone se rokte hain.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Redistribution profile routes chunta hai; export ya redistribution rule advertise karta hai.</li><li>Priority kam pehle evaluate hoti hai; no-redist entries filter ki tarah kaam karte hain.</li><li>ext-2 fixed metric rakhta hai; ext-1 internal cost jodta hai.</li><li>BGP import aur export rules local preference, MED, communities aur prepends set karte hain.</li><li>Prefix se filter karo; private ranges kabhi ISP ko advertise mat karo.</li></ul></div>
+`}};export{e as default};

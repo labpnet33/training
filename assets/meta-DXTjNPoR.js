@@ -1,0 +1,1 @@
+var e={read:70,blurb:{en:`SD-WAN from zero: underlay and overlay, transports and IPsec, Versa architecture, the VOS CLI, and your first branch from circuit to Established overlay.`,hi:`Zero se SD-WAN: underlay aur overlay, transports aur IPsec, Versa architecture, VOS CLI, aur circuit se Established overlay tak aapki pehli branch.`}};export{e as default};

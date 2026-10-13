@@ -1,0 +1,101 @@
+var e={id:`policy-path`,h:{en:`Policy mismatch and path selection: why did this flow go there?`,hi:`Policy mismatch aur path selection: yeh flow wahan kyun gaya?`},body:{en:`
+<p>Routing says a destination is reachable. Policy says whether this application may go there and over which road. When a user says "Zoom goes over the 4G backup" or "the payment app is blocked", the layer to check is layer 5. Think of a traffic police officer at a junction: the map (routing) shows many roads, but the officer (policy) decides which vehicles may take which road, and which are stopped.</p>
+<h3>The eight questions (from psd-policy)</h3>
+<p>psd-policy ended with a workflow for "why does this flow behave like that?". Here it is again as a troubleshooting tool, with the place to look for each answer:</p>
+<table class="cmp"><tr><th>#</th><th>Question</th><th>Where to look</th></tr><tr><td>1</td><td>Is the policy stack for this type bound to the site? (path, performance, QoS, security and NAT are each bound separately)</td><td>Site policy stack bindings</td></tr><tr><td>2</td><td>Is the application recognised? A generic bucket means an app-def is missing or a custom definition is needed</td><td>Application views, flow view</td></tr><tr><td>3</td><td>Which rule matched? The first match wins, so rule order matters</td><td>Policy set rule order, network context, prefixes</td></tr><tr><td>4</td><td>Which path did the rule allow (active, backup, L3 failure), and is the active path qualifying?</td><td>Path rule, flow view</td></tr><tr><td>5</td><td>Did a performance rule fire (SLA breach, move flows)?</td><td>Incidents, link performance</td></tr><tr><td>6</td><td>Which QoS class and transfer type did the flow get?</td><td>QoS policy, circuit capacity</td></tr><tr><td>7</td><td>Do security zones and rules allow it? The default may be deny</td><td>Security policy, zones on the interfaces</td></tr><tr><td>8</td><td>Is it translated the way you intended?</td><td>NAT policy, rule order</td></tr></table>
+<h3>The flow view: what the ION decided</h3>
+<p>The portal has a flow browser with an advanced information tab for a flow. A community answer from Palo Alto Networks staff explains that it shows the decision factors the ION used. As I understand them, the useful lines are:</p>
+<ul>
+<li><b>Available WAN networks:</b> the circuits that are properly configured (labelled and enabled). If this is empty, go back to layer 2: label and "use this port for Internet".</li>
+<li><b>Allowed WAN paths filtered by policy:</b> what the path policy permits for this application.</li>
+<li><b>Allowed WAN paths filtered by network reachability:</b> what remains after application reachability probes say a path can really reach the application.</li>
+<li><b>Preferred WAN paths:</b> the path the flow actually got.</li>
+</ul>
+<p>The same source notes that the internal criteria for best path are not all exposed in the interface. I describe this view in words because I could not verify exact screen names for every release. The idea is what matters: read the chain from "available" to "allowed" to "reachable" to "preferred", and find the step where your expected path disappeared.</p>
+<div class="dia"><svg viewBox="0 0 640 250" role="img" aria-label="diagram">
+<rect x="10" y="90" width="130" height="70" rx="10" fill="#bae6fd"/><text x="75" y="118" text-anchor="middle" class="svg-ink" font-size="12">Available WAN</text><text x="75" y="136" text-anchor="middle" class="svg-ink" font-size="12">networks</text>
+<rect x="170" y="90" width="130" height="70" rx="10" fill="#ddd6fe"/><text x="235" y="118" text-anchor="middle" class="svg-ink" font-size="12">Allowed by</text><text x="235" y="136" text-anchor="middle" class="svg-ink" font-size="12">policy</text>
+<rect x="330" y="90" width="140" height="70" rx="10" fill="#bbf7d0"/><text x="400" y="118" text-anchor="middle" class="svg-ink" font-size="12">Allowed by network</text><text x="400" y="136" text-anchor="middle" class="svg-ink" font-size="12">reachability</text>
+<rect x="500" y="90" width="130" height="70" rx="10" fill="#fde68a"/><text x="565" y="118" text-anchor="middle" class="svg-ink" font-size="12">Preferred</text><text x="565" y="136" text-anchor="middle" class="svg-ink" font-size="12">path</text>
+<line x1="140" y1="125" x2="170" y2="125" stroke="#64748b" stroke-width="2"/><line x1="300" y1="125" x2="330" y2="125" stroke="#64748b" stroke-width="2"/><line x1="470" y1="125" x2="500" y2="125" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="40" text-anchor="middle" class="svg-accent" font-size="13">The list shrinks at each step; find where your path was dropped</text>
+<text x="235" y="200" text-anchor="middle" class="svg-muted" font-size="11">wrong rule? category?</text><text x="400" y="200" text-anchor="middle" class="svg-muted" font-size="11">probe failing?</text><text x="75" y="200" text-anchor="middle" class="svg-muted" font-size="11">label missing?</text>
+</svg><p class="cap">How a flow's path candidates are narrowed. The step where the wanted path vanishes tells you the layer to fix.</p></div>
+<h3>CLI views of the policy on the device</h3>
+<p>The ION CLI reference lists commands that show the policy the device actually holds (useful when the portal and the device might disagree, for example after a failed push).</p>
+<h4>Reference configuration (not run in the simulator)</h4>
+<pre class="code"><span class="c">Reference configuration (not run in the simulator)</span>
+<span class="c">! Command names from the ION CLI reference; use ? help for options</span>
+dump network-policy config policy-rules
+dump performance-policy config policy-sets
+dump security-policy config policy-rules
+dump priority-policy config policy-sets all
+dump flow count-summary</pre>
+<p>Compare what you see with the portal's policy set. If they differ, check that the device is online, in Control mode and the push succeeded (audit log and device status). <code>dump flow count-summary</code> gives concurrent flow counts and path statistics (direct, VPN, service links), which helps confirm the share of traffic using each type of path.</p>
+<h3>Typical policy faults</h3>
+<ul>
+<li><b>Stack not bound</b> to the site, or bound for path but not for security.</li>
+<li><b>Rule order:</b> a broad rule (any application, any prefix) above a specific one shadows it.</li>
+<li><b>Unrecognised application:</b> a SaaS or custom application falls to a generic match and gets a generic path or QoS.</li>
+<li><b>Backup path used as primary:</b> the active path does not qualify (probe failing or SLA breach), so the backup is selected. That is working as designed; the fault is the active path.</li>
+<li><b>Path policy without the right circuit categories:</b> the rule lists a category that no circuit at this site has.</li>
+<li><b>Security zone pair missing:</b> traffic from LAN to the internet zone is denied by default.</li>
+<li><b>NAT:</b> source NAT where No NAT was needed (for example to a private partner prefix), or a missing NAT rule so internet traffic leaves with a private source address.</li>
+</ul>
+<div class="eg"><p><b>Worked example.</b> Ticket: br-pune-01 users say the video app uses the MPLS circuit and is slow, but policy says Internet-A and Internet-B first. The flow view shows available WAN networks: all three. Allowed by policy: Internet-A, Internet-B. After network reachability: only MPLS remains, because the application reachability probe fails on both internet circuits. So the policy is correct; the video service is blocked by a new firewall rule at the ISP-side proxy for the probe addresses. The network team fixes that, the probe passes, and flows return to the internet circuits. The backup path was doing its job.</p></div>
+<div class="warn"><p><b>Common mistakes.</b> Editing the policy when the flow view shows the path was filtered by reachability, not by policy. Changing several policy types at once so the result cannot be attributed. Declaring success from a test machine whose traffic matches a different rule. Ignoring rule order. Not checking that the device and the portal hold the same policy.</p></div>
+<div class="exam"><p><b>Exam trap.</b> A question that lists a long policy often hides one break: a missing binding, a shadowing rule, an application that falls to a generic match, or an SLA that never triggers. Use the eight questions in order and look for the single break. "Backup path in use" is not a fault by itself; find out why the active path does not qualify.</p></div>
+<div class="scn"><h4>The shadowing rule</h4><p>Harbor Retail added a rule "any application to any prefix, active path MPLS" for a project, at the top of the path set. Two weeks later, video meetings were slow on MPLS. The flow view showed the new rule matched every flow. Moving the rule to the bottom and narrowing it to the project prefixes restored the earlier behaviour.</p><p><b>Lesson:</b> the first match wins; always check what sits above your rule.</p></div>
+<div class="iv"><p class="q">"A flow uses a different path than your policy says. How do you find out why?"</p><p>I look at the flow's decision chain: available WAN networks, paths allowed by policy, paths allowed after reachability probes, and the preferred path. If the wanted path is missing at the first step it is a circuit label or port setting; at the second, a rule order, category or binding problem; at the third, a probe or SLA problem on the path itself. Then I fix only that step and test again.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Layer 5 is policy: binding, application recognition, rule order, path lists, performance, QoS, security zones, NAT.</li><li>The flow view's advanced information shows the chain: available, allowed by policy, allowed by reachability, preferred.</li><li>Backup in use usually means the active path does not qualify.</li><li>Check that the device holds what the portal shows (CLI policy dump commands).</li><li>Change one policy at a time and test with a real flow.</li></ul></div>
+`,hi:`
+<p>Routing batati hai ki destination reachable hai. Policy batati hai ki yeh application wahan jaa sakti hai ya nahi aur kaun se raaste se. Jab user kehta hai "Zoom 4G backup par jaata hai" ya "payment app block hai", to check karne wali layer layer 5 hai. Chauraahe par traffic police officer socho: map (routing) kai raaste dikhata hai, par officer (policy) tay karta hai kaun si gaadiyan kaun sa raasta le sakti hain, aur kaun roki jaati hain.</p>
+<h3>Aath sawal (psd-policy se)</h3>
+<p>psd-policy ka ant "yeh flow aisa kyun behave karta hai?" ke workflow par hua tha. Woh yahan troubleshooting tool ki tarah dobara hai, har jawab ke liye dekhne ki jagah ke saath:</p>
+<table class="cmp"><tr><th>#</th><th>Sawal</th><th>Kahan dekhein</th></tr><tr><td>1</td><td>Kya is type ka policy stack site se bound hai? (path, performance, QoS, security aur NAT har ek alag bound hota hai)</td><td>Site policy stack bindings</td></tr><tr><td>2</td><td>Kya application recognise hui? Generic bucket ka matlab app-def missing hai ya custom definition chahiye</td><td>Application views, flow view</td></tr><tr><td>3</td><td>Kaun si rule match hui? Pehli match jeetti hai, isliye rule order matter karta hai</td><td>Policy set rule order, network context, prefixes</td></tr><tr><td>4</td><td>Rule ne kaun sa path allow kiya (active, backup, L3 failure), aur kya active path qualify kar raha hai?</td><td>Path rule, flow view</td></tr><tr><td>5</td><td>Kya performance rule fire hui (SLA breach, move flows)?</td><td>Incidents, link performance</td></tr><tr><td>6</td><td>Flow ko kaun si QoS class aur transfer type mili?</td><td>QoS policy, circuit capacity</td></tr><tr><td>7</td><td>Kya security zones aur rules allow karte hain? Default deny ho sakta hai</td><td>Security policy, interfaces par zones</td></tr><tr><td>8</td><td>Kya woh waise translate ho raha hai jaise socha tha?</td><td>NAT policy, rule order</td></tr></table>
+<h3>Flow view: ION ne kya decide kiya</h3>
+<p>Portal mein flow browser hai jisme flow ka advanced information tab hota hai. Palo Alto Networks staff ka ek community jawab batata hai ki woh decision factors dikhata hai jo ION ne use kiye. Meri samajh ke hisaab se kaam ki lines yeh hain:</p>
+<ul>
+<li><b>Available WAN networks:</b> woh circuits jo sahi configure hain (labelled aur enabled). Agar yeh khaali hai to layer 2 par wapas jao: label aur "use this port for Internet".</li>
+<li><b>Allowed WAN paths filtered by policy:</b> path policy is application ke liye kya permit karti hai.</li>
+<li><b>Allowed WAN paths filtered by network reachability:</b> application reachability probes batane ke baad kya bachta hai ki path sach mein application tak pahunch sakta hai.</li>
+<li><b>Preferred WAN paths:</b> woh path jo flow ko asal mein mila.</li>
+</ul>
+<p>Wahi source note karta hai ki best path ke internal criteria sab interface mein exposed nahi hote. Main is view ko shabdon mein describe karta hoon kyunki har release ke exact screen names verify nahi kar saka. Idea matter karta hai: "available" se "allowed" se "reachable" se "preferred" tak chain padho, aur woh step dhoondo jahan aapka expected path gayab hua.</p>
+<div class="dia"><svg viewBox="0 0 640 250" role="img" aria-label="diagram">
+<rect x="10" y="90" width="130" height="70" rx="10" fill="#bae6fd"/><text x="75" y="118" text-anchor="middle" class="svg-ink" font-size="12">Available WAN</text><text x="75" y="136" text-anchor="middle" class="svg-ink" font-size="12">networks</text>
+<rect x="170" y="90" width="130" height="70" rx="10" fill="#ddd6fe"/><text x="235" y="118" text-anchor="middle" class="svg-ink" font-size="12">Policy se</text><text x="235" y="136" text-anchor="middle" class="svg-ink" font-size="12">allowed</text>
+<rect x="330" y="90" width="140" height="70" rx="10" fill="#bbf7d0"/><text x="400" y="118" text-anchor="middle" class="svg-ink" font-size="12">Network reachability</text><text x="400" y="136" text-anchor="middle" class="svg-ink" font-size="12">se allowed</text>
+<rect x="500" y="90" width="130" height="70" rx="10" fill="#fde68a"/><text x="565" y="118" text-anchor="middle" class="svg-ink" font-size="12">Preferred</text><text x="565" y="136" text-anchor="middle" class="svg-ink" font-size="12">path</text>
+<line x1="140" y1="125" x2="170" y2="125" stroke="#64748b" stroke-width="2"/><line x1="300" y1="125" x2="330" y2="125" stroke="#64748b" stroke-width="2"/><line x1="470" y1="125" x2="500" y2="125" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="40" text-anchor="middle" class="svg-accent" font-size="13">Har step par list chhoti hoti hai; dhoondo aapka path kahan gira</text>
+<text x="235" y="200" text-anchor="middle" class="svg-muted" font-size="11">galat rule? category?</text><text x="400" y="200" text-anchor="middle" class="svg-muted" font-size="11">probe fail?</text><text x="75" y="200" text-anchor="middle" class="svg-muted" font-size="11">label missing?</text>
+</svg><p class="cap">Flow ke path candidates kaise chhote hote hain. Jis step par wanted path gayab ho, wahi fix karne wali layer batata hai.</p></div>
+<h3>Device par policy ke CLI views</h3>
+<p>ION CLI reference aise commands list karta hai jo dikhate hain device ke paas asal mein kaun si policy hai (tab kaam aata hai jab portal aur device alag ho sakte hain, jaise failed push ke baad).</p>
+<h4>Reference configuration (not run in the simulator)</h4>
+<pre class="code"><span class="c">Reference configuration (not run in the simulator)</span>
+<span class="c">! Command names from the ION CLI reference; use ? help for options</span>
+dump network-policy config policy-rules
+dump performance-policy config policy-sets
+dump security-policy config policy-rules
+dump priority-policy config policy-sets all
+dump flow count-summary</pre>
+<p>Jo dikhe use portal ke policy set se compare karo. Agar alag hain to check karo ki device online hai, Control mode mein hai aur push succeed hua (audit log aur device status). <code>dump flow count-summary</code> concurrent flow counts aur path statistics (direct, VPN, service links) deta hai, jo confirm karne mein madad karta hai ki har type ke path par traffic ka kitna hissa jaa raha hai.</p>
+<h3>Aam policy faults</h3>
+<ul>
+<li><b>Stack bound nahi</b> site se, ya path ke liye bound par security ke liye nahi.</li>
+<li><b>Rule order:</b> broad rule (any application, any prefix) specific rule ke upar use shadow kar deti hai.</li>
+<li><b>Unrecognised application:</b> SaaS ya custom application generic match par girti hai aur generic path ya QoS paati hai.</li>
+<li><b>Backup path primary ki tarah use:</b> active path qualify nahi karta (probe fail ya SLA breach), isliye backup chuna jaata hai. Yeh design ke hisaab se kaam hai; fault active path hai.</li>
+<li><b>Sahi circuit categories ke bina path policy:</b> rule woh category list karti hai jo is site ke kisi circuit ke paas nahi.</li>
+<li><b>Security zone pair missing:</b> LAN se internet zone ka traffic default se deny hota hai.</li>
+<li><b>NAT:</b> jahan No NAT chahiye tha wahan source NAT (jaise private partner prefix ke liye), ya NAT rule missing to internet traffic private source address ke saath nikalta hai.</li>
+</ul>
+<div class="eg"><p><b>Worked example.</b> Ticket: br-pune-01 ke users kehte hain video app MPLS circuit use karti hai aur slow hai, jabki policy pehle Internet-A aur Internet-B kehti hai. Flow view available WAN networks: teeno dikhata hai. Policy se allowed: Internet-A, Internet-B. Network reachability ke baad: sirf MPLS bachta hai, kyunki application reachability probe dono internet circuits par fail hota hai. To policy sahi hai; video service ISP-side proxy par probe addresses ke liye naye firewall rule se block hai. Network team use theek karti hai, probe pass hota hai, aur flows internet circuits par lautte hain. Backup path apna kaam kar raha tha.</p></div>
+<div class="warn"><p><b>Common galtiyan.</b> Policy edit karna jabki flow view dikhata hai ki path reachability se filter hua, policy se nahi. Kai policy types ek saath badalna taaki result attribute na ho sake. Aise test machine se success declare karna jiska traffic doosri rule se match hota hai. Rule order ignore karna. Check na karna ki device aur portal ke paas same policy hai.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Lambi policy list karne wala sawal aksar ek break chhupata hai: missing binding, shadowing rule, application jo generic match par gayi, ya SLA jo kabhi trigger nahi hota. Aath sawal order mein use karo aur ek break dhoondo. "Backup path in use" apne aap mein fault nahi hai; pata karo active path qualify kyun nahi karta.</p></div>
+<div class="scn"><h4>Shadowing rule</h4><p>Harbor Retail ne ek project ke liye path set ke top par "any application to any prefix, active path MPLS" rule jodi. Do hafte baad video meetings MPLS par slow thin. Flow view ne dikhaya ki nayi rule har flow se match hoti hai. Rule ko neeche le jaane aur project prefixes tak narrow karne se pehla behaviour wapas aaya.</p><p><b>Seekh:</b> pehli match jeetti hai; hamesha dekho aapki rule ke upar kya hai.</p></div>
+<div class="iv"><p class="q">"Flow policy se alag path use karta hai. Wajah kaise pata karoge?"</p><p>Main flow ki decision chain dekhta hoon: available WAN networks, policy se allowed paths, reachability probes ke baad allowed paths, aur preferred path. Agar wanted path pehle step par missing hai to circuit label ya port setting; doosre par rule order, category ya binding problem; teesre par path par probe ya SLA problem. Phir sirf wahi step theek karta hoon aur dobara test karta hoon.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Layer 5 policy hai: binding, application recognition, rule order, path lists, performance, QoS, security zones, NAT.</li><li>Flow view ki advanced information chain dikhati hai: available, policy se allowed, reachability se allowed, preferred.</li><li>Backup in use ka matlab aksar active path qualify nahi karta.</li><li>Check karo ki device ke paas wahi hai jo portal dikhata hai (CLI policy dump commands).</li><li>Ek baar mein ek policy badlo aur real flow se test karo.</li></ul></div>
+`}};export{e as default};

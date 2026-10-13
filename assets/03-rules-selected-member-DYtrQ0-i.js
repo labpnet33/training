@@ -1,0 +1,87 @@
+var e={id:`rules-selected-member`,h:{en:`Rung 3: which rule matched and which member was selected`,hi:`Rung 3: kaun sa rule match hua aur kaun sa member selected hua`},body:{en:`
+<p>Members are alive and the SLA is known. Now the question is: of all your SD-WAN rules, which one does this flow hit, and which member does that rule pick right now? The tool is the <b>service view</b>. You met rule strategies (manual, best quality, lowest cost SLA, maximize bandwidth, and so on) in <b>fsd-rules</b>; here we read their result.</p>
+<h3>The service view</h3>
+<p>Each SD-WAN rule is a <b>service</b> with an ID. The service view lists its match criteria, its mode, and the members in the order the FortiGate prefers them, with a mark on the one that is <b>selected</b>.</p>
+<pre class="code"><span class="c">! Try it: lab "NOC ticket: CRM stays on the congested link"</span>
+BR1-FGT # diagnose sys sdwan service
+BR1-FGT # diagnose sys sdwan service 1
+BR1-FGT # diagnose firewall proute list</pre>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan service 1
+Service(1): Address Mode(IPV4) flags=0x200 use-shortcut-sla
+  Gen(7), TOS(0x0/0x0), Protocol(17: 16384->32767), Mode(sla), sla-compare-order
+  Members(2):
+    1: Seq_num(3 HUB1-ISP1), alive, sla(0x1), gid(0), cfg_order(0), local cost(0), <span class="hl">selected</span>
+    2: Seq_num(4 HUB1-ISP2), alive, sla(0x0), gid(0), cfg_order(1), local cost(0)
+  Src address(1):
+        10.1.1.0-10.1.1.255
+  Dst address(1):
+        10.0.0.0-10.0.0.255</pre>
+<p>Read it like this. The <b>Protocol</b> and <b>address</b> lines are the match: only flows from 10.1.1.0/24 to 10.0.0.0/24, UDP 16384-32767, enter this rule. The <b>Mode</b> is the strategy (<code>sla</code> here). The numbered lines are the members in preference order; a member marked <code>selected</code> is currently eligible and will be used. In this example HUB1-ISP2 is alive but its <code>sla(0x0)</code> means it fails the SLA, so it is not selected. The sla value is the same bitmap you saw in the health check, but for this rule's own SLA targets.</p>
+<h3>The decision list as the kernel sees it</h3>
+<p>The service view is the SD-WAN daemon's opinion. The <b>policy route list</b> shows what is actually installed for forwarding. Each SD-WAN rule becomes an entry in the policy route table, with the output interfaces in order.</p>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose firewall proute list
+list route policy info(vf=root):
+
+id=2130771969(0x7f010001) vwl_service=1(Voice-Overlay) vwl_mbr_seq=3 4 dscp_tag=0xff 0xff flags=0x0 tos=0x00 tos_mask=0x00 protocol=17 sport=0-65535 iif=0 dport=16384-32767 path(1) oif=20(HUB1-ISP1)
+source(1): 10.1.1.0-10.1.1.255
+destination(1): 10.0.0.0-10.0.0.255
+hit_count=412 last_used=2026-10-02 10:02:11</pre>
+<p>Two things to check here: the <b>path</b> list (which output interfaces will be tried) and <b>hit_count</b>. A hit count that never grows means no traffic matches that rule, so its match criteria are wrong or an earlier rule takes the traffic first.</p>
+<div class="dia"><svg viewBox="0 0 640 210" role="img" aria-label="diagram"><rect x="10" y="80" width="110" height="50" rx="10" fill="#bae6fd"/><text x="65" y="102" text-anchor="middle" class="svg-ink" font-size="13">Flow</text><text x="65" y="118" text-anchor="middle" class="svg-muted" font-size="11">UDP 10.1.1.20 to 10.0.0.50</text><rect x="170" y="15" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="40" text-anchor="middle" class="svg-ink" font-size="13">Rule 1 Voice: match?</text><rect x="170" y="70" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="95" text-anchor="middle" class="svg-ink" font-size="13">Rule 2 SaaS: match?</text><rect x="170" y="125" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="150" text-anchor="middle" class="svg-ink" font-size="13">Rule 3 Bulk: match?</text><rect x="170" y="175" width="140" height="30" rx="8" fill="#fed7aa"/><text x="240" y="195" text-anchor="middle" class="svg-ink" font-size="12">Implicit rule</text><rect x="380" y="30" width="250" height="70" rx="10" fill="#bbf7d0"/><text x="505" y="55" text-anchor="middle" class="svg-ink" font-size="13">First match wins, top to bottom</text><text x="505" y="75" text-anchor="middle" class="svg-muted" font-size="12">then members by strategy and SLA</text><text x="505" y="92" text-anchor="middle" class="svg-muted" font-size="12">first selected member carries the flow</text><line x1="120" y1="105" x2="170" y2="35" stroke="#64748b" stroke-width="2"/><line x1="120" y1="105" x2="170" y2="90" stroke="#64748b" stroke-width="2"/><line x1="120" y1="105" x2="170" y2="145" stroke="#64748b" stroke-width="2"/><line x1="310" y1="35" x2="380" y2="60" stroke="#64748b" stroke-width="2"/></svg><p class="cap">Rules are checked from the top; the first match decides. Traffic that matches nothing uses the implicit rule.</p></div>
+<h3>Why a rule does not do what you expect</h3>
+<table class="cmp"><tr><th>Symptom</th><th>Cause</th><th>Check</th></tr><tr><td>Traffic never uses the expected member</td><td>An earlier rule matches first (rules are ordered)</td><td>proute list: compare hit_count of each rule</td></tr><tr><td>No member marked selected</td><td>No member meets the SLA; flow may fall to the implicit rule</td><td>sla(0x0) on all members; review thresholds</td></tr><tr><td>Rule matches too little</td><td>Wrong source or destination object, protocol or port range</td><td>Src address and Dst address lines</td></tr><tr><td>SaaS app not steered</td><td>ISDB object does not cover the destination IP, or the app is only learned after the first packets</td><td>Dst address list; <code>diagnose internet-service match</code></td></tr><tr><td>Two members always tie</td><td>Equal results; tie-break and cfg_order decide</td><td>cfg_order, tie-break setting</td></tr><tr><td>Selected member flips</td><td>SLA values hover at the threshold</td><td>Add margin; <code>hold-down-time</code> where set</td></tr></table>
+<p>To check whether a destination is covered by an Internet Service Database object, ask the FortiGate directly:</p>
+<pre class="code"><span class="c">! Try it: lab "NOC ticket: CRM stays on the congested link"</span>
+BR1-FGT # diagnose internet-service match root 203.0.113.130 255.255.255.255</pre>
+<p>If the address matches no object, the rule's internet-service match can never fire for that flow, and the flow goes on to the next rule. For application-based rules (Application Control signatures), remember that the application is identified from the first packets of the session, so the first packets may use a different member than the rest. That is by design, not a fault.</p>
+<div class="warn"><p><b>Common mistake.</b> Changing the strategy when the real problem is the match. If the proute hit count of a rule is zero, tuning its SLA does nothing, because no traffic reaches it.</p></div>
+<div class="exam"><p><b>Exam trap.</b> The service view shows the <b>current</b> decision. A rule in <b>sla</b> mode keeps the members in configured order and picks the first that meets its SLA; <b>priority</b>, <b>manual</b> and <b>auto</b> modes choose differently. Know which mode you are looking at before you read the order.</p></div>
+<div class="scn"><h4>The rule at the bottom of the list</h4><p>A new "Cloud-Apps" rule was added for a video SaaS, but users still used ISP1. The service view showed the new rule with zero hits. The proute list showed an older rule, "All-Internet", above it with destination all addresses and the lowest cost strategy. Every flow matched the old rule first. Moving the new rule above it fixed the steering immediately.</p><p><b>Lesson:</b> Rule order is the first thing to check when a rule never hits.</p></div>
+<div class="iv"><p class="q">"How do you find out which SD-WAN rule a flow is using?"</p><p>I use the service view to read each rule's match and its selected member, and the policy route list for the hit counts, then confirm with a flow trace for the exact packet, which shows the policy route match. I check order, match criteria and SLA status in that sequence.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>diagnose sys sdwan service shows each rule, its mode and its selected member.</li><li>diagnose firewall proute list shows the installed decision and hit counts.</li><li>First match wins; unmatched traffic uses the implicit rule.</li><li>sla bits per member tell why a member is or is not selected.</li><li>Zero hits mean a match or order problem, not an SLA problem.</li></ul></div>
+`,hi:`
+<p>Members alive hain aur SLA pata hai. Ab sawaal yeh hai: aapke saare SD-WAN rules mein se yeh flow kaun sa rule hit karta hai, aur woh rule abhi kaun sa member chunta hai? Tool hai <b>service view</b>. Rule strategies (manual, best quality, lowest cost SLA, maximize bandwidth aadi) aap <b>fsd-rules</b> mein mil chuke ho; yahan hum unka result padhte hain.</p>
+<h3>Service view</h3>
+<p>Har SD-WAN rule ek ID wala <b>service</b> hai. Service view uske match criteria, mode, aur members ko us order mein dikhata hai jis order mein FortiGate unhe prefer karta hai, aur jo <b>selected</b> hai uspar mark hota hai.</p>
+<pre class="code"><span class="c">! Try it: lab "NOC ticket: CRM congested link par hi rehta hai"</span>
+BR1-FGT # diagnose sys sdwan service
+BR1-FGT # diagnose sys sdwan service 1
+BR1-FGT # diagnose firewall proute list</pre>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan service 1
+Service(1): Address Mode(IPV4) flags=0x200 use-shortcut-sla
+  Gen(7), TOS(0x0/0x0), Protocol(17: 16384->32767), Mode(sla), sla-compare-order
+  Members(2):
+    1: Seq_num(3 HUB1-ISP1), alive, sla(0x1), gid(0), cfg_order(0), local cost(0), <span class="hl">selected</span>
+    2: Seq_num(4 HUB1-ISP2), alive, sla(0x0), gid(0), cfg_order(1), local cost(0)
+  Src address(1):
+        10.1.1.0-10.1.1.255
+  Dst address(1):
+        10.0.0.0-10.0.0.255</pre>
+<p>Aise padho. <b>Protocol</b> aur <b>address</b> lines match hain: sirf 10.1.1.0/24 se 10.0.0.0/24 tak, UDP 16384-32767 ke flows is rule mein aate hain. <b>Mode</b> strategy hai (yahan <code>sla</code>). Numbered lines members hain preference order mein; <code>selected</code> mark wala member abhi eligible hai aur use hoga. Is example mein HUB1-ISP2 alive hai lekin uska <code>sla(0x0)</code> matlab woh SLA fail karta hai, isliye selected nahi. sla value wahi bitmap hai jo health check mein dekha, lekin is rule ke apne SLA targets ke liye.</p>
+<h3>Kernel ko decision list kaisi dikhti hai</h3>
+<p>Service view SD-WAN daemon ki raay hai. <b>Policy route list</b> dikhati hai ki forwarding ke liye actually kya install hai. Har SD-WAN rule policy route table mein ek entry banta hai, output interfaces order mein.</p>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose firewall proute list
+list route policy info(vf=root):
+
+id=2130771969(0x7f010001) vwl_service=1(Voice-Overlay) vwl_mbr_seq=3 4 dscp_tag=0xff 0xff flags=0x0 tos=0x00 tos_mask=0x00 protocol=17 sport=0-65535 iif=0 dport=16384-32767 path(1) oif=20(HUB1-ISP1)
+source(1): 10.1.1.0-10.1.1.255
+destination(1): 10.0.0.0-10.0.0.255
+hit_count=412 last_used=2026-10-02 10:02:11</pre>
+<p>Yahan do cheezein check karo: <b>path</b> list (kaun se output interfaces try honge) aur <b>hit_count</b>. Jo hit count kabhi nahi badhta uska matlab us rule se koi traffic match nahi karta, yaani match criteria galat hain ya pehle ka rule traffic le jaata hai.</p>
+<div class="dia"><svg viewBox="0 0 640 210" role="img" aria-label="diagram"><rect x="10" y="80" width="110" height="50" rx="10" fill="#bae6fd"/><text x="65" y="102" text-anchor="middle" class="svg-ink" font-size="13">Flow</text><text x="65" y="118" text-anchor="middle" class="svg-muted" font-size="11">UDP 10.1.1.20 to 10.0.0.50</text><rect x="170" y="15" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="40" text-anchor="middle" class="svg-ink" font-size="13">Rule 1 Voice: match?</text><rect x="170" y="70" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="95" text-anchor="middle" class="svg-ink" font-size="13">Rule 2 SaaS: match?</text><rect x="170" y="125" width="140" height="40" rx="8" fill="#e2e8f0"/><text x="240" y="150" text-anchor="middle" class="svg-ink" font-size="13">Rule 3 Bulk: match?</text><rect x="170" y="175" width="140" height="30" rx="8" fill="#fed7aa"/><text x="240" y="195" text-anchor="middle" class="svg-ink" font-size="12">Implicit rule</text><rect x="380" y="30" width="250" height="70" rx="10" fill="#bbf7d0"/><text x="505" y="55" text-anchor="middle" class="svg-ink" font-size="13">Pehla match jeetta hai, upar se neeche</text><text x="505" y="75" text-anchor="middle" class="svg-muted" font-size="12">phir strategy aur SLA se members</text><text x="505" y="92" text-anchor="middle" class="svg-muted" font-size="12">pehla selected member flow uthata hai</text><line x1="120" y1="105" x2="170" y2="35" stroke="#64748b" stroke-width="2"/><line x1="120" y1="105" x2="170" y2="90" stroke="#64748b" stroke-width="2"/><line x1="120" y1="105" x2="170" y2="145" stroke="#64748b" stroke-width="2"/><line x1="310" y1="35" x2="380" y2="60" stroke="#64748b" stroke-width="2"/></svg><p class="cap">Rules upar se check hote hain; pehla match decide karta hai. Jo kuch match nahi karta woh implicit rule use karta hai.</p></div>
+<h3>Rule expected kaam kyun nahi karta</h3>
+<table class="cmp"><tr><th>Symptom</th><th>Cause</th><th>Check</th></tr><tr><td>Traffic expected member kabhi use nahi karta</td><td>Pehle ka rule pehle match karta hai (rules ordered hain)</td><td>proute list: har rule ka hit_count compare karo</td></tr><tr><td>Koi member selected mark nahi</td><td>Koi member SLA meet nahi karta; flow implicit rule par gir sakta hai</td><td>Saare members par sla(0x0); thresholds review karo</td></tr><tr><td>Rule bahut kam match karta hai</td><td>Galat source ya destination object, protocol ya port range</td><td>Src address aur Dst address lines</td></tr><tr><td>SaaS app steer nahi hota</td><td>ISDB object destination IP cover nahi karta, ya app pehle packets ke baad hi seekhi jaati hai</td><td>Dst address list; <code>diagnose internet-service match</code></td></tr><tr><td>Do members hamesha tie</td><td>Equal results; tie-break aur cfg_order decide karte hain</td><td>cfg_order, tie-break setting</td></tr><tr><td>Selected member flip karta hai</td><td>SLA values threshold ke aaspaas ghoomti hain</td><td>Margin do; jahan set ho wahan <code>hold-down-time</code></td></tr></table>
+<p>Yeh check karne ke liye ki destination Internet Service Database object se cover hai ya nahi, seedha FortiGate se poochho:</p>
+<pre class="code"><span class="c">! Try it: lab "NOC ticket: CRM congested link par hi rehta hai"</span>
+BR1-FGT # diagnose internet-service match root 203.0.113.130 255.255.255.255</pre>
+<p>Agar address kisi object se match nahi karta to rule ka internet-service match us flow ke liye kabhi fire nahi ho sakta, aur flow agle rule par jaata hai. Application-based rules (Application Control signatures) ke liye yaad rakho ki application session ke pehle packets se pehchani jaati hai, isliye pehle packets baaki se alag member use kar sakte hain. Yeh design hai, fault nahi.</p>
+<div class="warn"><p><b>Common galti.</b> Jab asli problem match hai tab strategy badalna. Agar kisi rule ka proute hit count zero hai to uska SLA tune karna kuch nahi karta, kyunki koi traffic uske paas pahunchta hi nahi.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Service view <b>current</b> decision dikhata hai. <b>sla</b> mode ka rule members ko configured order mein rakhta hai aur pehla jo SLA meet kare use chunta hai; <b>priority</b>, <b>manual</b> aur <b>auto</b> modes alag tarah se chunte hain. Order padhne se pehle jaano ki aap kaun sa mode dekh rahe ho.</p></div>
+<div class="scn"><h4>List ke neeche wala rule</h4><p>Ek video SaaS ke liye naya "Cloud-Apps" rule add hua, lekin users ab bhi ISP1 use karte the. Service view mein naya rule zero hits ke saath dikha. Proute list mein ek purana rule "All-Internet" uske upar tha, destination all addresses aur lowest cost strategy ke saath. Har flow pehle purane rule se match ho jaata tha. Naye rule ko uske upar le jaane se steering turant fix ho gayi.</p><p><b>Seekh:</b> Jab rule kabhi hit nahi hota to rule order sabse pehle check karo.</p></div>
+<div class="iv"><p class="q">"Aap kaise pata lagate ho ki flow kaun sa SD-WAN rule use kar raha hai?"</p><p>Main service view se har rule ka match aur uska selected member padhta hoon, aur hit counts ke liye policy route list, phir exact packet ke liye flow trace se confirm karta hoon jo policy route match dikhata hai. Main order, match criteria aur SLA status us sequence mein check karta hoon.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>diagnose sys sdwan service har rule, uska mode aur selected member dikhata hai.</li><li>diagnose firewall proute list installed decision aur hit counts dikhata hai.</li><li>Pehla match jeetta hai; unmatched traffic implicit rule use karta hai.</li><li>Har member ke sla bits batate hain ki woh kyun selected hai ya nahi.</li><li>Zero hits matlab match ya order problem, SLA problem nahi.</li></ul></div>
+`}};export{e as default};

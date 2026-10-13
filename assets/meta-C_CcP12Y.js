@@ -1,0 +1,1 @@
+var e={read:70,blurb:{en:`SLA monitoring and profiles, forwarding profiles, policy rules and ECMP, QoS and DIA foundations, and troubleshooting brownouts and rule-match tickets on Versa.`,hi:`SLA monitoring aur profiles, forwarding profiles, policy rules aur ECMP, QoS aur DIA foundations, aur Versa par brownout aur rule-match tickets troubleshoot karna.`}};export{e as default};

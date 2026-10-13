@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`Hosts, networks and least privilege; Repair shared objects without widening access. Complete the three assessed labs after reading.`,hi:`Hosts, networks aur least privilege; Shared objects repair karo, access broad mat karo. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

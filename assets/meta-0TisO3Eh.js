@@ -1,0 +1,1 @@
+var e={read:85,blurb:{en:`Build template stacks with per-site variables, understand priority and precedence, push and verify, find local overrides, and change templates safely.`,hi:`Per-site variables ke saath template stacks banao, priority aur precedence samjho, push aur verify karo, local overrides dhoondho, aur templates safely badlo.`}};export{e as default};

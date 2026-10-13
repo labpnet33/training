@@ -1,0 +1,52 @@
+var e=(e,t)=>({en:e,hi:t}),t=[{title:e(`PE2 never reaches Established`,`PE2 kabhi Established nahi hota`),ticket:e(`PE2 and the RR are supposed to peer over IS-IS loopbacks. The session is stuck while the eBGP session works. Read the output.`,`PE2 aur RR ko IS-IS loopbacks par peer karna hai. eBGP session chalta hai par yeh session atka hai. Output padho.`),out:`PE2# show ip bgp summary
+BGP router identifier 10.20.255.3, local AS number 65000
+BGP table version is 2, main routing table version 2
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.20.2.2       4        65000       0       0        0    0    0 never   Active
+198.51.100.2    4        65102       3       2        2    0    0 00:00:30         1
+
+PE2# show ip route 10.20.255.2
+Routing entry for 10.20.255.2/32
+  Known via "isis", distance 115, metric 10
+  Routing Descriptor Blocks:
+  * 10.20.2.2, via GigabitEthernet0/0`,q:e(`What is wrong?`,`Kya galat hai?`),o:[e(`IS-IS has no route to the RR`,`IS-IS ke paas RR ka route nahi`),e(`PE2 peers with the RR link address, not its loopback`,`PE2 RR ke link address se peer karta hai, loopback se nahi`),e(`The AS number is wrong`,`AS number galat hai`),e(`The RR is not a route reflector yet`,`RR abhi route reflector nahi hai`)],a:1,w:e(`The IGP route to 10.20.255.2 exists, so the fault is the neighbour statement. The RR expects loopback-to-loopback, so neighbour 10.20.2.2 stays Active. The AS 65000 is correct for iBGP.`,`IGP route 10.20.255.2 ka maujood hai, isliye fault neighbour statement mein hai. RR loopback-to-loopback ki ummeed karta hai, isliye neighbour 10.20.2.2 Active rehta hai. iBGP ke liye AS 65000 sahi hai.`)},{title:e(`Route present but not best on the RR`,`RR par route hai par best nahi`),ticket:e(`The RR has both iBGP sessions up, but PE2 never learns CE1's prefix. Look at the RR table.`,`RR ke dono iBGP sessions up hain par PE2 ko CE1 ka prefix kabhi nahi milta. RR table dekho.`),out:`RR# show ip bgp
+BGP table version is 1, local router ID is 10.20.255.2
+Status codes: s suppressed, * valid, > best, i - internal, r RIB-failure
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+     Network          Next Hop            Metric LocPrf Weight Path
+   i 172.16.1.0/24    192.0.2.2                0    100      0 65101 i`,q:e(`What is the most likely fix?`,`Sabse likely fix kya hai?`),o:[e(`Add route-reflector-client on PE1`,`PE1 par route-reflector-client lagao`),e(`Change the AS number on the RR`,`RR par AS number badlo`),e(`Add next-hop-self on PE1 toward the RR`,`PE1 par RR ki taraf next-hop-self lagao`),e(`Clear the CE1 eBGP session`,`CE1 eBGP session clear karo`)],a:2,w:e(`There is no * and no > in front of the route, and the next hop is the customer link address 192.0.2.2, which IS-IS does not carry. next-hop-self on PE1 rewrites the next hop to its loopback so the RR can mark the route best and reflect it.`,`Route ke aage na * hai na >, aur next hop customer link address 192.0.2.2 hai jo IS-IS carry nahi karta. PE1 par next-hop-self next hop ko uske loopback se badalta hai taaki RR route ko best mark karke reflect kar sake.`)},{title:e(`PE1 sends the route, but with the wrong next hop`,`PE1 route bhejta hai, par galat next hop ke saath`),ticket:e(`PE1 shows the RR session as Established with 0 prefixes received. You check what PE1 is sending.`,`PE1 RR session Established dikhata hai, 0 prefixes received. Aap dekhte ho PE1 kya bhej raha hai.`),out:`PE1# show ip bgp summary
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.20.255.2     4        65000       2       3        2    0    0 00:00:30         0
+192.0.2.2       4        65101       3       2        2    0    0 00:00:30         1
+
+PE1# show ip bgp neighbors 10.20.255.2 advertised-routes
+     Network          Next Hop            Metric LocPrf Weight Path
+ *>  172.16.1.0/24    192.0.2.2                0             0 65101 i
+
+Total number of prefixes 1`,q:e(`Which statement is correct?`,`Kaunsa statement sahi hai?`),o:[e(`PE1 is not advertising anything to the RR`,`PE1 RR ko kuch advertise nahi kar raha`),e(`PE1 advertises the prefix but with the customer next hop; add next-hop-self`,`PE1 prefix advertise karta hai par customer next hop ke saath; next-hop-self lagao`),e(`The RR must receive the route first; it has 0 prefixes from PE1 because PE1 has no IGP`,`RR ko pehle route milna chahiye; PE1 se 0 prefixes isliye kyunki PE1 ke paas IGP nahi`),e(`The route is filtered by an outbound prefix-list on PE1`,`Route PE1 par outbound prefix-list se filter hota hai`)],a:1,w:e(`The route is sent (advertised-routes lists it), with next hop 192.0.2.2. "0" in the PfxRcd column is what PE1 receives from the RR, not what it sends. The remedy is next-hop-self toward the RR.`,`Route bheja ja raha hai (advertised-routes mein listed hai), next hop 192.0.2.2 ke saath. PfxRcd column ka "0" PE1 ko RR se kya milta hai wo hai, kya bhejta hai wo nahi. Ilaaj RR ki taraf next-hop-self hai.`)},{title:e(`Read the reflected route`,`Reflected route padho`),ticket:e(`A junior asks which router first injected this route and which router reflected it. Read the output on PE2.`,`Junior poochta hai ki yeh route pehle kis router ne inject kiya aur kisne reflect kiya. PE2 ka output padho.`),out:`PE2# show ip bgp 172.16.1.0
+BGP routing table entry for 172.16.1.0/24, version 3
+Paths: (1 available, best #1, table default)
+  65101
+    10.20.255.1 (metric 20) from 10.20.255.2 (10.20.255.2)
+      Origin IGP, metric 0, localpref 100, weight 0, valid, internal, best
+      Originator: 10.20.255.1, Cluster list: 10.20.255.2`,q:e(`Which is correct?`,`Kaunsa sahi hai?`),o:[e(`PE2 injected it and the RR reflected it`,`PE2 ne inject kiya aur RR ne reflect kiya`),e(`The RR injected it and PE1 reflected it`,`RR ne inject kiya aur PE1 ne reflect kiya`),e(`CE1 reflected it`,`CE1 ne reflect kiya`),e(`PE1 injected it (originator); the RR (cluster 10.20.255.2) reflected it`,`PE1 ne inject kiya (originator); RR (cluster 10.20.255.2) ne reflect kiya`)],a:3,w:e(`Originator 10.20.255.1 is PE1's router ID. The route was received "from 10.20.255.2", the RR, whose router ID is also the default cluster ID in the Cluster list.`,`Originator 10.20.255.1 PE1 ka router ID hai. Route "from 10.20.255.2" yaani RR se mila, jiska router ID Cluster list mein default cluster ID bhi hai.`)},{title:e(`Why two different metrics?`,`Do alag metrics kyun?`),ticket:e(`The same prefix shows metric 10 on the RR and metric 20 on PE2, same next hop. A colleague thinks this is MED. Read both outputs.`,`Wahi prefix RR par metric 10 aur PE2 par metric 20 dikhata hai, same next hop. Ek colleague ise MED samajhta hai. Dono outputs padho.`),out:`RR# show ip bgp 172.16.1.0
+  65101
+    10.20.255.1 (metric 10) from 10.20.255.1 (10.20.255.1)
+      Origin IGP, metric 0, localpref 100, weight 0, valid, internal, best
+
+PE2# show ip bgp 172.16.1.0
+  65101
+    10.20.255.1 (metric 20) from 10.20.255.2 (10.20.255.2)
+      Origin IGP, metric 0, localpref 100, weight 0, valid, internal, best`,q:e(`What does "(metric N)" next to the next hop mean?`,`Next hop ke saath "(metric N)" ka kya matlab hai?`),o:[e(`The MED sent by the customer`,`Customer dwara bheja MED`),e(`The BGP weight`,`BGP weight`),e(`The IGP (IS-IS) cost from this router to the next hop`,`Is router se next hop tak IGP (IS-IS) cost`),e(`The number of AS hops`,`AS hops ki ginti`)],a:2,w:e(`The IS-IS cost differs per router: 10 from the RR (one hop) and 20 from PE2 (two hops). The MED is the "metric 0" on the Origin line.`,`IS-IS cost router ke hisaab se alag hai: RR se 10 (ek hop) aur PE2 se 20 (do hops). MED Origin line ka "metric 0" hai.`)},{title:e(`RR sees one client Active`,`RR ko ek client Active dikhta hai`),ticket:e(`From the RR you see one client up and one stuck. What do you conclude?`,`RR se ek client up aur ek atka dikhta hai. Kya nishkarsh nikalte ho?`),out:`RR# show ip bgp summary
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.20.255.1     4        65000       3       2        1    0    0 00:00:30         1
+10.20.255.3     4        65000       0       0        0    0    0 never   Active`,q:e(`Where do you look first?`,`Pehle kahan dekhte ho?`),o:[e(`On PE1: its session works, so it is fine`,`PE1 par: uska session chalta hai, theek hai`),e(`The RR best-path selection`,`RR best-path selection`),e(`The customer CE2 configuration`,`Customer CE2 configuration`),e(`On PE2: its neighbour statement towards the RR (address and update-source)`,`PE2 par: RR ki taraf uska neighbour statement (address aur update-source)`)],a:3,w:e(`The RR is waiting for a peer at 10.20.255.3 and receives nothing. The side that fails to connect is PE2: compare its neighbour statement with the working PE1.`,`RR 10.20.255.3 par peer ka intezaar kar raha hai aur kuch nahi milta. Jo side connect nahi kar paati woh PE2 hai: uske neighbour statement ko chalte hue PE1 se milao.`)},{title:e(`Which administrative distance?`,`Kaunsa administrative distance?`),ticket:e(`A learner asks why PE2 shows distance 200 for the customer route learned across the core but 20 for the one from CE2. Read the output.`,`Learner poochta hai ki PE2 core ke paar se seekhe customer route par distance 200 kyun dikhata hai aur CE2 wale par 20. Output padho.`),out:`PE1# show ip protocols
+Routing Protocol is "bgp 65000"
+  Maximum path: 1
+  Routing Information Sources:
+    Gateway         Distance      Last Update
+    10.20.255.2          200      00:00:35
+    192.0.2.2             20      00:01:10
+  Distance: external 20 internal 200 local 200`,q:e(`What explains the two values?`,`Do values kaise explain hote hain?`),o:[e(`eBGP routes use AD 20 and iBGP routes use AD 200 by default`,`eBGP routes AD 20 aur iBGP routes AD 200 use karte hain default mein`),e(`IS-IS has set the value to 200`,`IS-IS ne value 200 set ki hai`),e(`The RR has raised the distance`,`RR ne distance badhaya hai`),e(`The distance depends on the number of hops`,`Distance hops ki ginti par depend karta hai`)],a:0,w:e(`Default AD: eBGP 20, iBGP 200. IS-IS is 115. The lower distance wins when several protocols offer the same prefix.`,`Default AD: eBGP 20, iBGP 200. IS-IS 115 hai. Kai protocols ek hi prefix dein to kam distance jeet-ta hai.`)}];export{t as default};

@@ -1,0 +1,73 @@
+var e={id:`troubleshooting`,h:{en:`Troubleshooting dynamic routing: a workflow for OSPF and BGP`,hi:`Dynamic routing troubleshooting: OSPF aur BGP ka workflow`},body:{en:`
+<p>Dynamic routing problems look scary but follow a short list of causes. Work from the bottom of the stack up: link and addressing, then the protocol session, then the routes, then the policy. In this chapter the FortiGate protocol commands are <b>reference only</b> (the simulator does not run them), but the generic routing and flow commands at the end are real captures from <b>nse4-routing</b>.</p>
+<div class="dia"><svg viewBox="0 0 640 170" role="img" aria-label="diagram"><rect x="5" y="20" width="120" height="50" rx="10" fill="#bae6fd"/><text x="65" y="42" text-anchor="middle" class="svg-ink" font-size="13">1 Link / IP</text><text x="65" y="59" text-anchor="middle" class="svg-muted" font-size="11">ping, interface</text><rect x="135" y="20" width="120" height="50" rx="10" fill="#e2e8f0"/><text x="195" y="42" text-anchor="middle" class="svg-ink" font-size="13">2 Session</text><text x="195" y="59" text-anchor="middle" class="svg-muted" font-size="11">neighbor / summary</text><rect x="265" y="20" width="120" height="50" rx="10" fill="#fde68a"/><text x="325" y="42" text-anchor="middle" class="svg-ink" font-size="13">3 Routes</text><text x="325" y="59" text-anchor="middle" class="svg-muted" font-size="11">routing-table</text><rect x="395" y="20" width="120" height="50" rx="10" fill="#ddd6fe"/><text x="455" y="42" text-anchor="middle" class="svg-ink" font-size="13">4 Filters</text><text x="455" y="59" text-anchor="middle" class="svg-muted" font-size="11">route-map, list</text><rect x="525" y="20" width="110" height="50" rx="10" fill="#bbf7d0"/><text x="580" y="42" text-anchor="middle" class="svg-ink" font-size="13">5 Policy</text><text x="580" y="59" text-anchor="middle" class="svg-muted" font-size="11">debug flow</text><text x="320" y="110" text-anchor="middle" class="svg-accent" font-size="13">Bottom-up: do not read routes before the session is up.</text></svg><p class="cap">Five layers, checked in order.</p></div>
+<h3>OSPF checklist</h3>
+<ol><li>Can I ping the neighbour's interface address? If not, fix link, VLAN or addressing.</li><li>Does the interface appear in <code>get router info ospf interface</code> with the right area and not passive?</li><li>Compare area, hello/dead, authentication, stub flags, subnet and MTU on both sides.</li><li>Read <code>get router info ospf neighbor</code>: Init, ExStart or flapping each point to a cause (see chapter 4).</li><li>Check <code>get router info routing-table ospf</code> for the expected prefixes and next hops.</li></ol>
+<h3>BGP checklist</h3>
+<table class="cmp"><tr><th>State or symptom</th><th>What to check</th></tr><tr><td>Idle</td><td>Neighbour shut down, no route to the peer address, router ID or AS not set.</td></tr><tr><td>Active for a long time</td><td>TCP 179 cannot connect: wrong peer IP, no reachability, a local-in policy or a provider filter blocking, TTL on a multihop peer, password mismatch.</td></tr><tr><td>OpenSent that resets</td><td>Remote AS number wrong, or router ID clash; read the BGP debug for a notification.</td></tr><tr><td>Established, zero prefixes received</td><td>The peer is not advertising (their filter), or our inbound route-map or prefix-list drops everything.</td></tr><tr><td>Established, our prefix not seen by the peer</td><td>Exact prefix missing in our routing table, outbound filter too strict, or network statement missing.</td></tr></table>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+get router info bgp summary
+get router info bgp neighbors 203.0.113.1
+get router info bgp neighbors 203.0.113.1 advertised-routes
+get router info bgp neighbors 203.0.113.1 received-routes
+get router info bgp network
+get router info routing-table bgp
+execute router clear bgp all
+diagnose ip router bgp all enable
+diagnose ip router bgp level info
+diagnose debug enable</pre>
+<p><code>received-routes</code> works because soft reconfiguration is on; <code>advertised-routes</code> shows what you really send after the outbound filters. After a policy change use a soft reset where your version offers it, and a hard clear only in a window.</p>
+<h3>The generic part (real captured output)</h3>
+<p>Whatever the protocol, the routing table and the reverse-path check are the final judges. Below is the generic pair from the nse4-routing warehouse lab: the destination that matches only the default route, and the reverse-path drop that follows when the source network is unknown. A learned route for 172.16.5.0/24 would show a code O or B instead of S in <code>details</code>, but the logic is identical.</p>
+<pre class="out">NK-WH-FGT # get router info routing-table details 172.16.5.10
+Routing table for VRF=0
+Routing entry for 0.0.0.0/0
+  Known via "static", distance 10, metric 0, candidate default, best
+  * vrf 0 203.0.113.1, via port1
+
+id=65308 trace_id=1 msg="vd-root:0 received a packet(proto=1, 172.16.5.10:19499-&gt;8.8.8.8:2048) tun_id=0.0.0.0 from port3. type=8, code=0, id=19499, seq=1."
+id=65308 trace_id=1 msg="allocate a new session-000025d1, tun_id=0.0.0.0"
+id=65308 trace_id=1 msg="<span class="hl">reverse path check fail, drop</span>"</pre>
+<p>If the dynamic route is missing, nothing in the protocol will rescue the traffic; if it is present but traffic still dies, look at the policy (the denied message of the previous chapter). To rehearse neighbour and peer troubleshooting itself, use the routers of <b>enarsi-ospf</b> and <b>enarsi-bgp</b>.</p>
+<div class="warn"><p><b>Common mistake.</b> Clearing a BGP session or the OSPF process in business hours to "see if it helps". It resets adjacencies and drops traffic for every site that depends on it. Gather evidence first.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Match the BGP state to the cause: Idle (no attempt or no route), Active (TCP fails), OpenSent resetting (AS or parameters), Established with zero prefixes (filters). For OSPF: ExStart is MTU, Init is one-way hellos.</p></div>
+<div class="scn"><h4>A peering that sat in Active for a day</h4><p>A new BGP peering to a provider never left Active. Ping to the peer worked, so the team suspected the provider. The real cause was a local-in policy written months earlier that allowed TCP 179 only from an old peer address. Adding the new address and watching the state change to Established took one minute.</p><p><b>Lesson:</b> Ping working does not prove that TCP 179 is allowed.</p></div>
+<div class="iv"><p class="q">"A BGP neighbour is stuck in Active. What do you check?"</p><p>Active means the TCP session to port 179 is failing. I check the peer IP and my route to it, ping, any firewall local-in policy or provider ACL blocking 179, the TTL for a multihop peer, and a password mismatch. Then I enable BGP debug briefly to see the reason, fix one thing and watch the state.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Troubleshoot bottom-up: link, session, routes, filters, policy.</li><li>OSPF: ExStart is MTU, Init is one-way hellos.</li><li>BGP: Idle, Active, OpenSent and Established with zero prefixes each point to a different cause.</li><li>The routing table and the policy engine decide the last step.</li></ul></div>
+`,hi:`
+<p>Dynamic routing problems darawne lagte hain lekin causes ki chhoti list follow karte hain. Stack ke neeche se upar kaam karo: link aur addressing, phir protocol session, phir routes, phir policy. Is chapter mein FortiGate protocol commands <b>sirf reference</b> hain (simulator unhe nahi chalata), lekin aakhir ke generic routing aur flow commands <b>nse4-routing</b> se real captures hain.</p>
+<div class="dia"><svg viewBox="0 0 640 170" role="img" aria-label="diagram"><rect x="5" y="20" width="120" height="50" rx="10" fill="#bae6fd"/><text x="65" y="42" text-anchor="middle" class="svg-ink" font-size="13">1 Link / IP</text><text x="65" y="59" text-anchor="middle" class="svg-muted" font-size="11">ping, interface</text><rect x="135" y="20" width="120" height="50" rx="10" fill="#e2e8f0"/><text x="195" y="42" text-anchor="middle" class="svg-ink" font-size="13">2 Session</text><text x="195" y="59" text-anchor="middle" class="svg-muted" font-size="11">neighbor / summary</text><rect x="265" y="20" width="120" height="50" rx="10" fill="#fde68a"/><text x="325" y="42" text-anchor="middle" class="svg-ink" font-size="13">3 Routes</text><text x="325" y="59" text-anchor="middle" class="svg-muted" font-size="11">routing-table</text><rect x="395" y="20" width="120" height="50" rx="10" fill="#ddd6fe"/><text x="455" y="42" text-anchor="middle" class="svg-ink" font-size="13">4 Filters</text><text x="455" y="59" text-anchor="middle" class="svg-muted" font-size="11">route-map, list</text><rect x="525" y="20" width="110" height="50" rx="10" fill="#bbf7d0"/><text x="580" y="42" text-anchor="middle" class="svg-ink" font-size="13">5 Policy</text><text x="580" y="59" text-anchor="middle" class="svg-muted" font-size="11">debug flow</text><text x="320" y="110" text-anchor="middle" class="svg-accent" font-size="13">Neeche se upar: session up hone se pehle routes mat padho.</text></svg><p class="cap">Paanch layers, order mein check hoti hain.</p></div>
+<h3>OSPF checklist</h3>
+<ol><li>Kya main neighbour ke interface address ko ping kar sakta hoon? Nahi to link, VLAN ya addressing theek karo.</li><li>Kya interface <code>get router info ospf interface</code> mein sahi area ke saath aur passive nahi dikhta?</li><li>Dono sides par area, hello/dead, authentication, stub flags, subnet aur MTU compare karo.</li><li><code>get router info ospf neighbor</code> padho: Init, ExStart ya flapping ka har ek cause ki taraf ishara karta hai (chapter 4).</li><li>Expected prefixes aur next hops ke liye <code>get router info routing-table ospf</code> check karo.</li></ol>
+<h3>BGP checklist</h3>
+<table class="cmp"><tr><th>State ya symptom</th><th>Kya check karna hai</th></tr><tr><td>Idle</td><td>Neighbour shut, peer address tak route nahi, router ID ya AS set nahi.</td></tr><tr><td>Active for a long time</td><td>TCP 179 connect nahi hota: galat peer IP, reachability nahi, local-in policy ya provider filter block kar raha, multihop peer par TTL, password mismatch.</td></tr><tr><td>OpenSent that resets</td><td>Remote AS number galat, ya router ID clash; notification ke liye BGP debug padho.</td></tr><tr><td>Established, zero prefixes received</td><td>Peer advertise nahi kar raha (unka filter), ya hamara inbound route-map ya prefix-list sab drop karta hai.</td></tr><tr><td>Established, our prefix not seen by the peer</td><td>Hamare routing table mein exact prefix missing, outbound filter bahut strict, ya network statement missing.</td></tr></table>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+get router info bgp summary
+get router info bgp neighbors 203.0.113.1
+get router info bgp neighbors 203.0.113.1 advertised-routes
+get router info bgp neighbors 203.0.113.1 received-routes
+get router info bgp network
+get router info routing-table bgp
+execute router clear bgp all
+diagnose ip router bgp all enable
+diagnose ip router bgp level info
+diagnose debug enable</pre>
+<p><code>received-routes</code> isliye kaam karta hai kyunki soft reconfiguration on hai; <code>advertised-routes</code> outbound filters ke baad dikhata hai ki aap asal mein kya bhejte ho. Policy change ke baad jahan aapka version offer kare soft reset use karo, aur hard clear sirf window mein.</p>
+<h3>Generic hissa (real captured output)</h3>
+<p>Protocol kuch bhi ho, routing table aur reverse-path check antim judge hain. Neeche nse4-routing warehouse lab ki generic jodi hai: destination jo sirf default route se match hota hai, aur source network unknown hone par reverse-path drop. 172.16.5.0/24 ka learned route <code>details</code> mein S ki jagah O ya B code dikhata, lekin logic identical hai.</p>
+<pre class="out">NK-WH-FGT # get router info routing-table details 172.16.5.10
+Routing table for VRF=0
+Routing entry for 0.0.0.0/0
+  Known via "static", distance 10, metric 0, candidate default, best
+  * vrf 0 203.0.113.1, via port1
+
+id=65308 trace_id=1 msg="vd-root:0 received a packet(proto=1, 172.16.5.10:19499-&gt;8.8.8.8:2048) tun_id=0.0.0.0 from port3. type=8, code=0, id=19499, seq=1."
+id=65308 trace_id=1 msg="allocate a new session-000025d1, tun_id=0.0.0.0"
+id=65308 trace_id=1 msg="<span class="hl">reverse path check fail, drop</span>"</pre>
+<p>Dynamic route missing ho to protocol mein kuch bhi traffic ko nahi bacha sakta; route ho par traffic phir bhi mare to policy dekho (pichhle chapter ka denied message). Neighbour aur peer troubleshooting ki khud rehearsal ke liye <b>enarsi-ospf</b> aur <b>enarsi-bgp</b> ke routers use karo.</p>
+<div class="warn"><p><b>Common galti.</b> Business hours mein "dekhte hain madad karta hai ya nahi" ke liye BGP session ya OSPF process clear karna. Yeh adjacencies reset karta hai aur har dependent site ka traffic girata hai. Pehle evidence jama karo.</p></div>
+<div class="exam"><p><b>Exam trap.</b> BGP state ko cause se milao: Idle (koshish nahi ya route nahi), Active (TCP fail), OpenSent reset ho raha (AS ya parameters), Established lekin zero prefixes (filters). OSPF ke liye: ExStart MTU hai, Init one-way hellos.</p></div>
+<div class="scn"><h4>Peering jo ek din Active mein rahi</h4><p>Provider ke saath nayi BGP peering kabhi Active se bahar nahi gayi. Peer ko ping chalta tha, isliye team ne provider par shak kiya. Asli wajah mahino pehle likhi local-in policy thi jo TCP 179 sirf purane peer address se allow karti thi. Naya address jodne aur state ko Established hote dekhne mein ek minute laga.</p><p><b>Seekh:</b> Ping chalne ka matlab yeh nahi ki TCP 179 allowed hai.</p></div>
+<div class="iv"><p class="q">"BGP neighbour Active mein atka hai. Kya check karte ho?"</p><p>Active ka matlab port 179 par TCP session fail ho raha hai. Main peer IP aur uska mere paas route, ping, 179 block karne wali koi firewall local-in policy ya provider ACL, multihop peer ka TTL, aur password mismatch check karta hoon. Phir wajah dekhne ke liye BGP debug thodi der on karta hoon, ek cheez fix karta hoon aur state dekhta hoon.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Neeche se upar troubleshoot karo: link, session, routes, filters, policy.</li><li>OSPF: ExStart MTU hai, Init one-way hellos.</li><li>BGP: Idle, Active, OpenSent aur zero prefixes wala Established har ek alag cause batata hai.</li><li>Routing table aur policy engine aakhri step tay karte hain.</li></ul></div>
+`}};export{e as default};

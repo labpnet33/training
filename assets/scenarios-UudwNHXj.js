@@ -1,0 +1,71 @@
+var e=[{title:{en:`Training room PCs get no IPv6 address`,hi:`Training room PCs ko IPv6 address nahi milta`},ticket:{en:`Helpdesk: "Since this morning's change, no PC in the training room has an IPv6 address. IPv4 is fine." R1 G0/0 is the room's gateway.`,hi:`Helpdesk: "Aaj subah ke change ke baad se training room ke kisi PC par IPv6 address nahi hai. IPv4 theek hai." R1 G0/0 room ka gateway hai.`},out:`PC1> ip auto
+No router answered ICMPv6 Router Solicitation
+
+R1# show ipv6 interface g0/0
+GigabitEthernet0/0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::5054:CFF:FE04:4B01
+  No Virtual link-local address(es):
+  Global unicast address(es):
+    2001:DB8:CAFE:1:5054:CFF:FE04:4B01, subnet is 2001:DB8:CAFE:1::/64 [EUI]
+  Joined group address(es):
+    FF02::1
+    FF02::1:FF04:4B01
+  MTU is 1500 bytes
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds (using 30000)`,q:{en:`What is the fix?`,hi:`Fix kya hai?`},o:[{en:`Configure ipv6 unicast-routing on R1`,hi:`R1 par ipv6 unicast-routing configure karo`},{en:`Add ipv6 enable to G0/0`,hi:`G0/0 par ipv6 enable jodo`},{en:`Replace the EUI-64 address with a manual one`,hi:`EUI-64 address ko manual address se badlo`},{en:`Configure ipv6 nd other-config-flag on G0/0`,hi:`G0/0 par ipv6 nd other-config-flag configure karo`}],a:0,w:{en:`The interface has a valid /64 but has not joined FF02::2 and shows no RA lines, so R1 is not acting as an IPv6 router and sends no RAs. ipv6 unicast-routing restores RAs and SLAAC. ipv6 enable is already implied, the EUI-64 address is fine, and the O flag only matters once RAs are sent.`,hi:`Interface ke paas valid /64 hai par usne FF02::2 join nahi kiya aur koi RA lines nahi dikhti, isliye R1 IPv6 router ki tarah kaam nahi kar raha aur RAs nahi bhejta. ipv6 unicast-routing RAs aur SLAAC wapas laata hai. ipv6 enable pehle se implied hai, EUI-64 address theek hai, aur O flag tabhi matter karta hai jab RAs bheje jaayein.`}},{title:{en:`Guest VLAN clients ignore the prefix`,hi:`Guest VLAN clients prefix ignore karte hain`},ticket:{en:`Network change: "Readdressed guest VLAN gateway to save space." Now guest devices have only link-local addresses.`,hi:`Network change: "Jagah bachane ke liye guest VLAN gateway readdress kiya." Ab guest devices ke paas sirf link-local addresses hain.`},out:`PC1> ip auto
+No usable /64 prefix in the Router Advertisement
+
+GW# show ipv6 interface g0/1 | include subnet|Hosts
+    2001:DB8:77:5::1, subnet is 2001:DB8:77:5::/112
+  Hosts use stateless autoconfig for addresses.`,q:{en:`Why do the clients fail to autoconfigure?`,hi:`Clients autoconfigure kyun nahi kar paate?`},o:[{en:`The RA is missing the M flag`,hi:`RA mein M flag missing hai`},{en:`Router advertisements are suppressed`,hi:`Router advertisements suppressed hain`},{en:`SLAAC needs a /64 prefix and the gateway now advertises a /112`,hi:`SLAAC ko /64 prefix chahiye aur gateway ab /112 advertise karta hai`},{en:`The gateway needs a link-local address first`,hi:`Gateway ko pehle link-local address chahiye`}],a:2,w:{en:`The RA arrives (the PC received it), but SLAAC requires a 64-bit interface ID, so a /112 prefix cannot be used. Readdress the gateway with a /64. The M flag would move clients to DHCPv6, which was not the design; RAs are clearly being sent; every IPv6 interface already has a link-local.`,hi:`RA aa raha hai (PC ko mila), par SLAAC ko 64-bit interface ID chahiye, isliye /112 prefix use nahi ho sakta. Gateway ko /64 se readdress karo. M flag clients ko DHCPv6 par bhejega, jo design nahi tha; RAs saaf bheje ja rahe hain; har IPv6 interface par pehle se link-local hai.`}},{title:{en:`Branch template sets the M flag`,hi:`Branch template M flag set karta hai`},ticket:{en:`New branch rollout: "Users have no IPv6 address. The design says SLAAC for all branches, and branches have no DHCPv6 server."`,hi:`Nayi branch rollout: "Users ke paas IPv6 address nahi hai. Design kehta hai sab branches mein SLAAC, aur branches mein DHCPv6 server nahi hai."`},out:`PC1> ip auto
+Router fe80::1 asks hosts to use DHCPv6 (M flag set); no SLAAC prefix advertised
+
+BR1# show running-config interface g0/1
+interface GigabitEthernet0/1
+ ipv6 address FE80::1 link-local
+ ipv6 address 2001:DB8:40:10::1/64
+ ipv6 nd prefix 2001:DB8:40:10::/64 no-autoconfig
+ ipv6 nd managed-config-flag
+BR1# show ipv6 dhcp pool
+BR1#`,q:{en:`What change matches the design?`,hi:`Kaunsa change design se match karta hai?`},o:[{en:`Add ipv6 nd other-config-flag`,hi:`ipv6 nd other-config-flag jodo`},{en:`Remove the managed-config-flag and the no-autoconfig prefix line`,hi:`managed-config-flag aur no-autoconfig prefix line hatao`},{en:`Change the prefix to /56`,hi:`Prefix ko /56 karo`},{en:`Add ipv6 address autoconfig to G0/1`,hi:`G0/1 par ipv6 address autoconfig jodo`}],a:1,w:{en:`M=1 plus no-autoconfig tells hosts to get addresses only from DHCPv6, and there is no pool. Removing both lines gives M=0 and A=1, which is SLAAC as designed. The O flag alone does not restore SLAAC while A=0, a /56 breaks SLAAC, and autoconfig would make the router a client, not a server.`,hi:`M=1 plus no-autoconfig hosts ko sirf DHCPv6 se addresses lene ko kehta hai, aur koi pool nahi hai. Dono lines hatane se M=0 aur A=1 milta hai, jo design ke hisaab se SLAAC hai. Akela O flag A=0 rehte SLAAC wapas nahi laata, /56 SLAAC tod deta hai, aur autoconfig router ko client banayega, server nahi.`}},{title:{en:`Static route refused on R2`,hi:`R2 par static route reject hua`},ticket:{en:`An engineer is building lab 3 and reports: "R2 will not accept my route to the head-office loopback network."`,hi:`Ek engineer lab 3 bana raha hai aur batata hai: "R2 head-office loopback network ka mera route accept nahi karta."`},out:`R2(config)# ipv6 route 2001:db8:1::/64 fe80::1
+% Interface has to be specified for a link-local nexthop
+R2(config)# do show ipv6 interface brief
+GigabitEthernet0/0     [up/up]
+    FE80::2
+    2001:DB8:12::2
+GigabitEthernet0/1     [up/up]
+    FE80::2
+    2001:DB8:23::2`,q:{en:`Which command should the engineer use?`,hi:`Engineer ko kaunsi command use karni chahiye?`},o:[{en:`ipv6 route 2001:db8:1::/64 fe80::1 1`,hi:`ipv6 route 2001:db8:1::/64 fe80::1 1`},{en:`ipv6 route 2001:db8:1::/64 g0/1 fe80::1`,hi:`ipv6 route 2001:db8:1::/64 g0/1 fe80::1`},{en:`ipv6 route 2001:db8:1::/128 fe80::1`,hi:`ipv6 route 2001:db8:1::/128 fe80::1`},{en:`ipv6 route 2001:db8:1::/64 g0/0 fe80::1`,hi:`ipv6 route 2001:db8:1::/64 g0/0 fe80::1`}],a:3,w:{en:`A link-local next hop needs its exit interface, and R1 (FE80::1) is behind G0/0 on the 2001:db8:12::/64 link. G0/1 faces R3. Adding an AD or changing the prefix length does not remove the need for the interface.`,hi:`Link-local next hop ko uska exit interface chahiye, aur R1 (FE80::1) 2001:db8:12::/64 link par G0/0 ke peeche hai. G0/1 R3 ki taraf hai. AD jodna ya prefix length badalna interface ki zaroorat khatam nahi karta.`}},{title:{en:`Loopback-to-loopback ping fails`,hi:`Loopback-to-loopback ping fail hota hai`},ticket:{en:`Lab 3 check: "R1 can ping 2001:db8:3::1 normally, but the ping sourced from Loopback0 fails."`,hi:`Lab 3 check: "R1 normal tarike se 2001:db8:3::1 ping kar leta hai, par Loopback0 se sourced ping fail hota hai."`},out:`R1# ping 2001:db8:3::1 source Loopback0
+Sending 5, 100-byte ICMP Echos to 2001:DB8:3::1, timeout is 2 seconds:
+Packet sent with a source address of 2001:DB8:1::1
+.....
+Success rate is 0 percent (0/5)
+
+R2# show ipv6 route static
+S   2001:DB8:3::/64 [1/0]
+     via FE80::3, GigabitEthernet0/1
+
+R3# show ipv6 route static
+S   ::/0 [1/0]
+     via 2001:DB8:23::2`,q:{en:`What is missing?`,hi:`Kya missing hai?`},o:[{en:`A default route on R1`,hi:`R1 par default route`},{en:`ipv6 unicast-routing on R3`,hi:`R3 par ipv6 unicast-routing`},{en:`A route on R2 to 2001:db8:1::/64 via G0/0 FE80::1`,hi:`R2 par G0/0 FE80::1 ke through 2001:db8:1::/64 ka route`},{en:`A floating static on R3`,hi:`R3 par floating static`}],a:2,w:{en:`The request reaches R3 and R3 sends the reply to R2 with its default route, but R2 has no route back to 2001:db8:1::/64, so the reply is dropped. The unsourced ping worked because R2 knows 2001:db8:12::/64 as connected. R1 already reaches R3, and R3 clearly routes.`,hi:`Request R3 tak pahunchti hai aur R3 apne default route se reply R2 ko bhejta hai, par R2 ke paas 2001:db8:1::/64 tak wapas ka route nahi, isliye reply drop hota hai. Bina source wala ping isliye chala kyunki R2 2001:db8:12::/64 ko connected ki tarah jaanta hai. R1 pehle se R3 tak pahunchta hai, aur R3 saaf route kar raha hai.`}},{title:{en:`New router logs a duplicate`,hi:`Naya router duplicate log karta hai`},ticket:{en:`After connecting a replacement router to the office LAN, users on that LAN lose IPv6 to other sites. The new router logs an error.`,hi:`Office LAN par replacement router jodne ke baad us LAN ke users ka doosri sites tak IPv6 chala jaata hai. Naya router ek error log karta hai.`},out:`%IPV6_ND-4-DUPLICATE: Duplicate address 2001:DB8:ACAD:10::1 on GigabitEthernet0/1
+
+R9# show ipv6 interface g0/1 | include subnet
+    2001:DB8:ACAD:10::1, subnet is 2001:DB8:ACAD:10::/64 [DUP]
+
+R1# show ipv6 interface brief | begin 0/1
+GigabitEthernet0/1     [up/up]
+    FE80::5054:CFF:FE04:4B02
+    2001:DB8:ACAD:10::1`,q:{en:`What does this show, and what should you do?`,hi:`Yeh kya dikhata hai, aur aapko kya karna chahiye?`},o:[{en:`DAD found that R1 already owns 2001:db8:acad:10::1; give R9 a different address or remove R1's`,hi:`DAD ne paaya ki 2001:db8:acad:10::1 pehle se R1 ka hai; R9 ko alag address do ya R1 ka hatao`},{en:`R9's link-local conflicts with R1; configure fe80::9 link-local`,hi:`R9 ka link-local R1 se takraata hai; fe80::9 link-local configure karo`},{en:`The /64 is too small for two routers; change to /56`,hi:`Do routers ke liye /64 chhota hai; /56 karo`},{en:`DAD is optional; disable it on R9 and keep the address`,hi:`DAD optional hai; R9 par ise disable karo aur address rakho`}],a:0,w:{en:`DAD's NS for 2001:db8:acad:10::1 got an answer from R1, so R9 marked its copy [DUP] and does not use it. Decide which router should own the gateway address and readdress the other. The link-locals differ, /64 has room for everyone, and disabling DAD would hide a real conflict.`,hi:`2001:db8:acad:10::1 ke liye DAD ke NS ko R1 se jawab mila, isliye R9 ne apni copy ko [DUP] mark kiya aur use nahi karta. Tay karo ki gateway address kis router ka ho aur doosre ko readdress karo. Link-locals alag hain, /64 mein sabke liye jagah hai, aur DAD disable karna asli conflict chhupa dega.`}},{title:{en:`Helpdesk cannot ping R1's EUI-64 address`,hi:`Helpdesk R1 ka EUI-64 address ping nahi kar paata`},ticket:{en:`A trainee worked out R1's SLAAC-lab address from its MAC and pings it from PC1, but gets no reply. PC1 itself works.`,hi:`Ek trainee ne R1 ke MAC se uska SLAAC-lab address nikala aur PC1 se ping kiya, par jawab nahi aaya. PC1 khud theek chal raha hai.`},out:`R1# show interfaces g0/0 | include address is
+  Hardware is iGbE, address is 5254.0c04.4b01 (bia 5254.0c04.4b01)
+
+PC1> ping 2001:db8:cafe:1:5254:cff:fe04:4b01
+2001:db8:cafe:1:5254:cff:fe04:4b01 icmp6_seq=1 timeout
+2001:db8:cafe:1:5254:cff:fe04:4b01 icmp6_seq=2 timeout`,q:{en:`Which address should the trainee ping?`,hi:`Trainee ko kaunsa address ping karna chahiye?`},o:[{en:`2001:db8:cafe:1:5254:0cff:fe04:4b01`,hi:`2001:db8:cafe:1:5254:0cff:fe04:4b01`},{en:`2001:db8:cafe:1:5254:c04:4b01:fffe`,hi:`2001:db8:cafe:1:5254:c04:4b01:fffe`},{en:`2001:db8:cafe:1:5654:cff:fe04:4b01`,hi:`2001:db8:cafe:1:5654:cff:fe04:4b01`},{en:`2001:db8:cafe:1:5054:cff:fe04:4b01`,hi:`2001:db8:cafe:1:5054:cff:fe04:4b01`}],a:3,w:{en:`The trainee inserted FFFE correctly but forgot to flip the 7th bit. 52 = 0101 0010; flipping the U/L bit gives 0101 0000 = 50, so the ID is 5054:cff:fe04:4b01. Option A is the same wrong address with a leading zero, B puts FFFE at the end, C flips the wrong bit.`,hi:`Trainee ne FFFE sahi daala par 7th bit flip karna bhool gaya. 52 = 0101 0010; U/L bit flip karne par 0101 0000 = 50, isliye ID 5054:cff:fe04:4b01 hai. Option A leading zero ke saath wahi galat address hai, B FFFE ko end mein rakhta hai, C galat bit flip karta hai.`}},{title:{en:`Servers vanish after an ACL change`,hi:`ACL change ke baad servers gayab`},ticket:{en:`Change log: "Added logging deny to SERVERS-IN to see drops." Right after, every server in VLAN 50 lost IPv6 connectivity.`,hi:`Change log: "Drops dekhne ke liye SERVERS-IN mein logging deny joda." Turant baad VLAN 50 ke har server ki IPv6 connectivity chali gayi.`},out:`DC-GW# show ipv6 access-list SERVERS-IN
+IPv6 access list SERVERS-IN
+    permit tcp any any eq 443 (1822 matches) sequence 10
+    permit tcp any any eq 22 (40 matches) sequence 20
+    deny ipv6 any any log (913 matches) sequence 30
+
+DC-GW# show ipv6 neighbors | include Vl50
+2001:DB8:50::21                             0 -               INCMP Vl50
+2001:DB8:50::22                             0 -               INCMP Vl50`,q:{en:`What is the best fix?`,hi:`Best fix kya hai?`},o:[{en:`Remove the ACL from the interface permanently`,hi:`Interface se ACL hamesha ke liye hatao`},{en:`Insert permit icmp any any nd-ns and permit icmp any any nd-na before sequence 30`,hi:`Sequence 30 se pehle permit icmp any any nd-ns aur permit icmp any any nd-na daalo`},{en:`Clear the neighbor cache with clear ipv6 neighbors`,hi:`clear ipv6 neighbors se neighbor cache clear karo`},{en:`Change the deny to deny ip any any log`,hi:`Deny ko deny ip any any log mein badlo`}],a:1,w:{en:`The implicit ND permits sit after the implicit final deny, so an explicit deny ipv6 any any catches NS and NA first and neighbours stay INCMP. Permit ND explicitly above the deny. Removing the ACL loses the policy, clearing the cache does not change the ACL, and an IPv4 deny does not apply to IPv6.`,hi:`Implicit ND permits implicit final deny ke baad aate hain, isliye explicit deny ipv6 any any NS aur NA ko pehle pakad leta hai aur neighbours INCMP rehte hain. Deny ke upar ND ko explicitly permit karo. ACL hatane se policy khatam hoti hai, cache clear karne se ACL nahi badalta, aur IPv4 deny IPv6 par lagu nahi hota.`}}];export{e as default};

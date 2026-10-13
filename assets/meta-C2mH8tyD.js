@@ -1,0 +1,1 @@
+var e={read:14,blurb:{en:`CoA, quarantine and the endpoint's IP address. Practise the three assessed labs and validate both permitted and denied behavior.`,hi:`CoA, quarantine aur endpoint ka IP address. Teen assessed labs practice karo aur permitted aur denied behavior validate karo.`}};export{e as default};

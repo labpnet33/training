@@ -1,0 +1,48 @@
+var e=[{title:{en:`The ping that lied`,hi:`Ping jo jhooth bola`},ticket:{en:`Guests say everything works, but a support engineer sees this from R1 and wants to call the provider. What do you tell them?`,hi:`Guests kehte hain sab chalta hai, par support engineer R1 se yeh dekhkar provider ko call karna chahta hai. Aap kya kahoge?`},out:`lab@R1> ping 198.18.0.10 count 3
+PING 198.18.0.10 (198.18.0.10): 56 data bytes
+Request timeout for icmp_seq 0
+Request timeout for icmp_seq 1
+Request timeout for icmp_seq 2
+--- 198.18.0.10 ping statistics ---
+3 packets transmitted, 0 packets received, 100% packet loss`,q:{en:`What is the right next step?`,hi:`Sahi agla kadam kya hai?`},o:[{en:`Call the provider`,hi:`Provider ko call karo`},{en:`Repeat the ping with routing-instance GUEST`,hi:`routing-instance GUEST ke saath ping dohrao`},{en:`Reboot R1`,hi:`R1 reboot karo`},{en:`Delete the GUEST instance`,hi:`GUEST instance delete karo`}],a:1,w:{en:`A plain ping uses the master table, which has no route to 198.18.0.0/24. The same test with routing-instance GUEST succeeds with 3 of 3 replies.`,hi:`Plain ping master table use karta hai, jisme 198.18.0.0/24 ka route nahi. routing-instance GUEST ke saath wahi test 3 mein se 3 replies ke saath safal hota hai.`}},{title:{en:`Empty forwarding instance`,hi:`Khali forwarding instance`},ticket:{en:`The ISP-B instance has a static default route to 10.0.2.2 and the filter is attached, but lab traffic times out. R1 shows this.`,hi:`ISP-B instance ke paas 10.0.2.2 ka static default route hai aur filter attach hai, par lab traffic timeout hota hai. R1 yeh dikhata hai.`},out:`lab@R1# run show route table ISP-B.inet.0
+ISP-B.inet.0: 0 destinations, 0 routes (0 active, 0 holddown, 0 hidden)`,q:{en:`Which change fixes it?`,hi:`Kaunsa change ise theek karta hai?`},o:[{en:`Change the instance to virtual-router`,hi:`Instance ko virtual-router karo`},{en:`Add a second term to the filter`,hi:`Filter mein doosra term jodo`},{en:`Add a RIB group that copies inet.0 interface routes into ISP-B.inet.0`,hi:`Aisa RIB group jodo jo inet.0 ke interface routes ISP-B.inet.0 mein copy kare`},{en:`Lower the OSPF cost`,hi:`OSPF cost kam karo`}],a:2,w:{en:`The default route cannot resolve its next hop because the instance has no connected subnets. A RIB group with interface-routes copies them. After that the table has nine routes and the default is active.`,hi:`Default route ka next hop resolve nahi hota kyunki instance ke paas connected subnets nahi hain. interface-routes wala RIB group unhe copy karta hai. Uske baad table mein nau routes hote hain aur default active hota hai.`}},{title:{en:`Two paths, one link`,hi:`Do paths, ek link`},ticket:{en:`R1 has two equal OSPF next hops to 172.16.40.0/24, but monitoring shows only ge-0/0/0 carrying traffic. Both outputs are from R1.`,hi:`R1 ke paas 172.16.40.0/24 ke liye do barabar OSPF next hops hain, par monitoring mein sirf ge-0/0/0 traffic le raha hai. Dono outputs R1 ke hain.`},out:`lab@R1> show route 172.16.40.0/24
+172.16.40.0/24     *[OSPF/10] 00:01:25, metric 3
+                    >  to 10.0.12.2 via ge-0/0/0.0
+                       to 10.0.13.2 via ge-0/0/1.0
+
+lab@R1> show route forwarding-table destination 172.16.40.0/24
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+172.16.40.0/24     user     0 10.0.12.2          ucst    868     2 ge-0/0/0.0`,q:{en:`Why is only one link used?`,hi:`Sirf ek link kyun use ho raha hai?`},o:[{en:`The forwarding table holds one next hop because no load-balance policy is exported`,hi:`Forwarding table mein ek next hop hai kyunki koi load-balance policy export nahi hui`},{en:`OSPF cost is different on the two links`,hi:`Dono links par OSPF cost alag hai`},{en:`ge-0/0/1 is down`,hi:`ge-0/0/1 down hai`},{en:`The route is hidden`,hi:`Route hidden hai`}],a:0,w:{en:`Both next hops exist in the route but only the first has the active arrow, and the forwarding table shows a single ucst. Apply a load-balance per-packet policy as forwarding-table export.`,hi:`Route mein dono next hops hain par active arrow sirf pehle par hai, aur forwarding table mein ek hi ucst hai. load-balance per-packet policy ko forwarding-table export ki tarah lagao.`}},{title:{en:`Verifying the fix`,hi:`Fix verify karna`},ticket:{en:`You applied the policy LB at forwarding-table export. Which line of this output proves both links are now installed?`,hi:`Aapne policy LB ko forwarding-table export par lagaya. Is output ki kaunsi line saabit karti hai ki dono links ab install hain?`},out:`lab@R1> show route forwarding-table destination 172.16.40.0/24
+Destination        Type RtRef Next hop           Type Index    NhRef Netif
+172.16.40.0/24     user     0                    ulst  1048491     2
+                              10.0.12.2          ucst    871     1 ge-0/0/0.0
+                              10.0.13.2          ucst    874     1 ge-0/0/1.0`,q:{en:`What does the entry show?`,hi:`Entry kya dikhati hai?`},o:[{en:`A reject route`,hi:`Reject route`},{en:`A hidden route`,hi:`Hidden route`},{en:`A broadcast entry`,hi:`Broadcast entry`},{en:`A unilist (ulst) with two unicast next hops`,hi:`Do unicast next hops wala unilist (ulst)`}],a:3,w:{en:`ulst is a list of unicast next hops. The two ucst members are the two links. Flows are hashed across them.`,hi:`ulst unicast next hops ki list hai. Do ucst members do links hain. Flows unke beech hash hote hain.`}},{title:{en:`Which PC is steered?`,hi:`Kaunsa PC steer hota hai?`},ticket:{en:`Filter STEER-LAB is applied on the lab interface. PC2 is 10.1.2.x and PC1 is 10.1.1.x. ISPB uses the 10.0.2.0/30 link and ISPA the 10.0.1.0/30 link. This trace is from PC2.`,hi:`Filter STEER-LAB lab interface par laga hai. PC2 10.1.2.x aur PC1 10.1.1.x hai. ISPB 10.0.2.0/30 link aur ISPA 10.0.1.0/30 link use karta hai. Yeh trace PC2 se hai.`},out:`PC2> trace 198.51.100.10
+trace to 198.51.100.10, 8 hops max, press Ctrl+C to stop
+ 1   10.1.2.1        0.500 ms  0.450 ms  0.480 ms
+ 2   10.0.2.2        0.700 ms  0.650 ms  0.680 ms
+ 3   10.9.2.2        0.900 ms  0.850 ms  0.880 ms
+ 4   *198.51.100.10   1.200 ms (ICMP type:3, code:3, Destination port unreachable)`,q:{en:`What does hop 2 prove?`,hi:`Hop 2 kya saabit karta hai?`},o:[{en:`The lab uses ISPA`,hi:`Lab ISPA use karta hai`},{en:`The filter steered the lab through ISPB`,hi:`Filter ne lab ko ISPB se bheja`},{en:`The destination is unreachable`,hi:`Destination unreachable hai`},{en:`A routing loop exists`,hi:`Routing loop hai`}],a:1,w:{en:`Hop 2 is 10.0.2.2, the ISPB side. Without FBF the lab would follow the default route to 10.0.1.2 like staff do.`,hi:`Hop 2 10.0.2.2 hai, ISPB side. FBF ke bina lab staff ki tarah 10.0.1.2 ke default route se jaata.`}},{title:{en:`What the instance list tells you`,hi:`Instance list kya batati hai`},ticket:{en:`After adding the RIB group on R1, you run the command below. Which statement is correct?`,hi:`R1 par RIB group jodne ke baad aap neeche ka command chalate ho. Kaunsa statement sahi hai?`},out:`lab@R1# run show route instance
+Instance             Type
+         Primary RIB                                     Active/holddown/hidden
+master               forwarding
+         inet.0                                          9/0/0
+
+ISP-B                forwarding
+         ISP-B.inet.0                                    9/0/0`,q:{en:`What can you conclude?`,hi:`Aap kya nishkarsh nikaal sakte ho?`},o:[{en:`ISP-B is a virtual router that runs OSPF`,hi:`ISP-B OSPF chalane wala virtual router hai`},{en:`ISP-B has no routes`,hi:`ISP-B ke paas koi route nahi`},{en:`ISP-B now has nine active routes, so the RIB group copied the interface routes`,hi:`ISP-B ke paas ab nau active routes hain, yaani RIB group ne interface routes copy kiye`},{en:`inet.0 is hidden`,hi:`inet.0 hidden hai`}],a:2,w:{en:`The count is 9/0/0 for ISP-B.inet.0, matching the nine routes: one static, four Direct and four Local. The type shown is forwarding.`,hi:`ISP-B.inet.0 ka count 9/0/0 hai, nau routes ke barabar: ek static, chaar Direct aur chaar Local. Dikhaya gaya type forwarding hai.`}},{title:{en:`Reading the filter`,hi:`Filter padhna`},ticket:{en:`This is the filter attached as input on ge-0/0/3.0. A packet from 10.1.5.5 enters that interface.`,hi:`Yeh filter ge-0/0/3.0 par input ki tarah laga hai. 10.1.5.5 se ek packet us interface mein aata hai.`},out:`lab@R1> show configuration firewall
+family inet {
+    filter STEER-LAB {
+        term LAB {
+            from {
+                source-address 10.1.2.0/24;
+            }
+            then {
+                routing-instance ISP-B;
+            }
+        }
+        term REST {
+            then {
+                accept;
+            }
+        }
+    }
+}`,q:{en:`What happens to the packet?`,hi:`Packet ka kya hota hai?`},o:[{en:`It matches REST, is accepted, and is forwarded using inet.0`,hi:`Woh REST se match hota hai, accept hota hai, aur inet.0 se forward hota hai`},{en:`It is sent to ISP-B.inet.0`,hi:`Woh ISP-B.inet.0 mein bheja jaata hai`},{en:`It is dropped by the implicit discard`,hi:`Woh implicit discard se drop hota hai`},{en:`It is rejected with ICMP`,hi:`Woh ICMP ke saath reject hota hai`}],a:0,w:{en:`10.1.5.5 is not in 10.1.2.0/24, so term LAB does not match. Term REST accepts it and the normal lookup in inet.0 follows. Without REST the packet would be dropped by the implicit discard.`,hi:`10.1.5.5 10.1.2.0/24 mein nahi hai, isliye term LAB match nahi karta. Term REST use accept karta hai aur inet.0 mein normal lookup hota hai. REST ke bina packet implicit discard se drop hota.`}}];export{e as default};

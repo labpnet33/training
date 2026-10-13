@@ -1,0 +1,1 @@
+var e={read:40,blurb:{en:`Templates, device groups, bind data and zero-touch onboarding: staging, Director push, states, failure modes and change control.`,hi:`Templates, device groups, bind data aur zero-touch onboarding: staging, Director push, states, failure modes aur change control.`}};export{e as default};

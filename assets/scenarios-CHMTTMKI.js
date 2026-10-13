@@ -1,0 +1,47 @@
+var e=[{title:{en:`The monitor that watches nothing`,hi:`Woh monitor jo kuch nahi dekhta`},ticket:{en:`Ravi Menon built a record, an exporter and the monitor GF-MON-FLOW on KCH-EDGE-R2. NMS shows no records from 10.255.0.2. He runs two show commands.`,hi:`Ravi Menon ne KCH-EDGE-R2 par record, exporter aur monitor GF-MON-FLOW banaya. NMS 10.255.0.2 ke koi records nahi dikhata. Woh do show commands chalata hai.`},out:`KCH-EDGE-R2# show flow interface
+KCH-EDGE-R2# show flow monitor GF-MON-FLOW
+Flow Monitor GF-MON-FLOW:
+  Flow Record:       GF-REC
+  Flow Exporter:     GF-EXPORT
+  Cache:
+    Type:                 normal (Platform cache)
+    Status:               not allocated
+    Size:                 4096 entries
+    Inactive Timeout:     15 secs
+    Active Timeout:       60 secs`,q:{en:`What is missing?`,hi:`Kya missing hai?`},o:[{en:`A larger cache size`,hi:`Bada cache size`},{en:`IPFIX instead of v9`,hi:`v9 ki jagah IPFIX`},{en:`A second exporter`,hi:`Doosra exporter`},{en:`ip flow monitor GF-MON-FLOW input on the user and circuit interfaces`,hi:`User aur circuit interfaces par ip flow monitor GF-MON-FLOW input`}],a:3,w:{en:`An empty show flow interface and a cache status of not allocated mean the monitor is not applied to any interface, so nothing is watched. Apply it in the input direction.`,hi:`Khaali show flow interface aur cache status not allocated ka matlab monitor kisi interface par apply nahi hai, to kuch dekha nahi jaata. Use input direction mein apply karo.`}},{title:{en:`Exporter with a wrong port`,hi:`Galat port wala exporter`},ticket:{en:`Lucknow flows do not appear on NMS. The monitor is applied and the cache is filling. The exporter output is below. The collector listens on UDP 9995.`,hi:`Lucknow ke flows NMS par nahi dikhte. Monitor apply hai aur cache bhar raha hai. Exporter ka output neeche hai. Collector UDP 9995 par sunta hai.`},out:`LKO-EDGE-R3# show flow exporter GF-EXPORT
+Flow Exporter GF-EXPORT:
+  Export protocol:          NetFlow Version 9
+  Transport Configuration:
+    Destination IP address: 10.1.50.100
+    Source IP address:      10.255.0.3
+    Source Interface:       Loopback0
+    Transport Protocol:     UDP
+    Destination Port:       9996
+  Export statistics:
+    210 records exported in 31 packets
+    0 records dropped (no route to collector)`,q:{en:`Which single change fixes this?`,hi:`Kaun sa ek change ise theek karta hai?`},o:[{en:`transport udp 9995 in the exporter`,hi:`Exporter mein transport udp 9995`},{en:`Change the source to Gi0/1`,hi:`Source ko Gi0/1 karo`},{en:`Switch to NetFlow v5`,hi:`NetFlow v5 par jao`},{en:`Reload the collector`,hi:`Collector reload karo`}],a:0,w:{en:`Destination, source and version are correct; only the port is 9996 while the collector listens on 9995. The statistics show sending, not delivery.`,hi:`Destination, source aur version sahi hain; sirf port 9996 hai jabki collector 9995 par sunta hai. Statistics sending dikhate hain, delivery nahi.`}},{title:{en:`Records are rejected: wrong source`,hi:`Records reject: galat source`},ticket:{en:`The exporter on LKO-EDGE-R3 uses the right destination, port and version, yet NMS lists no records from Lucknow. The collector accepts exports only from router loopback addresses.`,hi:`LKO-EDGE-R3 ka exporter sahi destination, port aur version use karta hai, phir bhi NMS Lucknow ke koi records list nahi karta. Collector sirf router loopback addresses se exports accept karta hai.`},out:`LKO-EDGE-R3# show flow exporter GF-EXPORT
+Flow Exporter GF-EXPORT:
+  Export protocol:          IPFIX (Version 10)
+  Transport Configuration:
+    Destination IP address: 10.1.50.100
+    Source IP address:      10.0.13.2
+    Source Interface:       GigabitEthernet0/1
+    Transport Protocol:     UDP
+    Destination Port:       9995
+  Export statistics:
+    58 records exported in 9 packets`,q:{en:`What is wrong?`,hi:`Kya galat hai?`},o:[{en:`IPFIX cannot use port 9995`,hi:`IPFIX port 9995 use nahi kar sakta`},{en:`The destination is a LAN address`,hi:`Destination LAN address hai`},{en:`The source is Gi0/1 (10.0.13.2); it should be Loopback0 (10.255.0.3)`,hi:`Source Gi0/1 (10.0.13.2) hai; Loopback0 (10.255.0.3) hona chahiye`},{en:`The cache timeout is too short`,hi:`Cache timeout bahut chhota hai`}],a:2,w:{en:`The datagrams come from 10.0.13.2, which the collector does not know. Set source Loopback0 so they come from 10.255.0.3.`,hi:`Datagrams 10.0.13.2 se aate hain jise collector nahi jaanta. source Loopback0 set karo taaki woh 10.255.0.3 se aayein.`}},{title:{en:`Which flow is the top talker?`,hi:`Top talker kaun sa flow hai?`},ticket:{en:`Priya Nair asks who is filling BB-KCH-01 tonight. The cache table on KCH-EDGE-R2 is below.`,hi:`Priya Nair poochhti hain aaj raat BB-KCH-01 kaun bhar raha hai. KCH-EDGE-R2 ki cache table neeche hai.`},out:`KCH-EDGE-R2# show flow monitor GF-MON-FLOW cache format table
+IPV4 SOURCE ADDRESS   IPV4 DESTINATION ADDRESS  IP PROTOCOL  TRNS SOURCE PORT  TRNS DESTINATION PORT  INTERFACE INPUT  counter bytes  counter packets
+10.2.20.21            10.1.20.10                6            51044             443                    Gi0/0            184220         214
+10.2.20.35            203.0.113.200             6            49822             8443                   Gi0/0            2516582400     1750000
+10.2.20.40            10.1.50.100               17           60001             53                     Gi0/0            3190           41`,q:{en:`What does the evidence show?`,hi:`Evidence kya dikhata hai?`},o:[{en:`ERP traffic from 10.2.20.21 is the problem`,hi:`10.2.20.21 ka ERP traffic problem hai`},{en:`DNS traffic from 10.2.20.40 fills the circuit`,hi:`10.2.20.40 ka DNS traffic circuit bharta hai`},{en:`The collector is misconfigured`,hi:`Collector galat configured hai`},{en:`10.2.20.35 sent about 2.4 GB to 203.0.113.200 on TCP 8443, so it is the top talker to investigate`,hi:`10.2.20.35 ne 203.0.113.200 ko TCP 8443 par lagbhag 2.4 GB bheja, to wahi investigate karne wala top talker hai`}],a:3,w:{en:`Compare the byte counters: 2,516,582,400 bytes is far larger than the others. The next step is a filtered capture to prove what the upload is.`,hi:`Byte counters compare karo: 2,516,582,400 bytes baaki se bahut bada hai. Agla step filtered capture hai jo sabit kare ki upload kya hai.`}},{title:{en:`SPAN session mirrors the wrong port`,hi:`SPAN session galat port mirror karta hai`},ticket:{en:`On SW-KCH the router R-KCH is on Gi0/1 and the capture host is on Gi0/5. The host sees no traffic from the router. The engineer shows the session.`,hi:`SW-KCH par router R-KCH Gi0/1 par hai aur capture host Gi0/5 par. Host ko router ka koi traffic nahi dikhta. Engineer session dikhata hai.`},out:`SW-KCH# show monitor session 1
+Session 1
+---------
+Type                     : Local Session
+Source Ports             :
+    Both                 : Gi0/3
+Destination Ports        : Gi0/5
+    Encapsulation        : Native
+          Ingress        : Disabled`,q:{en:`What must change?`,hi:`Kya badalna chahiye?`},o:[{en:`Make Gi0/5 the source`,hi:`Gi0/5 ko source banao`},{en:`Remove Gi0/3 and set source interface Gi0/1 both`,hi:`Gi0/3 hatao aur source interface Gi0/1 both set karo`},{en:`Use rx only`,hi:`Sirf rx use karo`},{en:`Enable ingress on the destination`,hi:`Destination par ingress enable karo`}],a:1,w:{en:`The source is Gi0/3, a quiet port. The router is on Gi0/1, so mirror that port. Direction both is already correct and the destination Gi0/5 matches the host.`,hi:`Source Gi0/3 hai, ek shaant port. Router Gi0/1 par hai, to us port ko mirror karo. Direction both pehle se sahi hai aur destination Gi0/5 host se match karta hai.`}},{title:{en:`Reading a capture: what failed?`,hi:`Capture padhna: kya fail hua?`},ticket:{en:`A Kochi user cannot open an internal app on SRV-HYD at 10.1.20.10 port 8080. A SPAN capture filtered to the user shows the lines below.`,hi:`Kochi ka user SRV-HYD 10.1.20.10 port 8080 ka internal app nahi khol pata. User tak filter kiye SPAN capture mein neeche ki lines dikhti hain.`},out:`10:52:01.000100 IP 10.2.20.21.50210 &gt; 10.1.20.10.8080: Flags [S], seq 4410001, win 64240, length 0
+10:52:01.031200 IP 10.1.20.10.8080 &gt; 10.2.20.21.50210: Flags [R.], seq 0, ack 4410002, win 0, length 0
+10:52:02.040100 IP 10.2.20.21.50212 &gt; 10.1.20.10.8080: Flags [S], seq 4410100, win 64240, length 0
+10:52:02.071000 IP 10.1.20.10.8080 &gt; 10.2.20.21.50212: Flags [R.], seq 0, ack 4410101, win 0, length 0`,q:{en:`What does the capture prove?`,hi:`Capture kya sabit karta hai?`},o:[{en:`The packets are lost on the circuit`,hi:`Packets circuit par kho rahe hain`},{en:`DNS is failing`,hi:`DNS fail ho raha hai`},{en:`The server answers at once with a reset: the path works but nothing listens on port 8080`,hi:`Server turant reset se jawab deta hai: path chal raha hai lekin port 8080 par koi sun nahi raha`},{en:`A firewall silently drops the SYN`,hi:`Firewall SYN ko chupchaap drop karta hai`}],a:2,w:{en:`A reset (R.) comes back 30 ms after each SYN, so packets travel both ways. A silent drop would show repeated SYNs with no answer. The application is not listening or is stopped on SRV-HYD.`,hi:`Har SYN ke 30 ms baad reset (R.) wapas aata hai, to packets dono taraf jaate hain. Silent drop mein baar baar SYN aur koi jawab nahi dikhta. SRV-HYD par application sun nahi rahi ya ruki hai.`}}];export{e as default};

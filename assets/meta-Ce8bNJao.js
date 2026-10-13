@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`A two-fault outage investigation; Acceptance matrix and real-platform progression. Complete the three assessed labs after reading.`,hi:`Do faults wali outage investigate karo; Acceptance matrix aur real-platform progression. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

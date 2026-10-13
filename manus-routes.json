@@ -5,20 +5,60 @@
       "title": "Home"
     },
     {
-      "path": "/tracks",
-      "title": "Tracks"
+      "path": "/ccie-dc-mock",
+      "title": "CCIE DC mock"
     },
     {
-      "path": "/roadmap",
-      "title": "Roadmap"
+      "path": "/ccie-dc-mock/:id",
+      "title": "CCIE DC mock"
+    },
+    {
+      "path": "/ccie-mock",
+      "title": "CCIE mock"
+    },
+    {
+      "path": "/ccie-mock/:id",
+      "title": "CCIE mock"
+    },
+    {
+      "path": "/ccie-sec-mock",
+      "title": "CCIE Security mock"
+    },
+    {
+      "path": "/ccie-sec-mock/:id",
+      "title": "CCIE Security mock"
+    },
+    {
+      "path": "/ccie-trial/:mod",
+      "title": "CCIE trial"
+    },
+    {
+      "path": "/dashboard",
+      "title": "Dashboard"
+    },
+    {
+      "path": "/exam/result/:id",
+      "title": "Exam result"
+    },
+    {
+      "path": "/exam/run",
+      "title": "Exam"
+    },
+    {
+      "path": "/exams",
+      "title": "Exams"
     },
     {
       "path": "/experience",
       "title": "Experience"
     },
     {
-      "path": "/trial-center",
-      "title": "Trial Center"
+      "path": "/experience/certificate/:id",
+      "title": "Certificate"
+    },
+    {
+      "path": "/experience/ticket/:id",
+      "title": "Experience ticket"
     },
     {
       "path": "/invite",
@@ -26,79 +66,91 @@
     },
     {
       "path": "/invite/:code",
-      "title": "Invite"
-    },
-    {
-      "path": "/unsubscribe",
-      "title": "Unsubscribe"
-    },
-    {
-      "path": "/privacy",
-      "title": "Privacy"
-    },
-    {
-      "path": "/terms",
-      "title": "Terms"
-    },
-    {
-      "path": "/verify",
-      "title": "Verify"
-    },
-    {
-      "path": "/labs",
-      "title": "Labs"
+      "title": "Invite/:Code"
     },
     {
       "path": "/lab/:module/:lab",
       "title": "Lab"
     },
     {
-      "path": "/packets",
-      "title": "Packet Studio"
-    },
-    {
-      "path": "/sandbox",
-      "title": "Build a lab"
-    },
-    {
-      "path": "/track/:id",
-      "title": "Track"
-    },
-    {
-      "path": "/module/:id",
-      "title": "Module"
-    },
-    {
-      "path": "/exams",
-      "title": "Exams"
-    },
-    {
-      "path": "/exam/run",
-      "title": "Exam"
-    },
-    {
-      "path": "/dashboard",
-      "title": "Dashboard"
+      "path": "/labs",
+      "title": "Labs"
     },
     {
       "path": "/leaderboard",
       "title": "Leaderboard"
     },
     {
-      "path": "/certificates",
-      "title": "Certificates"
+      "path": "/module/:id",
+      "title": "Module"
+    },
+    {
+      "path": "/packets",
+      "title": "Packet Studio"
+    },
+    {
+      "path": "/pricing",
+      "title": "Pricing"
+    },
+    {
+      "path": "/privacy",
+      "title": "Privacy"
     },
     {
       "path": "/profile",
       "title": "Profile"
     },
     {
+      "path": "/project/:id",
+      "title": "Project"
+    },
+    {
+      "path": "/projects",
+      "title": "Projects"
+    },
+    {
       "path": "/resume",
       "title": "Resume"
     },
     {
+      "path": "/roadmap",
+      "title": "Roadmap"
+    },
+    {
+      "path": "/sandbox",
+      "title": "Build a lab"
+    },
+    {
       "path": "/subscriptions",
       "title": "Subscriptions"
+    },
+    {
+      "path": "/terms",
+      "title": "Terms"
+    },
+    {
+      "path": "/track/:id",
+      "title": "Track"
+    },
+    {
+      "path": "/tracks",
+      "title": "Tracks"
+    },
+    {
+      "path": "/trial-center",
+      "title": "Trial Center"
+    },
+    {
+      "path": "/unsubscribe",
+      "title": "Unsubscribe"
+    },
+    {
+      "path": "/verify",
+      "title": "Verify"
+    },
+    {
+      "path": "/verify/:code",
+      "title": "Verify/:Code"
     }
   ]
 }

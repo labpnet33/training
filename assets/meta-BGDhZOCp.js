@@ -1,0 +1,1 @@
+var e={read:45,blurb:{en:`Catalyst 9800 first steps: the wireless management interface, CAPWAP AP join, the profile-and-tag model, your first WLAN and the default-tag fault.`,hi:`Catalyst 9800 ke pehle kadam: wireless management interface, CAPWAP AP join, profile-and-tag model, pehla WLAN aur default-tag fault.`}};export{e as default};

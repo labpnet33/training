@@ -1,0 +1,43 @@
+var e=[{title:{en:`Script stops on the fourth router`,hi:`Script chauthe router par ruk gaya`},ticket:{en:`The NTP rollout script stopped partway. Read the output. What is the most likely cause?`,hi:`NTP rollout script beech mein ruk gaya. Output padho. Sabse likely wajah kya hai?`},out:`Working on 10.99.0.1
+  NTP set, config saved
+Working on 10.99.0.2
+  NTP set, config saved
+Working on 10.99.0.3
+  NTP set, config saved
+Working on 10.99.0.40
+Traceback (most recent call last):
+  File "ntp_push.py", line 16
+    conn = ConnectHandler(device_type="nk_ios", host=ip, username="netops", password="NK@2026")
+nkmiko.exceptions.NetmikoTimeoutException: TCP connection to device failed.
+
+Common causes of this problem are:
+1. Incorrect hostname or IP address.
+2. Wrong TCP port.
+3. Intermediate firewall blocking access.
+
+Device settings: nk_ios 10.99.0.40:22
+(connection timed out)`,q:{en:`What is the cause?`,hi:`Wajah kya hai?`},o:[{en:`The fourth IP in the ROUTERS list is a typo, so no TCP connection could be made`,hi:`ROUTERS list ka chautha IP typo hai, isliye TCP connection nahi ban saka`},{en:`The password for all routers is wrong`,hi:`Saare routers ka password galat hai`},{en:`Python does not support lists`,hi:`Python lists support nahi karta`},{en:`The NTP server is down`,hi:`NTP server down hai`}],a:0,w:{en:`The last line is a timeout exception for 10.99.0.40 (the device being processed). A timeout means no TCP connection, here caused by a mistyped address. A wrong password would be an authentication exception.`,hi:`Aakhri line 10.99.0.40 ke liye timeout exception hai (jo device process ho raha tha). Timeout matlab TCP connection nahi, yahan galat type kiye address se. Galat password authentication exception hota.`}},{title:{en:`Login rejected`,hi:`Login reject hua`},ticket:{en:`A new engineer runs a script against R1 and gets this. What should he check first?`,hi:`Ek naya engineer R1 par script chalata hai aur yeh milta hai. Use pehle kya check karna chahiye?`},out:`Traceback (most recent call last):
+  File "bad_pw.py", line 2
+    conn = ConnectHandler(device_type="nk_ios", host="10.99.0.1", username="netops", password="not-the-password")
+nkmiko.exceptions.NetmikoAuthenticationException: Authentication to device failed.
+
+Common causes of this problem are:
+1. Invalid username and password
+2. Incorrect SSH-key file
+3. Connecting to the wrong device
+
+Device settings: nk_ios 10.99.0.1:22`,q:{en:`What does this error point to?`,hi:`Yeh error kis taraf ishara karta hai?`},o:[{en:`A missing colon in the for loop`,hi:`for loop mein colon missing`},{en:`Username or password used by the script`,hi:`Script mein use hua username ya password`},{en:`A wrong IP address (no route)`,hi:`Galat IP address (route nahi)`},{en:`The router has no memory`,hi:`Router ke paas memory nahi`}],a:1,w:{en:`An authentication exception means the TCP connection worked but the login was refused: check the username and password (and AAA settings). A wrong IP would give a timeout.`,hi:`Authentication exception ka matlab TCP connection chala lekin login refuse hua: username aur password (aur AAA settings) check karo. Galat IP timeout deta.`}},{title:{en:`What did the failed run leave behind?`,hi:`Failed run ne kya chhoda?`},ticket:{en:`After the NTP script crashed, this read-only check was run. Which statement is correct?`,hi:`NTP script crash hone ke baad yeh read-only check chalaya gaya. Kaun sa statement sahi hai?`},out:`KF-DEL-R1 OK
+KF-MUM-R2 OK
+KF-CHN-R3 OK
+KF-KOL-R4 MISSING
+KF-JAI-R5 MISSING`,q:{en:`What is the state of the rollout?`,hi:`Rollout ki state kya hai?`},o:[{en:`No router was changed`,hi:`Koi router nahi badla`},{en:`All five routers were changed and Python undid it`,hi:`Paanchon routers badle aur Python ne undo kar diya`},{en:`KOL-R4 and JAI-R5 still need the change; the first three were done`,hi:`KOL-R4 aur JAI-R5 ko abhi change chahiye; pehle teen ho chuke the`},{en:`Only R5 was changed`,hi:`Sirf R5 badla`}],a:2,w:{en:`Python runs line by line. The first three routers were completed before the crash; the failing one and the one after it were never changed. A verification script is how you see this.`,hi:`Python line by line chalta hai. Pehle teen routers crash se pehle ho chuke the; failing aur uske baad wala kabhi nahi badle. Verification script se yeh dikhta hai.`}},{title:{en:`Python does not know a name`,hi:`Python ek naam nahi jaanta`},ticket:{en:`A junior wrote a loop and the script crashed with this message. What is the fix?`,hi:`Junior ne loop likha aur script is message ke saath crash ho gaya. Fix kya hai?`},out:`Traceback (most recent call last):
+  File "typo.py", line 2
+    print(router)
+NameError: name 'router' is not defined. Did you mean: 'routers'?`,q:{en:`What should he change?`,hi:`Use kya badalna chahiye?`},o:[{en:`Add a closing quote`,hi:`Closing quote lagao`},{en:`Install a new library`,hi:`Nayi library install karo`},{en:`Reboot the router`,hi:`Router reboot karo`},{en:`Rename router to routers (the list that exists)`,hi:`router ko routers kar do (jo list maujood hai)`}],a:3,w:{en:`NameError means the name was never created; Python even suggests "routers". It is a spelling mistake in the variable name.`,hi:`NameError matlab naam kabhi bana hi nahi; Python khud "routers" suggest karta hai. Yeh variable naam ki spelling ki galti hai.`}},{title:{en:`Block without indentation`,hi:`Block bina indentation ke`},ticket:{en:`This is the output when a fresher runs his two-line loop. What is wrong?`,hi:`Fresher apna do-line ka loop chalata hai to yeh output aata hai. Kya galat hai?`},out:`  File "ind.py", line 2
+    print(ip)
+    ^
+IndentationError: expected an indented block after 'for' statement on line 1`,q:{en:`Which fix is correct?`,hi:`Kaunsa fix sahi hai?`},o:[{en:`Indent the print line by 4 spaces so it belongs to the loop`,hi:`print line ko 4 spaces indent karo taaki woh loop ka hissa bane`},{en:`Delete the colon after the list`,hi:`List ke baad ka colon hata do`},{en:`Change print to Print`,hi:`print ko Print karo`},{en:`Remove the list`,hi:`List hata do`}],a:0,w:{en:`The line after "for ... :" must be indented to be inside the loop. Python says exactly that: expected an indented block.`,hi:`"for ... :" ke baad ki line indented honi chahiye taaki woh loop ke andar ho. Python yahi kehta hai: expected an indented block.`}},{title:{en:`Where is the third router?`,hi:`Teesra router kahan hai?`},ticket:{en:`A new router at 10.99.0.3 was racked, but the report still shows only two. Read the line from the script and its last output lines.`,hi:`Naya router 10.99.0.3 par rack hua, lekin report abhi bhi sirf do dikhati hai. Script ki line aur uske aakhri output lines padho.`},out:`     8  ROUTERS = ["10.99.0.1", "10.99.0.2"]
+...
+  BLR-EDGE-02 uptime is 0 minutes
+Done: 2 routers checked`,q:{en:`What should be changed?`,hi:`Kya badalna chahiye?`},o:[{en:`Add a new for loop for the third router`,hi:`Teesre router ke liye naya for loop jodo`},{en:`Add "10.99.0.3" to the ROUTERS list`,hi:`ROUTERS list mein "10.99.0.3" jodo`},{en:`Change len() to 3`,hi:`len() ko 3 kar do`},{en:`Run the script on the router`,hi:`Script router par chalao`}],a:1,w:{en:`The loop visits what is in the list. Add the IP to the list and the same loop covers it; the count at the end then updates by itself.`,hi:`Loop wahi visit karta hai jo list mein hai. List mein IP jodo aur wahi loop use cover kar leta hai; end ka count apne aap update ho jaata hai.`}},{title:{en:`Config line sent as a show command`,hi:`Config line show command ki tarah bheji`},ticket:{en:`An engineer tried to set NTP with send_command and saw this. What is the correct approach?`,hi:`Ek engineer ne send_command se NTP set karne ki koshish ki aur yeh dekha. Sahi tareeka kya hai?`},out:`          ^
+% Invalid input detected at '^' marker.`,q:{en:`What should he use instead?`,hi:`Use uski jagah kya use karna chahiye?`},o:[{en:`conn.find_prompt()`,hi:`conn.find_prompt()`},{en:`conn.disconnect() before sending`,hi:`bhejne se pehle conn.disconnect()`},{en:`conn.send_config_set(["ntp server 10.99.0.200"]) followed by conn.save_config()`,hi:`conn.send_config_set(["ntp server 10.99.0.200"]) aur phir conn.save_config()`},{en:`A longer password`,hi:`Lamba password`}],a:2,w:{en:`send_command runs the text in operational mode, where a configuration command is invalid. send_config_set enters configuration mode first, and save_config makes it persistent.`,hi:`send_command text ko operational mode mein chalata hai jahan configuration command invalid hai. send_config_set pehle configuration mode mein jaata hai, aur save_config use persistent banata hai.`}}];export{e as default};

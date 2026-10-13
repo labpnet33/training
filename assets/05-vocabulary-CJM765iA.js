@@ -1,0 +1,69 @@
+var e=(e,t,n,r,i,a,o)=>`<rect x="`+e+`" y="`+t+`" width="`+n+`" height="`+r+`" rx="8" fill="`+i+`"/><text x="`+(e+n/2)+`" y="`+(t+r/2+(o?-2:4))+`" text-anchor="middle" class="svg-ink" font-size="12">`+a+`</text>`+(o?`<text x="`+(e+n/2)+`" y="`+(t+r/2+13)+`" text-anchor="middle" class="svg-muted" font-size="11">`+o+`</text>`:``),t=(e,t,n,r,i)=>`<line x1="`+e+`" y1="`+t+`" x2="`+n+`" y2="`+r+`" stroke="#64748b" stroke-width="2"`+(i?` stroke-dasharray="6 4"`:``)+`/>`,n=(e,t,n)=>`<div class="dia"><svg viewBox="0 0 640 `+e+`" role="img" aria-label="diagram">`+t+`</svg><p class="cap">`+n+`</p></div>`,r=r=>n(260,e(235,15,170,55,`#ddd6fe`,`HQ-FGT`,r.hub)+e(30,165,150,55,`#bae6fd`,`BR1-FGT`,r.sp1)+e(460,165,150,55,`#bae6fd`,`BR2-FGT`,r.sp2)+t(320,70,105,165)+t(320,70,535,165)+t(180,195,460,195,!0)+`<text x="170" y="105" text-anchor="middle" class="svg-muted" font-size="11">`+r.ov+`</text><text x="480" y="105" text-anchor="middle" class="svg-muted" font-size="11">`+r.ov+`</text><text x="320" y="188" text-anchor="middle" class="svg-accent" font-size="12">`+r.sc+`</text>`+e(235,225,170,28,`#fde68a`,r.ul),r.cap),i={id:`vocabulary`,h:{en:`The vocabulary: hub, spoke, overlay, underlay, member, zone, SLA, rule, shortcut`,hi:`Vocabulary: hub, spoke, overlay, underlay, member, zone, SLA, rule, shortcut`},body:{en:`
+<p>Every field has its own words, and Fortinet SD-WAN has about a dozen that appear in every document, every exam question and every design call. Learn them now, once, and the rest of the track reads like a story. We use the same lab names throughout: <b>HQ-FGT</b> (hub), <b>BR1-FGT</b> and <b>BR2-FGT</b> (branches), <b>ISP1</b> on <code>port1</code>, <b>ISP2</b> on <code>port2</code>, and the internal LAN on <code>port3</code>.</p>
+`+r({hub:`hub (data centre)`,sp1:`spoke (branch 1)`,sp2:`spoke (branch 2)`,ov:`overlay tunnel`,sc:`shortcut (ADVPN)`,ul:`underlay: ISP1 + ISP2 links`,cap:`Spokes connect to the hub with overlay tunnels over the underlay; a shortcut tunnel joins two spokes directly when needed.`})+`
+<h3>The words</h3>
+<dl class="terms">
+<dt>Underlay</dt><dd>The physical transports and their IP routing: ISP1 broadband, ISP2 LTE, an MPLS circuit. It carries encrypted tunnels and, at a branch with local breakout, plain internet traffic.</dd>
+<dt>Overlay</dt><dd>The encrypted IPsec tunnels built across the underlay between sites. To SD-WAN each tunnel is an interface that can be measured and used like any link.</dd>
+<dt>Hub</dt><dd>A central FortiGate, usually at a data centre or regional site, that many branches connect to. It terminates tunnels, holds shared applications and often advertises routes.</dd>
+<dt>Spoke</dt><dd>A branch FortiGate that connects to one or more hubs. Spokes normally use dial-up (dynamic) tunnels, so hubs do not need their IP addresses configured.</dd>
+<dt>Member</dt><dd>One link inside SD-WAN: an interface (physical port, VLAN or IPsec tunnel) plus normally a gateway. You studied members in <b>nse4-sdwan</b>.</dd>
+<dt>Zone</dt><dd>A named group of members. Policies and routes point to the zone, not to the member. Common design: a zone for underlay internet links and a zone for overlay tunnels.</dd>
+<dt>Health check</dt><dd>The probe that measures a member: latency, jitter and packet loss. Also called a performance SLA in the GUI.</dd>
+<dt>SLA target</dt><dd>The thresholds that define a good link, for example latency 100 ms, jitter 30 ms, loss 2 percent.</dd>
+<dt>Rule (service)</dt><dd>SD-WAN rule: a match (who, what, where) plus a strategy and an ordered list of members. Evaluated top-down.</dd>
+<dt>Implicit rule</dt><dd>The last, invisible rule: traffic that no rule matched is sent by the routing table and a load-balance mode.</dd>
+<dt>ISDB</dt><dd>Internet Service Database: FortiGuard's list of addresses and ports of well-known internet services, used to match SaaS traffic in policies and rules.</dd>
+<dt>ADVPN</dt><dd>Auto-Discovery VPN: a method where a hub tells two spokes about each other so they can build a direct tunnel.</dd>
+<dt>Shortcut</dt><dd>The direct spoke-to-spoke tunnel that ADVPN creates on demand, removed again when idle.</dd>
+<dt>Breakout (DIA)</dt><dd>Direct internet access at the branch instead of through the hub. Often called local breakout.</dd>
+<dt>Template</dt><dd>A reusable configuration in FortiManager (SD-WAN template, CLI template) applied to many devices.</dd></dl>
+<h3>Where each word lives in the configuration</h3>
+<table class="cmp"><tr><th>Word</th><th>Configuration object (FortiOS)</th></tr>
+<tr><td>Member, zone</td><td><code>config system sdwan</code>, then <code>config members</code> and <code>config zone</code></td></tr>
+<tr><td>Health check, SLA target</td><td><code>config health-check</code>, and inside it <code>config sla</code></td></tr>
+<tr><td>Rule</td><td><code>config service</code></td></tr>
+<tr><td>Overlay</td><td><code>config vpn ipsec phase1-interface</code> and <code>phase2-interface</code></td></tr>
+<tr><td>Shortcut</td><td>Auto-discovery settings on the IPsec phase 1 of hub and spokes</td></tr>
+<tr><td>Template</td><td>FortiManager, not a FortiGate object</td></tr></table>
+<div class="eg"><p><b>Worked example: reading a design sentence.</b> "BR1-FGT has two underlay links, ISP1 and ISP2. It builds one overlay tunnel over each to HQ-FGT, and both tunnels are members of the zone OVERLAY. A rule sends voice over whichever tunnel meets SLA 1 of the HUB-PING health check. When BR1 talks to BR2, ADVPN builds a shortcut." If you can draw that sentence on paper, you have the whole track in your head.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Mixing up <b>member</b> and <b>zone</b> in a policy. A firewall policy names the zone (for example <code>virtual-wan-link</code> or <code>OVERLAY</code>), never the individual member interface. The exam loves this.</p></div>
+<div class="exam"><p><b>Exam trap.</b> "Hub" and "spoke" describe roles, not hardware. The same FortiGate model can be a hub in one region and a spoke to another. Also "overlay" never means a different physical network; it is always built across the underlay.</p></div>
+<div class="scn"><h4>The word that caused a wrong design</h4><p>A new engineer read "add a shortcut" in a ticket and created a static route to another branch. The ticket author meant ADVPN: let BR1 and BR2 learn each other through the hub and build a dynamic tunnel. The static route worked but pinned traffic to one ISP and broke SLA steering. After a vocabulary session the team agreed a shared glossary in every design document.</p><p><b>Lesson:</b> Precise words prevent wrong designs.</p></div>
+<div class="iv"><p class="q">"Explain hub, spoke, overlay and underlay in one example."</p><p>Use the branch story: two ISP links are the underlay; IPsec tunnels over them to the hub form the overlay; the branch is a spoke, the data centre FortiGate is the hub; SD-WAN rules choose between tunnels, and ADVPN can add a direct shortcut between two spokes.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Underlay is physical; overlay is the tunnels; hub is central; spoke is the branch.</li><li>Members live in zones; policies and routes point to zones.</li><li>Health check measures, SLA defines good, rule steers, implicit rule catches the rest.</li><li>ISDB identifies services; ADVPN builds shortcuts; templates manage many devices.</li></ul></div>
+`,hi:`
+<p>Har field ke apne shabd hote hain, aur Fortinet SD-WAN ke lagbhag ek darjan shabd har document, har exam question aur har design call mein aate hain. Unhe abhi ek baar seekh lo, phir baaki track kahani ki tarah padha jaayega. Poore track mein wahi lab names use honge: <b>HQ-FGT</b> (hub), <b>BR1-FGT</b> aur <b>BR2-FGT</b> (branches), <b>ISP1</b> <code>port1</code> par, <b>ISP2</b> <code>port2</code> par, aur internal LAN <code>port3</code> par.</p>
+`+r({hub:`hub (data centre)`,sp1:`spoke (branch 1)`,sp2:`spoke (branch 2)`,ov:`overlay tunnel`,sc:`shortcut (ADVPN)`,ul:`underlay: ISP1 + ISP2 links`,cap:`Spokes underlay ke upar overlay tunnels se hub se jude hain; zaroorat padne par shortcut tunnel do spokes ko seedha jodta hai.`})+`
+<h3>Shabd</h3>
+<dl class="terms">
+<dt>Underlay</dt><dd>Physical transports aur unki IP routing: ISP1 broadband, ISP2 LTE, ek MPLS circuit. Yeh encrypted tunnels uthata hai aur local breakout wale branch par plain internet traffic bhi.</dd>
+<dt>Overlay</dt><dd>Sites ke beech underlay ke upar bane encrypted IPsec tunnels. SD-WAN ke liye har tunnel ek interface hai jo kisi bhi link ki tarah naapa aur use kiya ja sakta hai.</dd>
+<dt>Hub</dt><dd>Central FortiGate, aam taur par data centre ya regional site par, jisse kai branches judte hain. Woh tunnels terminate karta hai, shared applications rakhta hai aur aksar routes advertise karta hai.</dd>
+<dt>Spoke</dt><dd>Branch FortiGate jo ek ya zyada hubs se judta hai. Spokes aam taur par dial-up (dynamic) tunnels use karte hain, isliye hubs par unke IP addresses configure nahi karne padte.</dd>
+<dt>Member</dt><dd>SD-WAN ke andar ek link: ek interface (physical port, VLAN ya IPsec tunnel) plus aam taur par ek gateway. Members aapne <b>nse4-sdwan</b> mein padhe.</dd>
+<dt>Zone</dt><dd>Members ka naam wala group. Policies aur routes zone ko point karte hain, member ko nahi. Common design: underlay internet links ka ek zone aur overlay tunnels ka ek zone.</dd>
+<dt>Health check</dt><dd>Woh probe jo member ko naapta hai: latency, jitter aur packet loss. GUI mein ise performance SLA bhi kehte hain.</dd>
+<dt>SLA target</dt><dd>Woh thresholds jo achhi link define karte hain, jaise latency 100 ms, jitter 30 ms, loss 2 percent.</dd>
+<dt>Rule (service)</dt><dd>SD-WAN rule: ek match (kaun, kya, kahan) plus ek strategy aur members ki ordered list. Upar se neeche evaluate hota hai.</dd>
+<dt>Implicit rule</dt><dd>Aakhri, invisible rule: jis traffic se koi rule match nahi karta use routing table aur load-balance mode bhejta hai.</dd>
+<dt>ISDB</dt><dd>Internet Service Database: FortiGuard ki well-known internet services ke addresses aur ports ki list, jo policies aur rules mein SaaS traffic match karne ke liye use hoti hai.</dd>
+<dt>ADVPN</dt><dd>Auto-Discovery VPN: aisa tareeka jahan hub do spokes ko ek-doosre ke baare mein batata hai taaki woh seedha tunnel bana sakein.</dd>
+<dt>Shortcut</dt><dd>Woh seedha spoke-to-spoke tunnel jo ADVPN demand par banata hai aur idle hone par hata deta hai.</dd>
+<dt>Breakout (DIA)</dt><dd>Hub ke raaste ki jagah branch par direct internet access. Ise aksar local breakout kehte hain.</dd>
+<dt>Template</dt><dd>FortiManager mein reusable configuration (SD-WAN template, CLI template) jo kai devices par lagti hai.</dd></dl>
+<h3>Har shabd configuration mein kahan rehta hai</h3>
+<table class="cmp"><tr><th>Shabd</th><th>Configuration object (FortiOS)</th></tr>
+<tr><td>Member, zone</td><td><code>config system sdwan</code>, phir <code>config members</code> aur <code>config zone</code></td></tr>
+<tr><td>Health check, SLA target</td><td><code>config health-check</code>, aur uske andar <code>config sla</code></td></tr>
+<tr><td>Rule</td><td><code>config service</code></td></tr>
+<tr><td>Overlay</td><td><code>config vpn ipsec phase1-interface</code> aur <code>phase2-interface</code></td></tr>
+<tr><td>Shortcut</td><td>Hub aur spokes ke IPsec phase 1 par auto-discovery settings</td></tr>
+<tr><td>Template</td><td>FortiManager, FortiGate ka object nahi</td></tr></table>
+<div class="eg"><p><b>Worked example: design sentence padhna.</b> "BR1-FGT ke do underlay links hain, ISP1 aur ISP2. Woh har ek par HQ-FGT tak ek overlay tunnel banata hai, aur dono tunnels zone OVERLAY ke members hain. Ek rule voice ko us tunnel par bhejta hai jo HUB-PING health check ke SLA 1 ko meet kare. Jab BR1 BR2 se baat karta hai to ADVPN ek shortcut banata hai." Agar aap yeh sentence kaagaz par draw kar sako, to poora track aapke dimaag mein hai.</p></div>
+<div class="warn"><p><b>Common galti.</b> Policy mein <b>member</b> aur <b>zone</b> mix kar dena. Firewall policy zone ka naam leti hai (jaise <code>virtual-wan-link</code> ya <code>OVERLAY</code>), kabhi individual member interface ka nahi. Exam ko yeh bahut pasand hai.</p></div>
+<div class="exam"><p><b>Exam trap.</b> "Hub" aur "spoke" roles hain, hardware nahi. Wahi FortiGate model ek region mein hub aur doosre ke liye spoke ho sakta hai. Aur "overlay" ka matlab kabhi alag physical network nahi; woh hamesha underlay ke upar banta hai.</p></div>
+<div class="scn"><h4>Woh shabd jisne galat design banwaya</h4><p>Ek naye engineer ne ticket mein "add a shortcut" padha aur doosre branch ka static route bana diya. Ticket likhne wale ka matlab ADVPN tha: BR1 aur BR2 hub ke zariye ek-doosre ko seekhein aur dynamic tunnel banayein. Static route chala, par traffic ko ek ISP par pin kar diya aur SLA steering tod di. Vocabulary session ke baad team ne har design document mein shared glossary rakhne par sehmati di.</p><p><b>Seekh:</b> Sahi shabd galat designs rokte hain.</p></div>
+<div class="iv"><p class="q">"Hub, spoke, overlay aur underlay ek example se samjhao."</p><p>Branch story use karo: do ISP links underlay hain; unke upar hub tak IPsec tunnels overlay banate hain; branch spoke hai, data centre FortiGate hub hai; SD-WAN rules tunnels ke beech chunte hain, aur ADVPN do spokes ke beech seedha shortcut jod sakta hai.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Underlay physical hai; overlay tunnels hain; hub central hai; spoke branch hai.</li><li>Members zones mein rehte hain; policies aur routes zones ko point karte hain.</li><li>Health check naapta hai, SLA good define karta hai, rule steer karta hai, implicit rule baaki sambhalta hai.</li><li>ISDB services pehchaanta hai; ADVPN shortcuts banata hai; templates kai devices manage karte hain.</li></ul></div>
+`}};export{i as default};

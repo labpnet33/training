@@ -1,0 +1,1 @@
+var e={read:18,blurb:{en:`Learn who asks for access, who decides, and who enforces.`,hi:`Access kaun maangta hai, decision kaun leta hai aur enforce kaun karta hai, samjhein.`}};export{e as default};

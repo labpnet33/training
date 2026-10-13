@@ -1,0 +1,1 @@
+var e={read:18,blurb:{en:`Follow evidence, reauthorize sessions and prove recovery without broad access.`,hi:`Evidence follow karein, sessions reauthorize karein aur broad access diye bina recovery prove karein.`}};export{e as default};

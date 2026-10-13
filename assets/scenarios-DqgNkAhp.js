@@ -1,0 +1,55 @@
+var e=(e,t)=>({en:e,hi:t}),t=[{title:e(`No internet after the Nagpur cut-over`,`Nagpur cut-over ke baad internet nahi`),ticket:e(`After the SD-WAN cut-over at Nagpur, nobody can reach the internet. Both members exist and the LAN policy points at the zone. The excerpt is shown. What is missing?`,`Nagpur par SD-WAN cut-over ke baad koi internet tak nahi pahunch paata. Dono members maujood hain aur LAN policy zone ko point karti hai. Excerpt dikhaya gaya hai. Kya missing hai?`),out:`! Reference configuration excerpt (not run in the simulator)
+config system sdwan
+    set status enable
+    config members
+        edit 1
+            set interface "port1"
+            set gateway 203.0.113.1
+        next
+        edit 2
+            set interface "port2"
+            set gateway 198.51.100.1
+        next
+    end
+end
+config firewall policy
+    edit 10
+        set srcintf "port3"
+        set dstintf "virtual-wan-link"
+        set action accept
+        set nat enable
+    next
+end
+! no entry under config router static`,q:e(`What is the fix?`,`Fix kya hai?`),o:[e(`Add a third member`,`Teesra member jodo`),e(`Disable nat in the policy`,`Policy mein nat disable karo`),e(`Add a default static route that uses sdwan-zone virtual-wan-link`,`sdwan-zone virtual-wan-link use karne wala default static route jodo`),e(`Change the policy to srcintf port1`,`Policy ko srcintf port1 karo`)],a:2,w:e(`Members and a policy do not carry traffic by themselves; the FortiGate also needs a route. The default route must point at the zone so SD-WAN can pick the member. Disabling NAT or changing interfaces would not create a route.`,`Members aur policy akele traffic nahi uthate; FortiGate ko route bhi chahiye. Default route zone ko point karna chahiye taaki SD-WAN member chun sake. NAT disable karna ya interfaces badalna route nahi banata.`)},{title:e(`Voice is choppy but monitoring is green`,`Voice choppy hai par monitoring green hai`),ticket:e(`Evening VoIP calls at a branch are choppy. Both ISP links show up and the default route uses the zone. The excerpt shows the SD-WAN configuration. Why does SD-WAN not move voice away from the lossy link?`,`Branch par shaam ke VoIP calls choppy hain. Dono ISP links up dikhti hain aur default route zone use karta hai. Excerpt SD-WAN configuration dikhata hai. SD-WAN voice ko lossy link se kyun nahi hataata?`),out:`! Reference configuration excerpt (not run in the simulator)
+config system sdwan
+    set status enable
+    config zone
+        edit "virtual-wan-link"
+        next
+    end
+    config members
+        edit 1
+            set interface "port1"
+        next
+        edit 2
+            set interface "port2"
+        next
+    end
+end`,q:e(`What is missing?`,`Kya missing hai?`),o:[e(`A health check with an SLA target and a rule that requires it`,`SLA target wala health check aur use require karne wala rule`),e(`A third ISP link`,`Teesri ISP link`),e(`A larger MPLS circuit`,`Bada MPLS circuit`),e(`A second zone`,`Doosra zone`)],a:0,w:e(`There is no health check, so nothing measures loss, and there is no rule, so all traffic uses the implicit rule. Only a dead interface would be avoided. Add a health check with an SLA (for example loss under 1 percent) and a rule that steers voice to members meeting it.`,`Koi health check nahi hai, isliye loss kuch nahi naapta, aur koi rule nahi hai, isliye saara traffic implicit rule use karta hai. Sirf dead interface se bacha jaata. Health check SLA ke saath (jaise loss 1 percent se kam) aur voice ko SLA meet karne wale members par bhejne wala rule jodo.`)},{title:e(`Branch-to-branch voice goes through Mumbai`,`Branch-to-branch voice Mumbai se guzarti hai`),ticket:e(`Pune and Nashik are 200 km apart, yet voice between them takes 70 ms. The traceroute shows the path. All traffic uses the hub overlay today. What feature removes the detour?`,`Pune aur Nashik 200 km door hain, phir bhi unke beech voice 70 ms leti hai. Traceroute path dikhata hai. Aaj saara traffic hub overlay use karta hai. Kaun sa feature detour hataata hai?`),out:`! Illustrative path (not run in the simulator)
+BR-PUNE  -> HQ-MUMBAI   (overlay)   about 35 ms
+HQ-MUMBAI -> BR-NASHIK  (overlay)   about 35 ms
+total round trip                     about 70 ms`,q:e(`Which feature should you enable?`,`Kaun sa feature enable karoge?`),o:[e(`Local internet breakout`,`Local internet breakout`),e(`Weight-based load balancing`,`Weight-based load balancing`),e(`A bigger hub`,`Bada hub`),e(`ADVPN shortcuts`,`ADVPN shortcuts`)],a:3,w:e(`The traffic hairpins through the hub. ADVPN lets the two spokes build a direct shortcut tunnel on demand, so the path no longer passes Mumbai. Breakout and load balancing do not change spoke-to-spoke paths, and a bigger hub does not shorten the distance.`,`Traffic hub se hairpin karta hai. ADVPN do spokes ko demand par seedha shortcut tunnel banane deta hai, isliye path Mumbai se nahi guzarta. Breakout aur load balancing spoke-to-spoke paths nahi badalte, aur bada hub doori nahi ghataata.`)},{title:e(`Choose the design`,`Design chuno`),ticket:e(`A company with branches in India and Germany says: the data centre in each region must survive a site failure, Indian branches must not depend on Germany for latency, and branch-to-branch traffic should be direct. Pick the design shape.`,`India aur Germany mein branches wali company kehti hai: har region ka data centre site failure se bache, Indian branches latency ke liye Germany par nirbhar na hon, aur branch-to-branch traffic seedha ho. Design shape chuno.`),out:`! Requirements (not a device output)
+- 2 regions: India, Germany
+- each region needs a surviving data centre
+- low latency within a region
+- direct branch-to-branch traffic`,q:e(`Which design fits best?`,`Kaun sa design sabse fit baithta hai?`),o:[e(`One hub in Frankfurt for all branches`,`Saari branches ke liye Frankfurt mein ek hub`),e(`Multi-region with a hub pair per region, a hub-to-hub overlay, and ADVPN`,`Har region mein hub pair, hub-to-hub overlay aur ADVPN ke saath multi-region`),e(`Full mesh of static tunnels`,`Static tunnels ka full mesh`),e(`A single hub per branch`,`Har branch ke liye ek hub`)],a:1,w:e(`Regional hubs give local latency, a pair per region gives data-centre resilience, the hub-to-hub overlay joins the regions, and ADVPN gives direct branch-to-branch tunnels. One hub or a static full mesh fails at least one requirement.`,`Regional hubs local latency dete hain, har region mein pair data-centre resilience deta hai, hub-to-hub overlay regions ko jodta hai, aur ADVPN seedhe branch-to-branch tunnels deta hai. Ek hub ya static full mesh kam se kam ek requirement fail karta hai.`)},{title:e(`ISP2 shows dead but users are fine`,`ISP2 dead dikhta hai par users theek hain`),ticket:e(`The health check shows member 2 dead, yet a laptop forced over ISP2 browses normally. The health check probes one server. What is the most likely cause?`,`Health check member 2 ko dead dikhata hai, phir bhi ISP2 par forced laptop normally browse karta hai. Health check ek server ko probe karta hai. Sabse sambhavit wajah kya hai?`),out:`! Reference configuration (not run in the simulator) - illustrative output format
+Health Check(INTERNET-PING):
+Seq(1 port1): state(alive), packet-loss(0.000%) latency(12.0), jitter(0.5)
+Seq(2 port2): state(dead), packet-loss(100.000%)`,q:e(`Why is member 2 dead?`,`Member 2 dead kyun hai?`),o:[e(`The probe target is not reachable through ISP2 (blocked, filtered or ISP-specific), so the link looks dead though it works`,`Probe target ISP2 se reachable nahi hai (blocked, filtered ya ISP-specific), isliye link kaam karte hue bhi dead dikhti hai`),e(`ISP2 is out of SLA`,`ISP2 SLA se bahar hai`),e(`The zone has too many members`,`Zone mein bahut zyada members hain`),e(`NAT is disabled`,`NAT disabled hai`)],a:0,w:e(`100 percent loss on probes with normal user traffic means the probes do not get answers while other traffic does: the server is unreachable or filtered via ISP2. Out of SLA would show a live member with high loss or delay, not 100 percent loss. Use a robust, public target and consider a second server.`,`Probes par 100 percent loss aur normal user traffic ka matlab hai ki probes ko jawab nahi milte jabki doosra traffic chalta hai: server ISP2 se unreachable ya filtered hai. Out of SLA ek live member dikhata high loss ya delay ke saath, 100 percent loss nahi. Robust, public target use karo aur doosra server soch lo.`)},{title:e(`How many tunnels end on each hub?`,`Har hub par kitne tunnels khatam hote hain?`),ticket:e(`A company has 100 branches, each with 2 ISP links, and two hubs. Every branch builds one tunnel over each link to each hub. Size each hub.`,`Company ke 100 branches hain, har ek ke 2 ISP links, aur do hubs. Har branch har link par har hub tak ek tunnel banata hai. Har hub ko size karo.`),out:`! Planning data (not a device output)
+branches: 100
+links per branch: 2
+hubs: 2
+tunnels per branch per hub: one per link`,q:e(`How many tunnels end on each hub?`,`Har hub par kitne tunnels khatam hote hain?`),o:[e(`100`,`100`),e(`400`,`400`),e(`200`,`200`),e(`4,950`,`4,950`)],a:2,w:e(`Each branch has 2 links, and each link has one tunnel to a given hub, so 100 x 2 = 200 tunnels per hub (400 in total across both hubs). 4,950 is the number of branch pairs in a full mesh, which ADVPN avoids.`,`Har branch ke 2 links hain, aur har link ka ek hub tak ek tunnel hai, isliye 100 x 2 = 200 tunnels per hub (dono hubs mein kul 400). 4,950 full mesh mein branch pairs ki sankhya hai, jise ADVPN avoid karta hai.`)},{title:e(`What is the next migration step?`,`Agla migration step kya hai?`),ticket:e(`Phase 1 of the Nagpur migration is done: two members in a zone, a zone route, a zone policy, internet works. The team wants to start steering voice to the best link. What should they do next?`,`Nagpur migration ka phase 1 ho gaya: zone mein do members, zone route, zone policy, internet chalta hai. Team voice ko best link par steer karna chahti hai. Agla kya karein?`),out:`! Status (not a device output)
+phase 1: members + zone + zone route + zone policy  (done, tested)
+phase 2: ?
+phase 3: application rules`,q:e(`What is phase 2?`,`Phase 2 kya hai?`),o:[e(`Cancel the MPLS circuit`,`MPLS circuit cancel karo`),e(`Add ADVPN`,`ADVPN jodo`),e(`Apply a FortiManager template to all branches`,`Saari branches par FortiManager template lagao`),e(`Add health checks and SLA targets to measure the links`,`Links naapne ke liye health checks aur SLA targets jodo`)],a:3,w:e(`Steering by quality needs measurements and a definition of good first. Cancelling MPLS before the overlay is proven is risky, and templates and ADVPN come later when the design is proven on one site.`,`Quality se steer karne ke liye pehle measurements aur good ki definition chahiye. Overlay prove hone se pehle MPLS cancel karna risky hai, aur templates aur ADVPN baad mein aate hain jab design ek site par prove ho jaaye.`)}];export{t as default};

@@ -1,0 +1,1 @@
+var e={read:16,blurb:{en:`Find the first failing client stage, collect focused evidence and validate a reversible change.`,hi:`Client ka pehla failing stage identify karein, focused evidence lein aur reversible change validate karein.`}};export{e as default};

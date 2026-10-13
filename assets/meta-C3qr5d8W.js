@@ -1,0 +1,1 @@
+var e={read:70,blurb:{en:`Build an active/passive Panorama pair, understand synchronization and election, fail over, keep the firewalls managed, and troubleshoot a pair that will not form.`,hi:`Active/passive Panorama pair banao, synchronization aur election samjho, fail over karo, firewalls ko managed rakho aur na banne wale pair ko troubleshoot karo.`}};export{e as default};

@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`Gateway, management and the lab boundary; Commission interfaces and prove both directions. Complete the three assessed labs after reading.`,hi:`Gateway, management aur lab ki boundary; Interfaces commission karo aur dono directions prove karo. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

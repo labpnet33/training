@@ -1,0 +1,42 @@
+var e=(e,t,n,r,i,a,o)=>({title:{en:e[0],hi:e[1]},ticket:{en:t[0],hi:t[1]},out:n,q:{en:r[0],hi:r[1]},o:i.map(e=>({en:e[0],hi:e[1]})),a,w:{en:o[0],hi:o[1]}}),t=[e([`MPLS tunnel down, provider healthy`,`MPLS tunnel down, provider healthy`],[`Delhi overlay is up but the MPLS tunnel is down. The MPLS provider reports no fault.`,`Delhi overlay up hai lekin MPLS tunnel down hai. MPLS provider koi fault report nahi karta.`],`admin@Branch1-cli> show orgs org Acme sd-wan brief
+Org: Acme   Site-ID: 101   Hostname: Branch1
+Controller: 198.51.100.20 (Controller-1)   Overlay (MP-BGP): Established
+Transport  Interface  Tunnel  Reason
+Internet   vni-0/0    up      -
+MPLS       vni-0/1    down    transport domain MPLS is missing on the Controller
+LTE        vni-0/2    up      -`,[`Which component owns the fix and what is it?`,`Fix kaunsa component own karta hai aur kya fix hai?`],[[`Branch1: reboot the device`,`Branch1: device reboot karo`],[`MPLS provider: open a fault ticket`,`MPLS provider: fault ticket kholo`],[`Director: redeploy the template`,`Director: template dobara deploy karo`],[`Controller: set orgs org Acme sd-wan transport-domains MPLS, then commit`,`Controller: set orgs org Acme sd-wan transport-domains MPLS, phir commit`]],3,[`The reason text names the Controller. The branch interface is up and the circuit is not down. Add the domain on the Controller.`,`Reason text Controller ka naam leta hai. Branch interface up hai aur circuit down nahi. Controller par domain add karo.`]),e([`Controller and Director cannot see each other`,`Controller aur Director ek doosre ko nahi dekhte`],[`A new headend was built. Branches cannot onboard. The Controller was told its Director address.`,`Naya headend bana. Branches onboard nahi ho paati. Controller ko Director address bataya gaya tha.`],`admin@Controller-1-cli> show system director status
+Director: 198.51.100.10
+Link: up
+
+admin@Director-1-cli> show controllers
+Controller      Address         Reachable`,[`What is missing?`,`Kya missing hai?`],[[`Register the Controller on the Director: set director controllers Controller-1 address 198.51.100.20`,`Director par Controller register karo: set director controllers Controller-1 address 198.51.100.20`],[`Enable the log collector`,`Log collector enable karo`],[`Add an MPLS transport domain`,`MPLS transport domain add karo`],[`Change the Controller address to the Director address`,`Controller address ko Director address se badlo`]],0,[`The Controller side is done (Link up) but the Director list is empty. Both sides must know each other.`,`Controller side ho chuka hai (Link up) lekin Director ki list khaali hai. Dono sides ko ek doosre ko pata hona chahiye.`]),e([`No Delhi logs in Analytics`,`Analytics mein Delhi logs nahi`],[`Operations sees empty dashboards for Delhi after the exporter was configured on Branch1.`,`Branch1 par exporter configure hone ke baad bhi operations ko Delhi ke dashboards khaali dikhte hain.`],`admin@Branch1-cli> show orgs org-services Acme log-exporter
+Destination: 198.51.100.30
+Status: Log collector is disabled on Analytics-1
+
+admin@Analytics-1-cli> show analytics log-collector status
+Log collector: disabled   Port: 1234
+Sources: 0`,[`What do you change?`,`Kya badloge?`],[[`The branch destination to 198.51.100.10`,`Branch destination ko 198.51.100.10 karo`],[`On Analytics-1: set analytics log-collector enable true, then commit`,`Analytics-1 par: set analytics log-collector enable true, phir commit`],[`Add a transport domain on the Controller`,`Controller par transport domain add karo`],[`Remove the Director registration`,`Director registration hatao`]],1,[`The branch is correct; the collector is disabled. Fix it where it is broken and verify with show analytics sources.`,`Branch sahi hai; collector disabled hai. Jahan toota hai wahin fix karo aur show analytics sources se verify karo.`]),e([`Exporter points to the wrong node`,`Exporter galat node ko point karta hai`],[`A branch shows an error after a change of Analytics address in documentation.`,`Documentation mein Analytics address badalne ke baad branch error dikhata hai.`],`admin@Branch1-cli> show orgs org-services Acme log-exporter
+Destination: 198.51.100.31
+Status: Destination 198.51.100.31 is not an Analytics node`,[`Which statement is wrong, and where?`,`Kaunsa statement galat hai, aur kahan?`],[[`The Analytics collector port`,`Analytics collector port`],[`The Controller transport-domains list`,`Controller ki transport-domains list`],[`The branch log-exporter destination (should be 198.51.100.30)`,`Branch ka log-exporter destination (198.51.100.30 hona chahiye)`],[`The Director template name`,`Director template ka naam`]],2,[`.31 is not an Analytics node. Delete or overwrite the destination on the branch with 198.51.100.30.`,`.31 Analytics node nahi hai. Branch par destination delete ya overwrite karke 198.51.100.30 karo.`]),e([`Overlay Idle: who is it?`,`Overlay Idle: kiska fault hai?`],[`Delhi lost its overlay. Check where the evidence points.`,`Delhi ka overlay chala gaya. Dekho evidence kahan ishara karta hai.`],`admin@Branch1-cli> show orgs org Acme sd-wan brief
+Org: Acme   Site-ID: 101   Hostname: Branch1
+Controller: 198.51.100.20 (Controller-1)   Overlay (MP-BGP): Idle  [no transport tunnel is up]
+Transport  Interface  Tunnel  Reason
+Internet   vni-0/0    down    circuit down (provider fault)
+MPLS       vni-0/1    down    circuit down (provider fault)
+LTE        vni-0/2    down    circuit down (provider fault)`,[`What is the right first action?`,`Sahi pehla action kya hai?`],[[`Escalate to the carriers with the evidence; the headend configuration is not at fault`,`Evidence ke saath carriers ko escalate karo; headend configuration ka fault nahi hai`],[`Rebuild the template`,`Template dobara banao`],[`Add transport domains on the Controller`,`Controller par transport domains add karo`],[`Re-register the Director`,`Director dobara register karo`]],0,[`All three reasons say provider fault. The owner is the provider.`,`Teeno reasons provider fault kehte hain. Owner provider hai.`]),e([`Branch is Rejected`,`Branch Rejected hai`],[`Kolkata was staged but the Director refuses it.`,`Kolkata stage hui lekin Director use refuse karta hai.`],`admin@Branch3-cli> show system staging status
+Serial: VOS-BR3-0001
+Controller: 198.51.100.20
+State: Rejected
+Detail: serial VOS-BR3-0001 is not defined in the Director
+
+admin@Director-1-cli> show devices brief
+Device      Serial        Group         Deployed  Onboarding                    Overlay
+Branch3     VOS-BR3-001   BRANCHES      no        Not staged                    -`,[`What is the cause?`,`Cause kya hai?`],[[`The Controller has no MPLS domain`,`Controller mein MPLS domain nahi hai`],[`The serial is mistyped in the Director (VOS-BR3-001)`,`Director mein serial mistype hua hai (VOS-BR3-001)`],[`Analytics is unreachable`,`Analytics unreachable hai`],[`The LAN subnet is wrong`,`LAN subnet galat hai`]],1,[`The Director device has a different serial from the branch. Correct it in the Director; do not change the branch.`,`Director device ka serial branch se alag hai. Director mein sahi karo; branch mat badlo.`]),e([`Controller address unreachable on MPLS`,`MPLS par Controller address unreachable`],[`MPLS tunnel is down at Bengaluru only after a routing change at the headend.`,`Headend routing change ke baad sirf Bengaluru ka MPLS tunnel down hai.`],`admin@Branch2-cli> show orgs org Acme sd-wan brief
+Transport  Interface  Tunnel  Reason
+Internet   vni-0/0    up      -
+MPLS       vni-0/1    down    Controller MPLS address 172.31.100.2 is unreachable
+LTE        vni-0/2    up      -
+
+admin@Branch2-cli> ping 172.31.100.2
+.....
+5 packets transmitted, 0 received`,[`Which area should you investigate?`,`Kis area ko investigate karoge?`],[[`The Analytics collector`,`Analytics collector`],[`The underlay path: MPLS-Transport-VR route 172.31.0.0/16 and the provider`,`Underlay path: MPLS-Transport-VR route 172.31.0.0/16 aur provider`],[`The Director bind data only`,`Sirf Director bind data`],[`The SLA profile VOICE`,`SLA profile VOICE`]],1,[`The domain exists; the address is just not reachable. Check the branch MPLS VR route and the MPLS provider path to 172.31.100.0/30.`,`Domain maujood hai; address bas reachable nahi. Branch MPLS VR route aur 172.31.100.0/30 tak MPLS provider path check karo.`])];export{t as default};

@@ -1,0 +1,67 @@
+var e={id:`wide-metrics`,h:{en:`Metrics: narrow versus wide and interoperating with IOS`,hi:`Metrics: narrow versus wide aur IOS ke saath interoperate karna`},body:{en:`
+<p><b>Two ways to write a cost.</b> IS-IS carries link costs inside TLVs. The original format, <b>narrow metrics</b>, uses a 6-bit metric per link (maximum 63) and 24 bits for the whole path to a prefix (maximum 1023). That is too small for modern networks with many hops and fine-grained costs, and it cannot carry newer extensions such as traffic-engineering. The newer format, <b>wide metrics</b>, uses 24 bits per link and 32 bits per path. Carriers use wide metrics everywhere.</p>
+<table class="cmp"><tr><th></th><th>Narrow</th><th>Wide</th></tr><tr><td>Per-link metric</td><td>1 to 63 (6 bits)</td><td>Up to about 16 million (24 bits)</td></tr><tr><td>Per-path metric</td><td>Up to 1023</td><td>32 bits</td></tr><tr><td>Extensions (TE, SR)</td><td>No</td><td>Yes</td></tr></table>
+<h3>The behaviour of Junos and IOS</h3>
+<ul><li><b>Junos by default sends both</b> narrow and wide TLVs, so it works with either kind of neighbour. Its default interface metric is 10.</li>
+<li><code>set protocols isis level 2 wide-metrics-only</code> makes Junos send <b>only</b> wide TLVs at level 2.</li>
+<li><b>IOS</b> defaults to narrow metrics. <code>metric-style wide</code> under <code>router isis</code> makes it send and accept wide only; <code>metric-style transition</code> sends and accepts both during migration.</li></ul>
+<p>The lesson from the lab: in the lab R1 already runs <code>metric-style wide</code>. If a Junos router then goes wide-only, there is no problem. But if R1 were still narrow, it would not understand wide-only LSPs from Junos and would ignore the prefixes inside them. The adjacency would stay up, yet the routes would be missing. That makes this one of the sneakiest interoperability problems: <b>adjacency up, routes absent</b>.</p>
+<div class="dia"><svg viewBox="0 0 640 110" role="img" aria-label="diagram"><rect x="20" y="25" width="180" height="60" rx="10" fill="#bae6fd"/><text x="110" y="50" text-anchor="middle" class="svg-ink" font-size="13">Junos wide-only</text><text x="110" y="68" text-anchor="middle" class="svg-muted" font-size="12">sends wide TLVs</text><line x1="200" y1="55" x2="230" y2="55" stroke="#64748b" stroke-width="2"/><rect x="230" y="25" width="180" height="60" rx="10" fill="#bbf7d0"/><text x="320" y="50" text-anchor="middle" class="svg-ink" font-size="13">IOS narrow</text><text x="320" y="68" text-anchor="middle" class="svg-muted" font-size="12">ignores them</text><line x1="410" y1="55" x2="440" y2="55" stroke="#64748b" stroke-width="2"/><rect x="440" y="25" width="180" height="60" rx="10" fill="#ddd6fe"/><text x="530" y="50" text-anchor="middle" class="svg-ink" font-size="13">Result</text><text x="530" y="68" text-anchor="middle" class="svg-muted" font-size="12">adjacency up, routes missing</text></svg><p class="cap">A narrow-only neighbour cannot read wide-only LSPs.</p></div>
+<h3>Lab task: go wide on both Juniper routers</h3>
+<pre class="code"><span class="c">! on JR1 and JR2</span>
+set protocols isis level 2 wide-metrics-only
+commit</pre>
+<p>The lab checks that R1 still learns 10.30.255.12/32 and JR2 learns 10.30.255.1/32. Real output from R1 (IOS) after the build:</p>
+<pre class="out">R1# show ip route isis
+...
+      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+i L2     10.30.2.0/24 [115/20] via 10.30.1.11, 00:00:24, GigabitEthernet0/0
+i L2     10.30.255.11/32 [115/10] via 10.30.1.11, 00:00:24, GigabitEthernet0/0
+<span class="hl">i L2     10.30.255.12/32 [115/20] via 10.30.1.11, 00:00:24, GigabitEthernet0/0</span></pre>
+<p>R1 reaches JR2's loopback through JR1 with metric 20: the 10 for R1-to-JR1 plus the 10 for JR1-to-JR2. The code <b>i L2</b> means IS-IS level 2, and <b>[115/20]</b> is administrative distance 115 and metric 20. The metrics add up exactly because every link has the Junos default 10 and IOS default 10.</p>
+<h3>Tuning metrics</h3>
+<p>Default metric 10 on every link makes all links equal. A carrier with 1-gigabit and 100-gigabit links wants the fast links to be preferred. On Junos you can set a per-interface metric (<code>set protocols isis interface ge-0/0/0.0 level 2 metric 20</code>) or let the router derive it from the interface speed with <code>reference-bandwidth</code>. On IOS use <code>isis metric</code> on the interface. Lab 2 uses this: R1 to JR1 and JR1 to JR3 are set to metric 20 so that the path through JR2 (10 plus 10) wins.</p>
+<div class="eg"><p><b>Worked example.</b> In Lab 2 the path R1, JR2, JR3 costs 10 + 10 = 20, while the path R1, JR1, JR3 costs 20 + 20 = 40. IOS on R1 therefore shows metric 20 via JR2 and uses it as transit until you drain JR2 (chapter 6).</p></div>
+<div class="warn"><p><b>Common mistake.</b> Switching IOS to metric-style wide at the wrong moment, or going wide-only on Junos before every neighbour reads wide. Migrate with transition style, verify routes (not just adjacencies), and only then go wide-only.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Junos sends both TLV styles by default; wide-metrics-only stops the narrow ones. IOS needs metric-style wide (or transition). Remember "adjacency up, routes absent" as the symptom of a narrow-wide mismatch.</p></div>
+<div class="scn"><h4>The routes that never arrived</h4><p>After a migration weekend an IOS router showed its IS-IS neighbour as UP but learned none of the Juniper loopbacks. The Juniper routers had been set to wide-metrics-only while the IOS router still ran narrow metrics. Setting metric-style transition on IOS, then wide after the migration, brought the routes back.</p><p><b>Lesson:</b> Check routes, not just adjacencies.</p></div>
+<div class="iv"><p class="q">"What is the difference between narrow and wide IS-IS metrics, and how do you interoperate Junos with IOS?"</p><p>Narrow uses a 6-bit link metric with a path metric limited to 1023; wide uses 24-bit link and 32-bit path metrics and is needed for modern extensions. Junos sends both by default and wide-metrics-only turns narrow off. IOS defaults to narrow, so I set metric-style wide (or transition during migration). Then I verify that the routes, not only the adjacencies, appear.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Narrow: 6-bit link, 1023 path limit. Wide: 24-bit link, 32-bit path.</li>
+<li>Junos default: sends both, interface metric 10.</li>
+<li>wide-metrics-only stops the narrow TLVs.</li>
+<li>IOS needs metric-style wide or transition.</li>
+<li>Symptom of a mismatch: adjacency up but routes missing.</li></ul></div>
+`,hi:`
+<p><b>Cost likhne ke do tareeke.</b> IS-IS link costs TLVs ke andar carry karta hai. Original format, <b>narrow metrics</b>, per link 6-bit metric (maximum 63) aur prefix tak poore path ke liye 24 bits (maximum 1023) use karta hai. Yeh modern networks ke liye bahut chhota hai jahan kai hops aur fine-grained costs hote hain, aur yeh traffic-engineering jaise naye extensions carry nahi kar sakta. Naya format, <b>wide metrics</b>, per link 24 bits aur per path 32 bits use karta hai. Carriers har jagah wide metrics use karte hain.</p>
+<table class="cmp"><tr><th></th><th>Narrow</th><th>Wide</th></tr><tr><td>Per-link metric</td><td>1 se 63 (6 bits)</td><td>Lagbhag 16 million tak (24 bits)</td></tr><tr><td>Per-path metric</td><td>1023 tak</td><td>32 bits</td></tr><tr><td>Extensions (TE, SR)</td><td>Nahi</td><td>Haan</td></tr></table>
+<h3>Junos aur IOS ka behaviour</h3>
+<ul><li><b>Junos default mein dono bhejta hai</b> narrow aur wide TLVs, isliye dono kism ke neighbour ke saath chalta hai. Uska default interface metric 10 hai.</li>
+<li><code>set protocols isis level 2 wide-metrics-only</code> Junos ko level 2 par <b>sirf</b> wide TLVs bhejne deta hai.</li>
+<li><b>IOS</b> default mein narrow metrics rakhta hai. <code>router isis</code> ke neeche <code>metric-style wide</code> use sirf wide bhejne aur accept karne deta hai; <code>metric-style transition</code> migration ke dauran dono bhejta aur accept karta hai.</li></ul>
+<p>Lab ka sabak: lab mein R1 pehle se <code>metric-style wide</code> chalata hai. Aisi halat mein Junos router wide-only ho jaye to koi problem nahi. Par R1 abhi bhi narrow hota to Junos ke wide-only LSPs nahi samajhta aur unke andar ke prefixes ignore kar deta. Adjacency up rehti par routes gayab hote. Isliye yeh sabse chupe interoperability problems mein se ek hai: <b>adjacency up, routes absent</b>.</p>
+<div class="dia"><svg viewBox="0 0 640 110" role="img" aria-label="diagram"><rect x="20" y="25" width="180" height="60" rx="10" fill="#bae6fd"/><text x="110" y="50" text-anchor="middle" class="svg-ink" font-size="13">Junos wide-only</text><text x="110" y="68" text-anchor="middle" class="svg-muted" font-size="12">wide TLVs bhejta hai</text><line x1="200" y1="55" x2="230" y2="55" stroke="#64748b" stroke-width="2"/><rect x="230" y="25" width="180" height="60" rx="10" fill="#bbf7d0"/><text x="320" y="50" text-anchor="middle" class="svg-ink" font-size="13">IOS narrow</text><text x="320" y="68" text-anchor="middle" class="svg-muted" font-size="12">unhe ignore karta hai</text><line x1="410" y1="55" x2="440" y2="55" stroke="#64748b" stroke-width="2"/><rect x="440" y="25" width="180" height="60" rx="10" fill="#ddd6fe"/><text x="530" y="50" text-anchor="middle" class="svg-ink" font-size="13">Result</text><text x="530" y="68" text-anchor="middle" class="svg-muted" font-size="12">adjacency up, routes gayab</text></svg><p class="cap">Narrow-only neighbour wide-only LSPs nahi padh sakta.</p></div>
+<h3>Lab task: dono Juniper routers par wide jao</h3>
+<pre class="code"><span class="c">! on JR1 and JR2</span>
+set protocols isis level 2 wide-metrics-only
+commit</pre>
+<p>Lab check karta hai ki R1 ab bhi 10.30.255.12/32 seekhta hai aur JR2 10.30.255.1/32. Build ke baad R1 (IOS) ka real output:</p>
+<pre class="out">R1# show ip route isis
+...
+      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+i L2     10.30.2.0/24 [115/20] via 10.30.1.11, 00:00:24, GigabitEthernet0/0
+i L2     10.30.255.11/32 [115/10] via 10.30.1.11, 00:00:24, GigabitEthernet0/0
+<span class="hl">i L2     10.30.255.12/32 [115/20] via 10.30.1.11, 00:00:24, GigabitEthernet0/0</span></pre>
+<p>R1 JR2 ke loopback tak JR1 ke through metric 20 se pahunchta hai: R1-se-JR1 ke 10 plus JR1-se-JR2 ke 10. Code <b>i L2</b> ka matlab IS-IS level 2 hai, aur <b>[115/20]</b> administrative distance 115 aur metric 20 hai. Metrics bilkul jod ke aate hain kyunki har link par Junos default 10 aur IOS default 10 hai.</p>
+<h3>Metrics tune karna</h3>
+<p>Har link par default metric 10 saare links ko barabar banata hai. 1-gigabit aur 100-gigabit links wale carrier ko fast links prefer chahiye. Junos par per-interface metric set kar sakte ho (<code>set protocols isis interface ge-0/0/0.0 level 2 metric 20</code>) ya router ko <code>reference-bandwidth</code> se interface speed se derive karne de sakte ho. IOS par interface par <code>isis metric</code> use karo. Lab 2 yahi use karta hai: R1 se JR1 aur JR1 se JR3 metric 20 par set hain taaki JR2 wala path (10 plus 10) jeete.</p>
+<div class="eg"><p><b>Worked example.</b> Lab 2 mein path R1, JR2, JR3 ka cost 10 + 10 = 20 hai, jabki path R1, JR1, JR3 ka cost 20 + 20 = 40. Isliye R1 par IOS JR2 ke through metric 20 dikhata hai aur use transit ki tarah use karta hai jab tak aap JR2 ko drain nahi karte (chapter 6).</p></div>
+<div class="warn"><p><b>Common mistake.</b> IOS ko galat samay par metric-style wide par karna, ya har neighbour ke wide padhne se pehle Junos par wide-only jaana. Transition style se migrate karo, routes (sirf adjacencies nahi) verify karo, aur tabhi wide-only jao.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Junos default mein dono TLV styles bhejta hai; wide-metrics-only narrow wale band karta hai. IOS ko metric-style wide (ya transition) chahiye. Narrow-wide mismatch ka symptom "adjacency up, routes absent" yaad rakho.</p></div>
+<div class="scn"><h4>Woh routes jo kabhi nahi aaye</h4><p>Migration weekend ke baad IOS router ne apne IS-IS neighbour ko UP dikhaya par Juniper loopbacks mein se koi nahi seekha. Juniper routers wide-metrics-only par set the jabki IOS router abhi narrow metrics chalata tha. IOS par metric-style transition aur migration ke baad wide set karne se routes wapas aaye.</p><p><b>Lesson:</b> Routes check karo, sirf adjacencies nahi.</p></div>
+<div class="iv"><p class="q">"IS-IS narrow aur wide metrics mein kya difference hai, aur Junos ko IOS ke saath interoperate kaise karate ho?"</p><p>Narrow 6-bit link metric aur 1023 tak limited path metric use karta hai; wide 24-bit link aur 32-bit path metrics use karta hai aur modern extensions ke liye zaroori hai. Junos default mein dono bhejta hai aur wide-metrics-only narrow band karta hai. IOS default mein narrow rakhta hai, isliye main metric-style wide (ya migration mein transition) set karta hoon. Phir verify karta hoon ki routes, sirf adjacencies nahi, dikh rahe hain.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Narrow: 6-bit link, 1023 path limit. Wide: 24-bit link, 32-bit path.</li>
+<li>Junos default: dono bhejta hai, interface metric 10.</li>
+<li>wide-metrics-only narrow TLVs band karta hai.</li>
+<li>IOS ko metric-style wide ya transition chahiye.</li>
+<li>Mismatch ka symptom: adjacency up par routes missing.</li></ul></div>
+`}};export{e as default};

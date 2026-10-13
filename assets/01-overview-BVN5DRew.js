@@ -1,0 +1,77 @@
+var e={id:`overview`,h:{en:`Panorama: what you will learn and the big picture`,hi:`Panorama: kya seekhoge aur big picture`},body:{en:`
+<p><b>What you will learn.</b> This module teaches central management of Palo Alto Networks firewalls with Panorama: how firewalls are onboarded, how templates and template stacks hold network and device settings, how device groups hold policy and objects, how pre- and post-rules work, how the commit and push workflow runs, and how to keep it secure and auditable. It supports the Monitoring and Troubleshooting objectives of the NGFW Engineer exam on PAN-OS 10.x and 11.x.</p>
+<p><b>Prerequisites.</b> Know zones, interfaces and security policy from pan-setup, NAT from pan-nat and routing from pan-routing.</p>
+<div class="note"><p><b>Note.</b> No Panorama lab exists in the simulator yet. This module is reading material with reference configuration (not run in the simulator). Practise policy and NAT fundamentals in pan-setup and pan-nat, and use nse4-dynamic for related central-management ideas.</p></div>
+<h3>Analogy: head office and branch managers</h3>
+<p>Imagine a company with 60 branch shops. The head office writes a rulebook, a price list and a shop layout. Each branch can add local notes, but the head office wants to change something once and see it appear everywhere. Panorama is the head office. The <b>template</b> is the shop layout (interfaces, zones, routing, servers), the <b>device group</b> is the rulebook and price list (security rules and objects), and the <b>push</b> is the courier that delivers the update.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Panorama pushes templates and device groups to many firewalls from one place."><rect x="20" y="40" width="132" height="80" rx="10" fill="#bae6fd"/><text x="86" y="76" text-anchor="middle" class="svg-ink" font-size="14">Panorama</text><text x="86" y="98" text-anchor="middle" class="svg-muted" font-size="12">one console</text><line x1="152" y1="80" x2="176" y2="80" stroke="#64748b" stroke-width="2"/><rect x="176" y="40" width="132" height="80" rx="10" fill="#bbf7d0"/><text x="242" y="76" text-anchor="middle" class="svg-ink" font-size="14">Templates</text><text x="242" y="98" text-anchor="middle" class="svg-muted" font-size="12">network + device</text><line x1="308" y1="80" x2="332" y2="80" stroke="#64748b" stroke-width="2"/><rect x="332" y="40" width="132" height="80" rx="10" fill="#ddd6fe"/><text x="398" y="76" text-anchor="middle" class="svg-ink" font-size="14">Device groups</text><text x="398" y="98" text-anchor="middle" class="svg-muted" font-size="12">policy + objects</text><line x1="464" y1="80" x2="488" y2="80" stroke="#64748b" stroke-width="2"/><rect x="488" y="40" width="132" height="80" rx="10" fill="#fde68a"/><text x="554" y="76" text-anchor="middle" class="svg-ink" font-size="14">Firewalls</text><text x="554" y="98" text-anchor="middle" class="svg-muted" font-size="12">many sites</text></svg><p class="cap">Panorama pushes templates and device groups to many firewalls from one place.</p></div>
+<h3>What Panorama is</h3>
+<p>Panorama is the centralised management platform for PAN-OS firewalls. It runs as a hardware appliance (M-series) or a virtual appliance. It does four jobs: configuration management, log collection and reporting, monitoring, and orchestration of commits and updates. Firewalls keep working if Panorama goes down: they hold the last pushed configuration and keep enforcing policy, and they buffer logs until the connection returns.</p>
+<h3>Deployment modes</h3>
+<ul>
+<li><b>Panorama mode</b>: management and log collection on the same system (small to medium estates).</li>
+<li><b>Management Only mode</b>: no local logs; logs go to dedicated Log Collectors (large estates).</li>
+<li><b>Log Collector mode</b>: a dedicated collector that stores and indexes logs.</li>
+<li><b>High availability</b>: an active/passive Panorama pair keeps the configuration in sync.</li>
+</ul>
+<h3>The two halves of managed configuration</h3>
+<table class="cmp">
+<tr><th>Part</th><th>Holds</th><th>Pushed as</th></tr>
+<tr><td>Template / template stack</td><td>Network and Device tabs: interfaces, zones, virtual routers, server profiles, admin authentication</td><td>Template push</td></tr>
+<tr><td>Device group</td><td>Policies and objects: security, NAT, PBF rules, addresses, services, profiles</td><td>Device group push</td></tr>
+</table>
+<p>Remembering this split answers many exam questions: if it is about how the firewall connects or routes, it is a template; if it is about what the firewall allows, it is a device group.</p>
+<h3>Why central management matters</h3>
+<ul>
+<li><b>Consistency</b>: one rule, many firewalls; no configuration drift between branches.</li>
+<li><b>Speed</b>: a policy change takes one commit and push instead of sixty logins.</li>
+<li><b>Visibility</b>: logs and reports in one place, with managed device health.</li>
+<li><b>Control</b>: admin roles, locks and an audit trail show who changed what, and when.</li>
+</ul>
+<h3>Security and least privilege</h3>
+<p>Panorama is a high-value target: it can change every firewall. Protect it with a dedicated management network, administrator accounts mapped to named people, multi-factor authentication through an authentication profile, and <b>least-privilege admin roles</b> (for example a role that can edit policy in one device group but cannot push, and a separate approver who pushes). Record each push with a description, and review the config audit regularly.</p>
+<div class="eg"><p><b>Worked example.</b> A retailer has 40 stores. Each store firewall has the same zones (LAN, POS, GUEST, UNTRUST) and the same policy, but different IP addresses. One template stack with variables holds the zones and per-store addresses, and one device group holds the rulebook. A change to the guest Wi-Fi rule is made once and pushed to all 40.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Treating Panorama as optional for emergencies and making local changes on firewalls anyway. The next push can overwrite them, or they hide as configuration drift.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Templates hold Network and Device settings; device groups hold policy and objects. Firewalls keep enforcing policy if Panorama is unreachable.</p></div>
+<div class="scn"><h4>Sixty branches, one afternoon</h4><p>A company needed to block a risky application at sixty branches. Before Panorama this took two engineers three days of logins. After onboarding the branches, one engineer added the rule as a post-rule in the parent device group, previewed it, committed and pushed in a maintenance window, and checked all devices in sync the same afternoon.</p><p><b>Lesson:</b> central management turns a multi-day task into a reviewed, auditable change.</p></div>
+<div class="iv"><p class="q">"What is the difference between a template and a device group?"</p><p>A template holds Network and Device settings such as interfaces, zones, virtual routers and server profiles. A device group holds policies and objects. Both are pushed to firewalls from Panorama, and a firewall can belong to one device group but to a template stack of several templates.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Panorama centralises configuration, logs, monitoring and push workflows.</li><li>Templates carry Network and Device settings; device groups carry policy and objects.</li><li>Firewalls keep enforcing the last pushed configuration if Panorama is down.</li><li>Protect Panorama with MFA, named admins and least-privilege roles.</li><li>No simulator lab exists yet; this module is reference reading.</li></ul></div>
+`,hi:`
+<p><b>Is module mein aap kya seekhoge.</b> Yeh module Palo Alto Networks firewalls ke central management ko Panorama ke saath sikhata hai: firewalls kaise onboard hote hain, templates aur template stacks network aur device settings kaise rakhte hain, device groups policy aur objects kaise rakhte hain, pre- aur post-rules kaise kaam karte hain, commit aur push workflow kaise chalta hai, aur ise secure aur auditable kaise rakhte hain. Yeh NGFW Engineer exam ke Monitoring aur Troubleshooting objectives ko PAN-OS 10.x aur 11.x par support karta hai.</p>
+<p><b>Prerequisites.</b> pan-setup se zones, interfaces aur security policy, pan-nat se NAT aur pan-routing se routing aani chahiye.</p>
+<div class="note"><p><b>Note.</b> Simulator mein abhi koi Panorama lab nahi hai. Yeh module reference configuration (simulator mein nahi chalta) ke saath reading material hai. Policy aur NAT fundamentals pan-setup aur pan-nat mein practise karo, aur related central-management ideas ke liye nse4-dynamic use karo.</p></div>
+<h3>Analogy: head office aur branch managers</h3>
+<p>Socho ek company ki 60 branch shops hain. Head office rulebook, price list aur shop layout likhta hai. Har branch local notes jod sakti hai, lekin head office chahta hai ki ek baar change kare aur sab jagah dikhe. Panorama head office hai. <b>Template</b> shop layout hai (interfaces, zones, routing, servers), <b>device group</b> rulebook aur price list hai (security rules aur objects), aur <b>push</b> woh courier hai jo update deliver karta hai.</p>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Panorama templates aur device groups ek jagah se kai firewalls par push karta hai."><rect x="20" y="40" width="132" height="80" rx="10" fill="#bae6fd"/><text x="86" y="76" text-anchor="middle" class="svg-ink" font-size="14">Panorama</text><text x="86" y="98" text-anchor="middle" class="svg-muted" font-size="12">ek console</text><line x1="152" y1="80" x2="176" y2="80" stroke="#64748b" stroke-width="2"/><rect x="176" y="40" width="132" height="80" rx="10" fill="#bbf7d0"/><text x="242" y="76" text-anchor="middle" class="svg-ink" font-size="14">Templates</text><text x="242" y="98" text-anchor="middle" class="svg-muted" font-size="12">network + device</text><line x1="308" y1="80" x2="332" y2="80" stroke="#64748b" stroke-width="2"/><rect x="332" y="40" width="132" height="80" rx="10" fill="#ddd6fe"/><text x="398" y="76" text-anchor="middle" class="svg-ink" font-size="14">Device groups</text><text x="398" y="98" text-anchor="middle" class="svg-muted" font-size="12">policy + objects</text><line x1="464" y1="80" x2="488" y2="80" stroke="#64748b" stroke-width="2"/><rect x="488" y="40" width="132" height="80" rx="10" fill="#fde68a"/><text x="554" y="76" text-anchor="middle" class="svg-ink" font-size="14">Firewalls</text><text x="554" y="98" text-anchor="middle" class="svg-muted" font-size="12">kai sites</text></svg><p class="cap">Panorama templates aur device groups ek jagah se kai firewalls par push karta hai.</p></div>
+<h3>Panorama kya hai</h3>
+<p>Panorama PAN-OS firewalls ka centralised management platform hai. Yeh hardware appliance (M-series) ya virtual appliance ki tarah chalta hai. Iske chaar kaam hain: configuration management, log collection aur reporting, monitoring, aur commits aur updates ka orchestration. Panorama down ho to bhi firewalls chalte rehte hain: woh last pushed configuration rakhte hain, policy enforce karte rehte hain, aur connection wapas aane tak logs buffer karte hain.</p>
+<h3>Deployment modes</h3>
+<ul>
+<li><b>Panorama mode</b>: management aur log collection ek hi system par (chhote se medium estates).</li>
+<li><b>Management Only mode</b>: local logs nahi; logs dedicated Log Collectors ko jaate hain (bade estates).</li>
+<li><b>Log Collector mode</b>: dedicated collector jo logs store aur index karta hai.</li>
+<li><b>High availability</b>: active/passive Panorama pair configuration sync rakhta hai.</li>
+</ul>
+<h3>Managed configuration ke do hisse</h3>
+<table class="cmp">
+<tr><th>Hissa</th><th>Kya rakhta hai</th><th>Kaise push hota hai</th></tr>
+<tr><td>Template / template stack</td><td>Network aur Device tabs: interfaces, zones, virtual routers, server profiles, admin authentication</td><td>Template push</td></tr>
+<tr><td>Device group</td><td>Policies aur objects: security, NAT, PBF rules, addresses, services, profiles</td><td>Device group push</td></tr>
+</table>
+<p>Yeh baant yaad rakhne se kai exam questions solve ho jaate hain: firewall kaise connect ya route karta hai to template; firewall kya allow karta hai to device group.</p>
+<h3>Central management kyun zaroori hai</h3>
+<ul>
+<li><b>Consistency</b>: ek rule, kai firewalls; branches ke beech configuration drift nahi.</li>
+<li><b>Speed</b>: policy change ke liye ek commit aur push, saath login nahi.</li>
+<li><b>Visibility</b>: logs aur reports ek jagah, managed device health ke saath.</li>
+<li><b>Control</b>: admin roles, locks aur audit trail dikhate hain kisne kya, kab badla.</li>
+</ul>
+<h3>Security aur least privilege</h3>
+<p>Panorama high-value target hai: yeh har firewall badal sakta hai. Ise dedicated management network, naam wale logon ke admin accounts, authentication profile se multi-factor authentication, aur <b>least-privilege admin roles</b> se protect karo (jaise ek role jo ek device group mein policy edit kare par push na kar sake, aur alag approver jo push kare). Har push ko description ke saath record karo, aur config audit regularly review karo.</p>
+<div class="eg"><p><b>Worked example.</b> Ek retailer ke 40 stores hain. Har store firewall ke zones (LAN, POS, GUEST, UNTRUST) aur policy same hain, par IP addresses alag. Variables ke saath ek template stack zones aur per-store addresses rakhta hai, aur ek device group rulebook. Guest Wi-Fi rule ka change ek baar hota hai aur 40 par push.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Panorama ko emergency mein optional maanke phir bhi firewalls par local changes karna. Agla push unhe overwrite kar sakta hai, ya woh configuration drift ban kar chhupe rehte hain.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Templates Network aur Device settings rakhte hain; device groups policy aur objects. Panorama unreachable ho to firewalls policy enforce karte rehte hain.</p></div>
+<div class="scn"><h4>Sixty branches, ek dopahar</h4><p>Ek company ko sixty branches par risky application block karna tha. Panorama se pehle isme do engineers ke teen din lagte. Branches onboard hone ke baad ek engineer ne rule parent device group mein post-rule ki tarah jodi, preview kiya, maintenance window mein commit aur push kiya, aur usi dopahar saare devices in sync check kiye.</p><p><b>Lesson:</b> central management multi-day task ko reviewed, auditable change bana deta hai.</p></div>
+<div class="iv"><p class="q">"Template aur device group mein kya difference hai?"</p><p>Template Network aur Device settings rakhta hai jaise interfaces, zones, virtual routers aur server profiles. Device group policies aur objects rakhta hai. Dono Panorama se firewalls par push hote hain, aur firewall ek device group ka ho sakta hai par kai templates ke template stack ka.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Panorama configuration, logs, monitoring aur push workflows centralise karta hai.</li><li>Templates Network aur Device settings rakhte hain; device groups policy aur objects.</li><li>Panorama down ho to firewalls last pushed configuration enforce karte rehte hain.</li><li>Panorama ko MFA, named admins aur least-privilege roles se protect karo.</li><li>Abhi simulator lab nahi hai; yeh module reference reading hai.</li></ul></div>
+`}};export{e as default};

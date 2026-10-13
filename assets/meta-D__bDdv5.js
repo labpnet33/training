@@ -1,0 +1,1 @@
+var e={read:14,blurb:{en:`Authorization results and enforced segmentation. Practise the three assessed labs and validate both permitted and denied behavior.`,hi:`Authorization results aur enforced segmentation. Teen assessed labs practice karo aur permitted aur denied behavior validate karo.`}};export{e as default};

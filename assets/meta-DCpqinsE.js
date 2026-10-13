@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`Rule order and service scope; Repair shadowing and disabled rules. Complete the three assessed labs after reading.`,hi:`Rule order aur service scope; Shadowing aur disabled rules repair karo. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

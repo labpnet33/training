@@ -1,0 +1,1 @@
+var e={read:18,blurb:{en:`Separate visitor accounts, device provisioning and health decisions.`,hi:`Visitor accounts, device provisioning aur health decisions ko alag samjhein.`}};export{e as default};

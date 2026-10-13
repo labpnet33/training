@@ -1,0 +1,1 @@
+var e={read:15,blurb:{en:`Reason about airtime, coverage, channels and power, then build an evidence-led survey exercise.`,hi:`Airtime, coverage, channels aur power samajhkar evidence ke saath survey exercise banayein.`}};export{e as default};

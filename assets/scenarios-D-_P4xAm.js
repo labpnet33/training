@@ -1,0 +1,62 @@
+var e=[{title:{en:`Office PCs get no IPv6 address`,hi:`Office PCs ko IPv6 address nahi milta`},ticket:{en:`Helpdesk: "After last night's change the office PCs show only an fe80 address. IPv4 is fine." R1 G0/0 is the office gateway and has 2001:db8:acad:10::1/64.`,hi:`Helpdesk: "Kal raat ke change ke baad office PCs sirf fe80 address dikha rahe hain. IPv4 theek hai." R1 G0/0 office gateway hai aur uspar 2001:db8:acad:10::1/64 hai.`},out:`PC2> ip auto
+No router answered ICMPv6 Router Solicitation
+
+R1# show ipv6 interface g0/0
+GigabitEthernet0/0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::5054:CFF:FE04:4B01
+  No Virtual link-local address(es):
+  Global unicast address(es):
+    2001:DB8:ACAD:10::1, subnet is 2001:DB8:ACAD:10::/64
+  Joined group address(es):
+    FF02::1
+    FF02::1:FF04:4B01
+    FF02::1:FF00:1
+  MTU is 1500 bytes
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds (using 30000)`,q:{en:`What is the fix?`,hi:`Fix kya hai?`},o:[{en:`Change the prefix to /128`,hi:`Prefix ko /128 kar do`},{en:`Add ipv6 nd managed-config-flag to G0/0`,hi:`G0/0 par ipv6 nd managed-config-flag jodo`},{en:`Configure ipv6 unicast-routing on R1`,hi:`R1 par ipv6 unicast-routing configure karo`},{en:`Set a static IPv6 gateway on every PC`,hi:`Har PC par static IPv6 gateway set karo`}],a:2,w:{en:`The interface has a correct /64 but has not joined FF02::2 and shows no RA lines, so R1 is not acting as an IPv6 router and sends no RAs. ipv6 unicast-routing restores RAs and SLAAC. /128 would break SLAAC, the M flag only matters once RAs are sent, and static gateways would not give the PCs global addresses.`,hi:`Interface par sahi /64 hai lekin usne FF02::2 join nahi kiya aur RA lines nahi dikhti, isliye R1 IPv6 router ki tarah kaam nahi kar raha aur RAs nahi bhejta. ipv6 unicast-routing RAs aur SLAAC wapas laata hai. /128 SLAAC tod dega, M flag tabhi matter karta hai jab RAs jaayein, aur static gateways PCs ko global addresses nahi denge.`}},{title:{en:`IPv4 works, IPv6 to the server times out`,hi:`IPv4 chalta hai, server tak IPv6 time out`},ticket:{en:`PC1 (2001:db8:acad:10::/64) can ping SRV at 10.0.20.10 but not at 2001:db8:acad:20::10. R1 has ipv6 route ::/0 2001:db8:acad:12::2. R2 output below.`,hi:`PC1 (2001:db8:acad:10::/64) SRV ko 10.0.20.10 par ping kar leta hai lekin 2001:db8:acad:20::10 par nahi. R1 par ipv6 route ::/0 2001:db8:acad:12::2 hai. R2 ka output neeche hai.`},out:`PC1> ping 2001:db8:acad:20::10
+2001:DB8:ACAD:20::10 icmp_seq=1 timeout
+2001:DB8:ACAD:20::10 icmp_seq=2 timeout
+
+R2# show ipv6 route
+IPv6 Routing Table - default - 5 entries
+C  2001:DB8:ACAD:12::/64 [0/0]
+     via GigabitEthernet0/0, directly connected
+L  2001:DB8:ACAD:12::2/128 [0/0]
+     via GigabitEthernet0/0, receive
+C  2001:DB8:ACAD:20::/64 [0/0]
+     via GigabitEthernet0/1, directly connected
+L  2001:DB8:ACAD:20::1/128 [0/0]
+     via GigabitEthernet0/1, receive
+L  FF00::/8 [0/0]
+     via Null0, receive`,q:{en:`Which command fixes the problem?`,hi:`Kaunsi command problem fix karti hai?`},o:[{en:`On R2: ipv6 route 2001:db8:acad:10::/64 2001:db8:acad:12::1`,hi:`R2 par: ipv6 route 2001:db8:acad:10::/64 2001:db8:acad:12::1`},{en:`On R1: ipv6 route 2001:db8:acad:20::/64 2001:db8:acad:12::2`,hi:`R1 par: ipv6 route 2001:db8:acad:20::/64 2001:db8:acad:12::2`},{en:`On R2: ip route 10.0.10.0 255.255.255.0 10.0.12.1`,hi:`R2 par: ip route 10.0.10.0 255.255.255.0 10.0.12.1`},{en:`On R2: ipv6 route ::/0 fe80::1`,hi:`R2 par: ipv6 route ::/0 fe80::1`}],a:0,w:{en:`R2 has no IPv6 route back to the office /64, so SRV's replies are dropped. R1 already reaches the server through its default route. An IPv4 route does nothing for IPv6, and a link-local next hop without an exit interface is rejected.`,hi:`R2 ke paas office /64 tak wapas IPv6 route nahi hai, isliye SRV ke replies drop hote hain. R1 pehle se default route se server tak pahunchta hai. IPv4 route IPv6 ke liye kuch nahi karta, aur bina exit interface ka link-local next hop reject hota hai.`}},{title:{en:`New server unreachable from other subnets`,hi:`Naya server doosre subnets se unreachable`},ticket:{en:`A new server SRV was given a static IPv6 address. Devices on its own subnet reach it; nothing from the office subnet does. Routers are correct.`,hi:`Naye server SRV ko static IPv6 address diya gaya. Uske apne subnet ke devices wahan pahunchte hain; office subnet se kuch nahi. Routers sahi hain.`},out:`SRV> show ipv6
+NAME              : SRV[1]
+LINK-LOCAL SCOPE  : FE80::250:9FF:FE16:E401/64
+GLOBAL SCOPE      : 2001:DB8:ACAD:20::10/64
+ROUTER LINK-LAYER :
+GATEWAY           : 2001:DB8:ACAD:2::1
+MAC               : 00:50:09:16:e4:01
+
+PC1> ping 2001:db8:acad:20::10
+2001:DB8:ACAD:20::10 icmp_seq=1 timeout
+2001:DB8:ACAD:20::10 icmp_seq=2 timeout`,q:{en:`What is wrong?`,hi:`Kya galat hai?`},o:[{en:`The server's prefix length should be /48`,hi:`Server ki prefix length /48 honi chahiye`},{en:`The server needs an EUI-64 address`,hi:`Server ko EUI-64 address chahiye`},{en:`The link-local address is a duplicate`,hi:`Link-local address duplicate hai`},{en:`The gateway is mistyped: it should be 2001:db8:acad:20::1`,hi:`Gateway galat type hua hai: 2001:db8:acad:20::1 hona chahiye`}],a:3,w:{en:`The gateway 2001:DB8:ACAD:2::1 is not on the server's /64 (the subnet ID is 20, not 2), so replies to other subnets are never sent to R2. /64 is correct, static interface IDs are fine, and nothing indicates a duplicate.`,hi:`Gateway 2001:DB8:ACAD:2::1 server ke /64 par nahi hai (subnet ID 20 hai, 2 nahi), isliye doosre subnets ke replies kabhi R2 ko nahi jaate. /64 sahi hai, static interface IDs theek hain, aur duplicate ka koi sanket nahi.`}},{title:{en:`Tunnel is up but the branch is cut off`,hi:`Tunnel up hai lekin branch kati hui hai`},ticket:{en:`Branch R2 reaches head office over IPv6 through a GRE tunnel across an IPv4-only provider. Head office R1 uses public address 203.0.113.1. Since a config change, no IPv6 traffic crosses.`,hi:`Branch R2 IPv4-only provider ke paar GRE tunnel se head office tak IPv6 par pahunchta hai. Head office R1 public address 203.0.113.1 use karta hai. Ek config change ke baad koi IPv6 traffic paar nahi jaata.`},out:`R2# show interfaces tunnel0
+Tunnel0 is up, line protocol is up
+  Hardware is Tunnel
+  Tunnel source 198.51.100.1 (GigabitEthernet0/0), destination 203.0.113.9
+  Tunnel protocol/transport GRE/IP
+    Key disabled, sequencing disabled
+  Tunnel transport MTU 1476 bytes
+  Last input never, output never, output hang never
+     0 packets input, 0 bytes, 0 no buffer
+     0 packets output, 0 bytes, 0 underruns`,q:{en:`What is the cause?`,hi:`Cause kya hai?`},o:[{en:`The tunnel MTU is too small for IPv6`,hi:`Tunnel MTU IPv6 ke liye bahut chhota hai`},{en:`The tunnel destination is wrong; it must be 203.0.113.1`,hi:`Tunnel destination galat hai; 203.0.113.1 hona chahiye`},{en:`GRE cannot carry IPv6; 6in4 is required`,hi:`GRE IPv6 nahi le ja sakta; 6in4 chahiye`},{en:`The line protocol is down`,hi:`Line protocol down hai`}],a:1,w:{en:`Without keepalives a GRE tunnel stays up/up while the router has a route to the destination, even a wrong one. The destination must be the far end's source, 203.0.113.1; zero input packets confirm nothing arrives. 1476 bytes is above the IPv6 minimum of 1280, and GRE carries IPv6 fine.`,hi:`Keepalives ke bina GRE tunnel tab tak up/up rehta hai jab tak router ke paas destination ka route hai, bhale hi galat ho. Destination door wale end ka source, 203.0.113.1, hona chahiye; zero input packets confirm karte hain ki kuch nahi pahunchta. 1476 bytes IPv6 minimum 1280 se upar hai, aur GRE IPv6 aaram se le jaata hai.`}},{title:{en:`IPv6-only phone reaches an IPv4 site`,hi:`IPv6-only phone IPv4 site tak pahunchta hai`},ticket:{en:`The staff Wi-Fi is IPv6-only with NAT64 and DNS64. A user asks why the old site legacy.example, which has no IPv6, still works. You check what the phone receives.`,hi:`Staff Wi-Fi NAT64 aur DNS64 ke saath IPv6-only hai. Ek user poochta hai ki purani site legacy.example, jiske paas IPv6 nahi, phir bhi kaise chalti hai. Aap check karte ho ki phone ko kya milta hai.`},out:`> nslookup -type=AAAA legacy.example
+Server:  dns64.corp.example
+Address:  2001:db8:acad:20::53
+
+Non-authoritative answer:
+Name:    legacy.example
+Address:  64:ff9b::c633:6414`,q:{en:`Which IPv4 address does the NAT64 gateway connect to for this site?`,hi:`Is site ke liye NAT64 gateway kis IPv4 address se connect karta hai?`},o:[{en:`198.51.100.20`,hi:`198.51.100.20`},{en:`100.64.0.20`,hi:`100.64.0.20`},{en:`203.0.113.20`,hi:`203.0.113.20`},{en:`198.51.100.100`,hi:`198.51.100.100`}],a:0,w:{en:`DNS64 embeds the IPv4 address in the last 32 bits of 64:ff9b::/96. c6 = 198, 33 = 51, 64 = 100, 14 = 20, so the server is 198.51.100.20. The phone sends IPv6 to the synthesised address and the NAT64 gateway translates it to IPv4.`,hi:`DNS64 IPv4 address ko 64:ff9b::/96 ke aakhri 32 bits mein embed karta hai. c6 = 198, 33 = 51, 64 = 100, 14 = 20, to server 198.51.100.20 hai. Phone synthesised address ko IPv6 bhejta hai aur NAT64 gateway use IPv4 mein translate karta hai.`}},{title:{en:`Static route rejected`,hi:`Static route reject hua`},ticket:{en:`An engineer wants R1 to reach 2001:db8:acad:20::/64 through the neighbour on G0/1, whose link-local address is fe80::1. The command is refused.`,hi:`Ek engineer chahta hai ki R1 G0/1 wale neighbour ke through 2001:db8:acad:20::/64 tak pahunche, jiska link-local address fe80::1 hai. Command refuse ho jaati hai.`},out:`R1(config)# ipv6 route 2001:db8:acad:20::/64 fe80::1
+% Interface has to be specified for a link-local nexthop`,q:{en:`Which command works?`,hi:`Kaunsi command chalegi?`},o:[{en:`ipv6 route 2001:db8:acad:20::/64 fe80::1 255`,hi:`ipv6 route 2001:db8:acad:20::/64 fe80::1 255`},{en:`ipv6 route 2001:db8:acad:20::/64 fe80::1/64`,hi:`ipv6 route 2001:db8:acad:20::/64 fe80::1/64`},{en:`ip route 2001:db8:acad:20::/64 g0/1 fe80::1`,hi:`ip route 2001:db8:acad:20::/64 g0/1 fe80::1`},{en:`ipv6 route 2001:db8:acad:20::/64 g0/1 fe80::1`,hi:`ipv6 route 2001:db8:acad:20::/64 g0/1 fe80::1`}],a:3,w:{en:`A link-local next hop is only unique per link, so the exit interface must come before it. An administrative distance or a prefix length on the next hop does not help, and ip route is the IPv4 command.`,hi:`Link-local next hop sirf har link par unique hota hai, isliye exit interface uske pehle aana chahiye. Administrative distance ya next hop par prefix length se kuch nahi hota, aur ip route IPv4 command hai.`}},{title:{en:`Gateway address conflict`,hi:`Gateway address conflict`},ticket:{en:`After a technician configured a new test server on the office LAN, R1 logged a message and office PCs lost IPv6 connectivity through their static gateway 2001:db8:acad:10::1.`,hi:`Ek technician ne office LAN par naya test server configure kiya, uske baad R1 ne ek message log kiya aur office PCs ki unke static gateway 2001:db8:acad:10::1 ke through IPv6 connectivity chali gayi.`},out:`%IPV6_ND-4-DUPLICATE: Duplicate address 2001:DB8:ACAD:10::1 on GigabitEthernet0/0
+
+R1# show ipv6 interface brief
+GigabitEthernet0/0     [up/up]
+    FE80::5054:CFF:FE04:4B01
+    2001:DB8:ACAD:10::1 [DUP]`,q:{en:`What happened and what is the fix?`,hi:`Kya hua aur fix kya hai?`},o:[{en:`R1 has an EUI-64 error; reconfigure with eui-64`,hi:`R1 mein EUI-64 error hai; eui-64 ke saath reconfigure karo`},{en:`DAD found another device using the router's address; readdress the test server`,hi:`DAD ne router ka address use karta doosra device paaya; test server ko readdress karo`},{en:`The link-local address is invalid; set fe80::1`,hi:`Link-local address invalid hai; fe80::1 set karo`},{en:`The /64 is too small; use a /48 on the LAN`,hi:`/64 bahut chhota hai; LAN par /48 use karo`}],a:1,w:{en:`Duplicate Address Detection saw a Neighbor Advertisement for 2001:db8:acad:10::1 from another device, so the address is marked DUP and not used. The test server was given the gateway's address; change the server's address. EUI-64, the link-local and the /64 are not the problem.`,hi:`Duplicate Address Detection ne kisi doosre device se 2001:db8:acad:10::1 ka Neighbor Advertisement dekha, isliye address DUP mark hua aur use nahi hota. Test server ko gateway ka address de diya gaya tha; server ka address badlo. EUI-64, link-local aur /64 problem nahi hain.`}}];export{e as default};

@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`Publish, install and discard are different actions; Logs, sessions and a useful incident record. Complete the three assessed labs after reading.`,hi:`Publish, install aur discard alag actions hain; Logs, sessions aur useful incident record. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

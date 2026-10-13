@@ -1,0 +1,49 @@
+var e={id:`source-nat-pools`,h:{en:`Source NAT pools: with and without PAT`,hi:`Source NAT pools: PAT ke saath aur bina`},body:{en:`<p><b>Analogy.</b> A taxi company owns two licence plates for a whole day. With <b>port translation</b> (PAT) a plate may carry many passengers at once, told apart by seat number. Without it, each plate carries exactly one passenger at a time: the third passenger has to wait, or be turned away.</p>
+<h3>What a pool is</h3>
+<p>A <b>source NAT pool</b> is a range of public addresses the SRX can use instead of the egress interface address. You use pools when the business wants a specific outgoing address range (for allow-lists at partners, for example) or several public addresses.</p>
+<pre class="code">set security nat source pool POOL1 address 203.0.113.5/32 to 203.0.113.6/32
+set security nat source rule-set TRUST-POOL from zone trust
+set security nat source rule-set TRUST-POOL to zone untrust
+set security nat source rule-set TRUST-POOL rule R1 match source-address 192.168.0.0/16
+set security nat source rule-set TRUST-POOL rule R1 then source-nat pool POOL1
+set security nat proxy-arp interface ge-0/0/0.0 address 203.0.113.5/32 to 203.0.113.6/32</pre>
+<h3>Two behaviours</h3>
+<ul><li><b>With PAT (the default):</b> every pool address can serve thousands of hosts, told apart by port. Exhaustion is rare.</li><li><b>Without PAT (<code>port no-translation</code>):</b> one private host maps to one pool address, so the pool serves at most as many hosts as it has addresses. When it runs out, new sessions from a new host fail.</li></ul>
+<p>To survive exhaustion you can add an <b>overflow pool</b> (another pool or the interface address) with <code>overflow-pool interface</code>.</p>
+<pre class="out">user@SRX&gt; show security nat source pool all
+Pool name          : POOL1
+Port translation   : <span class="hl">no</span>
+Address assignment : one-to-one
+Total addresses    : 2
+Translation hits   : 4</pre>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Three hosts, two pool addresses"><rect x="20" y="10" width="120" height="34" rx="8" fill="#bbf7d0"/><text x="80" y="32" text-anchor="middle" class="svg-ink" font-size="12">PC1</text><rect x="20" y="58" width="120" height="34" rx="8" fill="#bbf7d0"/><text x="80" y="80" text-anchor="middle" class="svg-ink" font-size="12">PC2</text><rect x="20" y="106" width="120" height="34" rx="8" fill="#fecaca"/><text x="80" y="128" text-anchor="middle" class="svg-ink" font-size="12">PC3 (no address)</text><rect x="470" y="22" width="150" height="34" rx="8" fill="#bae6fd"/><text x="545" y="44" text-anchor="middle" class="svg-ink" font-size="12">203.0.113.5</text><rect x="470" y="78" width="150" height="34" rx="8" fill="#bae6fd"/><text x="545" y="100" text-anchor="middle" class="svg-ink" font-size="12">203.0.113.6</text><path d="M140 27L470 39M140 75L470 95" stroke="#64748b" stroke-width="2"/><path d="M140 123L300 123" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 4"/></svg><p class="cap">No PAT: the third host finds the pool empty.</p></div>
+<div class="eg"><p><b>Worked example.</b> A partner allows only 203.0.113.5 and .6. You build a two-address pool. With PAT, any number of users work. Without PAT, only two users at a time; adding <code>overflow-pool interface</code> lets the third user fall back to the interface address.</p></div>
+<div class="warn"><p><b>Common mistake.</b> Forgetting proxy-ARP for pool addresses that are inside the ISP link subnet: replies are never delivered. Another trap: sizing a no-PAT pool for the number of <i>hosts</i>, not the number of <i>concurrent sessions</i> (it maps hosts, not sessions).</p></div>
+<div class="exam"><p><b>Exam trap.</b> Pool address translation uses PAT by default. Turning ports off gives a one-to-one mapping per host and can exhaust the pool.</p></div>
+<div class="scn"><h4>The third office that could not browse</h4><p>Two of three offices worked. <code>show security nat source pool all</code> showed two addresses used and the failed-session counter rising for the third. Enabling port translation on the pool fixed it for everyone.</p><p><b>Lesson:</b> check the pool statistics before blaming routing.</p></div>
+<div class="iv"><p class="q">"When would you use a pool instead of interface NAT?"</p><p>When a specific set of public addresses is required, for partner allow-lists or traffic separation. I keep PAT on unless there is a strict one-to-one requirement, and add an overflow pool for safety.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Pools provide specific public addresses.</li><li>PAT is on by default; port no-translation is one-to-one.</li><li>Overflow-pool prevents exhaustion outages.</li><li>Pool addresses in the link subnet need proxy-ARP.</li></ul></div>`,hi:`<p><b>Analogy.</b> Taxi company ke paas poore din ke liye do licence plates hain. <b>Port translation</b> (PAT) ke saath ek plate par ek saath kai yatri ho sakte hain, jinhe seat number se alag pehchana jata hai. Uske bina har plate par ek time par sirf ek yatri; teesre ko intezaar karna padta hai, ya mana kar diya jata hai.</p>
+<h3>Pool kya hai</h3>
+<p><b>Source NAT pool</b> public addresses ki ek range hai jo SRX egress interface address ki jagah use kar sakta hai. Pools tab use hote hain jab business ko specific outgoing address range chahiye (jaise partners ke allow-lists ke liye) ya kai public addresses chahiye.</p>
+<pre class="code">set security nat source pool POOL1 address 203.0.113.5/32 to 203.0.113.6/32
+set security nat source rule-set TRUST-POOL from zone trust
+set security nat source rule-set TRUST-POOL to zone untrust
+set security nat source rule-set TRUST-POOL rule R1 match source-address 192.168.0.0/16
+set security nat source rule-set TRUST-POOL rule R1 then source-nat pool POOL1
+set security nat proxy-arp interface ge-0/0/0.0 address 203.0.113.5/32 to 203.0.113.6/32</pre>
+<h3>Do behaviours</h3>
+<ul><li><b>PAT ke saath (default):</b> har pool address hazaaron hosts ko serve kar sakta hai, ports se alag. Exhaustion kam hota hai.</li><li><b>PAT ke bina (<code>port no-translation</code>):</b> ek private host ek pool address se map hota hai, isliye pool utne hi hosts serve karta hai jitne uske addresses hain. Khatam hone par naye host ke naye sessions fail hote hain.</li></ul>
+<p>Exhaustion se bachne ke liye aap <b>overflow pool</b> (doosra pool ya interface address) <code>overflow-pool interface</code> se jod sakte ho.</p>
+<pre class="out">user@SRX&gt; show security nat source pool all
+Pool name          : POOL1
+Port translation   : <span class="hl">no</span>
+Address assignment : one-to-one
+Total addresses    : 2
+Translation hits   : 4</pre>
+<div class="dia"><svg viewBox="0 0 640 150" role="img" aria-label="Teen hosts, do pool addresses"><rect x="20" y="10" width="120" height="34" rx="8" fill="#bbf7d0"/><text x="80" y="32" text-anchor="middle" class="svg-ink" font-size="12">PC1</text><rect x="20" y="58" width="120" height="34" rx="8" fill="#bbf7d0"/><text x="80" y="80" text-anchor="middle" class="svg-ink" font-size="12">PC2</text><rect x="20" y="106" width="120" height="34" rx="8" fill="#fecaca"/><text x="80" y="128" text-anchor="middle" class="svg-ink" font-size="12">PC3 (address nahi)</text><rect x="470" y="22" width="150" height="34" rx="8" fill="#bae6fd"/><text x="545" y="44" text-anchor="middle" class="svg-ink" font-size="12">203.0.113.5</text><rect x="470" y="78" width="150" height="34" rx="8" fill="#bae6fd"/><text x="545" y="100" text-anchor="middle" class="svg-ink" font-size="12">203.0.113.6</text><path d="M140 27L470 39M140 75L470 95" stroke="#64748b" stroke-width="2"/><path d="M140 123L300 123" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 4"/></svg><p class="cap">PAT nahi: teesre host ko pool khaali milta hai.</p></div>
+<div class="eg"><p><b>Worked example.</b> Ek partner sirf 203.0.113.5 aur .6 allow karta hai. Aap do-address pool banate ho. PAT ke saath kitne bhi users chalte hain. PAT ke bina ek time par sirf do users; <code>overflow-pool interface</code> jodne se teesra user interface address par fall back karta hai.</p></div>
+<div class="warn"><p><b>Common mistake.</b> ISP link subnet ke andar ke pool addresses ke liye proxy-ARP bhool jana: replies kabhi deliver nahi hote. Ek aur jaal: no-PAT pool ko <i>concurrent sessions</i> ki jagah <i>hosts</i> ki sankhya ke hisaab se size karna (yeh hosts map karta hai, sessions nahi).</p></div>
+<div class="exam"><p><b>Exam trap.</b> Pool address translation default mein PAT use karta hai. Ports band karne se har host ka one-to-one mapping milta hai aur pool khatam ho sakta hai.</p></div>
+<div class="scn"><h4>Teesra office jo browse nahi kar paya</h4><p>Teen mein se do offices chale. <code>show security nat source pool all</code> ne do addresses used dikhaye aur teesre ke liye failed-session counter badhta dikha. Pool par port translation enable karne se sab ke liye theek ho gaya.</p><p><b>Lesson:</b> routing ko dosh dene se pehle pool statistics dekho.</p></div>
+<div class="iv"><p class="q">"Interface NAT ki jagah pool kab use karoge?"</p><p>Jab specific public addresses chahiye, partner allow-lists ya traffic separation ke liye. PAT on rakhta hoon jab tak strict one-to-one requirement na ho, aur safety ke liye overflow pool jodta hoon.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Pools specific public addresses dete hain.</li><li>PAT default hai; port no-translation one-to-one hai.</li><li>Overflow-pool exhaustion outage se bachata hai.</li><li>Link subnet ke andar ke pool addresses ko proxy-ARP chahiye.</li></ul></div>`}};export{e as default};

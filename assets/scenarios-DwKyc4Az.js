@@ -1,0 +1,71 @@
+var e=[{title:{en:`The VPN that broke on the 1st`,hi:`Woh VPN jo 1 tareekh ko toota`},ticket:{en:`Remote-access VPN logins on ASA1 failed for every user from 09:00 this morning. Nobody changed the configuration. Users see "Certificate Validation Failure" in Secure Client.`,hi:`Aaj subah 09:00 se ASA1 par har user ke remote-access VPN logins fail ho rahe hain. Kisi ne configuration nahi badli. Users ko Secure Client mein "Certificate Validation Failure" dikhta hai.`},out:`ASA1# show crypto ca certificates
+Certificate
+  Status: Available
+  Certificate Serial Number: 5c21a0
+  Certificate Usage: General Purpose
+  Subject Name:
+    cn=vpn.nk.example
+  Issuer Name:
+    cn=NK-Issuing-CA
+  Validity Date:
+    start date: 09:00:00 UTC Oct 1 2025
+    end   date: 09:00:00 UTC Oct 1 2026
+  Storage: config
+  Associated Trustpoints: NK-VPN
+
+ASA1# show clock
+09:02:41.118 UTC Thu Oct 1 2026`,q:{en:`What is the root cause?`,hi:`Root cause kya hai?`},o:[{en:`The ASA identity certificate expired at 09:00 today`,hi:`ASA ka identity certificate aaj 09:00 par expire ho gaya`},{en:`The group policy address pool is exhausted`,hi:`Group policy ka address pool khatam ho gaya`},{en:`DTLS on UDP 443 is blocked`,hi:`UDP 443 par DTLS block hai`},{en:`The users' passwords expired`,hi:`Users ke passwords expire ho gaye`}],a:0,w:{en:`The end date equals the current time, so every client rejects the server certificate. Renew it, install it on trustpoint NK-VPN, and monitor expiry with alerts well before the end date.`,hi:`End date current time ke barabar hai, isliye har client server certificate reject karta hai. Ise renew karo, trustpoint NK-VPN par install karo, aur end date se kaafi pehle alerts ke saath expiry monitor karo.`}},{title:{en:`The branch that proposes the wrong thing`,hi:`Woh branch jo galat cheez propose karti hai`},ticket:{en:`The new Pune router R2 never brings up its tunnel to HQ router R1. R1 was hardened last week to next-generation encryption only.`,hi:`Naya Pune router R2 HQ router R1 tak apna tunnel kabhi up nahi karta. R1 ko pichhle hafte sirf next-generation encryption par harden kiya gaya tha.`},out:`R1# debug crypto ikev2
+IKEv2:(SESSION ID = 7,SA ID = 1):Received Packet [From 198.51.100.2:500/To 203.0.113.1:500/VRF i0:f0]
+IKEv2 IKE_SA_INIT Exchange REQUEST
+IKEv2-ERROR:(SESSION ID = 7,SA ID = 1):: Failed to find a matching policy
+IKEv2:(SESSION ID = 7,SA ID = 1):Received Policies:
+Proposal 1:  AES-CBC-256 SHA256 SHA256 DH_GROUP_2048_MODP/Group 14
+IKEv2:(SESSION ID = 7,SA ID = 1):Expected Policies:
+Proposal 1:  AES-GCM-256 SHA384 DH_GROUP_384_ECP/Group 20
+IKEv2:(SESSION ID = 7,SA ID = 1):Sending Packet ... NOTIFY(NO_PROPOSAL_CHOSEN)`,q:{en:`What is the correct fix?`,hi:`Sahi fix kya hai?`},o:[{en:`Change the pre-shared key on both routers`,hi:`Dono routers par pre-shared key badlo`},{en:`Update R2's IKEv2 proposal to AES-GCM-256, PRF SHA384 and group 20`,hi:`R2 ka IKEv2 proposal AES-GCM-256, PRF SHA384 aur group 20 par update karo`},{en:`Open UDP 4500 on the HQ firewall`,hi:`HQ firewall par UDP 4500 kholo`},{en:`Add DH group 2 to R1 for compatibility`,hi:`Compatibility ke liye R1 par DH group 2 jodo`}],a:1,w:{en:`NO_PROPOSAL_CHOSEN in IKE_SA_INIT is an algorithm mismatch. The debug prints both lists: R2 must offer the NGE proposal R1 expects. Adding weak groups back on R1 would undo the hardening.`,hi:`IKE_SA_INIT mein NO_PROPOSAL_CHOSEN algorithm mismatch hai. Debug dono lists print karta hai: R2 ko wahi NGE proposal offer karna hoga jo R1 expect karta hai. R1 par kamzor groups wapas jodna hardening ko ulta kar dega.`}},{title:{en:`Keys that do not agree`,hi:`Keys jo agree nahi karti`},ticket:{en:`After a PSK rotation, the R1 to R2 tunnel is down. IKE_SA_INIT completes, then the exchange fails.`,hi:`PSK rotation ke baad R1 se R2 ka tunnel down hai. IKE_SA_INIT complete hota hai, phir exchange fail ho jaata hai.`},out:`R1# debug crypto ikev2
+IKEv2:(SESSION ID = 8,SA ID = 1):Processing IKE_AUTH message
+IKEv2-ERROR:(SESSION ID = 8,SA ID = 1):: Failed to authenticate the IKE SA
+IKEv2:(SESSION ID = 8,SA ID = 1):Verification of peer's authentication data FAILED
+IKEv2:(SESSION ID = 8,SA ID = 1):Sending Packet ... NOTIFY(AUTHENTICATION_FAILED)
+
+R1# show running-config | section keyring
+crypto ikev2 keyring NK-KEYS
+ peer R2
+  address 198.51.100.2
+  pre-shared-key local NK-R1-to-R2-7f3Kq9
+  pre-shared-key remote NK-R2-to-R1-OLDKEY`,q:{en:`Why does authentication fail?`,hi:`Authentication kyun fail hota hai?`},o:[{en:`The DH groups do not match`,hi:`DH groups match nahi karte`},{en:`NAT-T is disabled`,hi:`NAT-T disabled hai`},{en:`R1 still verifies R2 with the old remote key, which no longer matches R2's new local key`,hi:`R1 abhi bhi R2 ko purani remote key se verify karta hai, jo ab R2 ki nayi local key se match nahi karti`},{en:`The certificate on R2 has expired`,hi:`R2 par certificate expire ho gaya hai`}],a:2,w:{en:`The proposal was accepted (IKE_SA_INIT succeeded), so algorithms are fine. AUTHENTICATION_FAILED with PSKs means R1's remote key must equal R2's local key. Update pre-shared-key remote on R1.`,hi:`Proposal accept hua (IKE_SA_INIT safal raha), isliye algorithms theek hain. PSKs ke saath AUTHENTICATION_FAILED ka matlab R1 ki remote key R2 ki local key ke barabar honi chahiye. R1 par pre-shared-key remote update karo.`}},{title:{en:`The router that thinks it is 1993`,hi:`Woh router jo sochta hai ki 1993 hai`},ticket:{en:`After a weekend power cut, branch router R2 cannot bring up its certificate-authenticated FlexVPN tunnel. The certificate was issued last month.`,hi:`Weekend ke power cut ke baad branch router R2 apna certificate-authenticated FlexVPN tunnel up nahi kar pa raha. Certificate pichhle mahine issue hua tha.`},out:`R2# show logging | include PKI
+%PKI-3-CERTIFICATE_INVALID_NOT_YET_VALID: Certificate chain validation has failed. The certificate (SN: 3A1F07) is not yet valid Validity period starts on 09:00:00 UTC Sep 1 2026
+
+R2# show clock detail
+*00:04:12.311 UTC Mon Mar 1 1993
+No time source
+
+R2# show ntp status
+%NTP is not enabled.`,q:{en:`What should the engineer do first?`,hi:`Engineer ko pehle kya karna chahiye?`},o:[{en:`Re-enroll the certificate with a new key pair`,hi:`Naye key pair ke saath certificate re-enroll karo`},{en:`Disable revocation checking on the trustpoint`,hi:`Trustpoint par revocation checking disable karo`},{en:`Switch the tunnel to aggressive mode`,hi:`Tunnel ko aggressive mode par switch karo`},{en:`Configure NTP to a server reachable outside the tunnel, wait for sync, then clear the session`,hi:`Tunnel ke bahar reachable server par NTP configure karo, sync ka intezaar karo, phir session clear karo`}],a:3,w:{en:`The certificate is fine; the clock is wrong. The asterisk and "No time source" confirm it. Fix time first, and make sure the NTP server is not reachable only through the tunnel being built.`,hi:`Certificate theek hai; clock galat hai. Asterisk aur "No time source" isse confirm karte hain. Pehle time theek karo, aur pakka karo ki NTP server sirf usi tunnel ke through reachable na ho jo ban raha hai.`}},{title:{en:`Encrypted one way only`,hi:`Sirf ek taraf encrypted`},ticket:{en:`The HQ to Pune tunnel is up, but HQ users cannot reach 10.2.2.0/24. The Pune router also does PAT for internet access.`,hi:`HQ se Pune ka tunnel up hai, lekin HQ users 10.2.2.0/24 tak nahi pahunch paate. Pune router internet access ke liye PAT bhi karta hai.`},out:`R1# show crypto ipsec sa | include pkts
+    #pkts encaps: 842, #pkts encrypt: 842, #pkts digest: 842
+    #pkts decaps: 0, #pkts decrypt: 0, #pkts verify: 0
+
+R2# show crypto ipsec sa | include pkts
+    #pkts encaps: 0, #pkts encrypt: 0, #pkts digest: 0
+    #pkts decaps: 842, #pkts decrypt: 842, #pkts verify: 842
+
+R2# show ip nat translations | include 10.2.2.20
+icmp 198.51.100.2:1   10.2.2.20:1   10.1.1.10:1   10.1.1.10:1`,q:{en:`What is the most likely cause?`,hi:`Sabse sambhavit cause kya hai?`},o:[{en:`ESP is filtered by an ISP`,hi:`ISP ESP filter kar raha hai`},{en:`R2 translates the return traffic with PAT before it can be encrypted; a NAT exemption is missing`,hi:`R2 return traffic ko encrypt hone se pehle PAT se translate karta hai; NAT exemption missing hai`},{en:`The transform sets do not match`,hi:`Transform sets match nahi karte`},{en:`R1 has the wrong pre-shared key`,hi:`R1 par galat pre-shared key hai`}],a:1,w:{en:`R2 decrypts everything R1 sends, so the path and SAs work. Replies from 10.2.2.20 to 10.1.1.10 are translated to 198.51.100.2 and leave unencrypted. Deny LAN-to-LAN traffic in the NAT ACL (or route it into the VTI) so replies are encrypted.`,hi:`R2 wahi sab decrypt karta hai jo R1 bhejta hai, isliye path aur SAs chal rahe hain. 10.2.2.20 se 10.1.1.10 ke replies 198.51.100.2 mein translate hokar bina encryption ke nikal jaate hain. NAT ACL mein LAN-to-LAN traffic deny karo (ya use VTI mein route karo) taaki replies encrypt hon.`}},{title:{en:`Encrypting a private MPLS WAN`,hi:`Private MPLS WAN encrypt karna`},ticket:{en:`120 branches on a private MPLS L3VPN need any-to-any encryption. Multicast video and QoS markings must keep working. There is no internet transport.`,hi:`120 branches private MPLS L3VPN par hain, any-to-any encryption chahiye. Multicast video aur QoS markings chalte rehne chahiye. Internet transport nahi hai.`},out:`Transport: MPLS L3VPN (private addressing end to end)
+Requirement: full mesh, multicast, DSCP preserved, no per-peer tunnels
+Current: 120 crypto maps, 7140 ACL entries, frequent selector mismatches`,q:{en:`Which VPN type fits best?`,hi:`Kaunsa VPN type sabse sahi hai?`},o:[{en:`Static VTI from every branch to every other branch`,hi:`Har branch se har doosri branch tak static VTI`},{en:`SSL VPN with Secure Client on each router`,hi:`Har router par Secure Client ke saath SSL VPN`},{en:`GETVPN with redundant GDOI key servers`,hi:`Redundant GDOI key servers ke saath GETVPN`},{en:`More crypto maps with larger ACLs`,hi:`Bade ACLs ke saath aur crypto maps`}],a:2,w:{en:`GETVPN is tunnel-less and preserves the original IP header, so routing, multicast and QoS keep working and any-to-any is instant. It suits private WANs, not the internet.`,hi:`GETVPN tunnel-less hai aur original IP header bachaye rakhta hai, isliye routing, multicast aur QoS chalte rehte hain aur any-to-any turant hai. Yeh private WANs ke liye theek hai, internet ke liye nahi.`}},{title:{en:`The tunnel that fails every 24 hours`,hi:`Woh tunnel jo har 24 ghante mein fail hota hai`},ticket:{en:`A branch tunnel works after every reboot but traffic stops almost exactly one day later, until someone clears the session.`,hi:`Ek branch tunnel har reboot ke baad chalta hai lekin lagbhag theek ek din baad traffic ruk jaata hai, jab tak koi session clear na kare.`},out:`HUB# debug crypto ikev2
+IKEv2:(SESSION ID = 12,SA ID = 1):Received Packet [From 198.51.100.2:4500/To 203.0.113.1:4500/VRF i0:f0]
+IKEv2 CREATE_CHILD_SA Exchange REQUEST
+IKEv2-ERROR:(SESSION ID = 12,SA ID = 1):: Failed to find a matching policy
+IKEv2:(SESSION ID = 12,SA ID = 1):Sending Packet ... NOTIFY(NO_PROPOSAL_CHOSEN)
+
+HUB# show running-config | section ipsec profile
+crypto ipsec profile NK-IPSEC
+ set transform-set TS-GCM
+ set pfs group20
+ set ikev2-profile NK-PROF
+
+BRANCH# show running-config | section ipsec profile
+crypto ipsec profile NK-IPSEC
+ set transform-set TS-GCM
+ set ikev2-profile NK-PROF`,q:{en:`Why does the tunnel fail at rekey?`,hi:`Tunnel rekey par kyun fail hota hai?`},o:[{en:`The certificate expires every day`,hi:`Certificate har din expire hota hai`},{en:`The NAT keepalive interval is too long`,hi:`NAT keepalive interval bahut lamba hai`},{en:`The traffic selectors are not mirrored`,hi:`Traffic selectors mirror nahi hain`},{en:`PFS is required on the hub but not configured on the branch`,hi:`Hub par PFS required hai lekin branch par configured nahi`}],a:3,w:{en:`The first child SA is created inside IKE_AUTH without its own DH, so it works. The CREATE_CHILD_SA rekey must carry a DH exchange for PFS group 20, which the branch does not send. Add set pfs group20 on the branch.`,hi:`Pehla child SA IKE_AUTH ke andar apne DH ke bina banta hai, isliye chalta hai. CREATE_CHILD_SA rekey mein PFS group 20 ke liye DH exchange hona chahiye, jo branch nahi bhejti. Branch par set pfs group20 jodo.`}},{title:{en:`The board asks about quantum`,hi:`Board quantum ke baare mein poochta hai`},ticket:{en:`Legal says customer contracts sent over the site-to-site VPN must stay confidential for 15 years. The VPN uses IKEv2 with ECDH group 19 and AES-256-GCM. The CISO asks what is weakest against a future quantum attacker.`,hi:`Legal kehta hai site-to-site VPN par bheje customer contracts 15 saal confidential rehne chahiye. VPN IKEv2, ECDH group 19 aur AES-256-GCM use karta hai. CISO poochta hai ki future quantum attacker ke against sabse kamzor kya hai.`},out:`R1# show crypto ikev2 sa detailed | include Encr
+      Encr: AES-GCM, keysize: 256, PRF: SHA256, Hash: None, DH Grp:19, Auth sign: PSK, Auth verify: PSK`,q:{en:`What should be strengthened first?`,hi:`Pehle kya mazboot karna chahiye?`},o:[{en:`The ECDH key exchange: add an IKEv2 post-quantum PPK now and plan hybrid ML-KEM`,hi:`ECDH key exchange: abhi IKEv2 post-quantum PPK jodo aur hybrid ML-KEM plan karo`},{en:`Replace AES-256-GCM, because quantum computers break all encryption`,hi:`AES-256-GCM badlo, kyunki quantum computers saara encryption tod dete hain`},{en:`Replace SHA-256 with MD5`,hi:`SHA-256 ki jagah MD5 lagao`},{en:`Nothing: quantum only affects hashes`,hi:`Kuch nahi: quantum sirf hashes par asar karta hai`}],a:0,w:{en:`Harvest now, decrypt later targets the asymmetric key exchange, which Shor breaks. AES-256 stays strong against Grover. A PPK (RFC 8784) or hybrid ML-KEM protects the keys even if ECDH falls.`,hi:`Harvest now, decrypt later asymmetric key exchange ko target karta hai, jise Shor todta hai. AES-256 Grover ke against strong rehta hai. PPK (RFC 8784) ya hybrid ML-KEM keys ko protect karta hai chahe ECDH gir jaaye.`}}];export{e as default};

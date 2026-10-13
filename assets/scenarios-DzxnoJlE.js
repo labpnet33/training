@@ -1,0 +1,47 @@
+var e=[{title:{en:`Pune web down after the weekend`,hi:`Weekend ke baad Pune web down`},ticket:{en:`Ticket 320040: Since Monday 08:00 nobody in Pune can open any website. The only recorded change was on Sunday.`,hi:`Ticket 320040: Monday 08:00 se Pune mein koi website nahi khul rahi. Sirf Sunday ko ek change record hua.`},out:`Locations and edge devices  >  Pune HQ
+Method: ipsec    VPN credential: pune-hq@sahyadri.example  (bound to Pune HQ)
+Edge FW-PUN: tunnel ipsec  fqdn pune-hq@sahyadri.example
+Circuit wan1 ILL-PUN-01: up   wan2 BB-PUN-02: up
+Tunnel: DOWN   reason: pre-shared key mismatch
+
+Audit log
+Sun 03:20  netops  edge FW-PUN tunnel.psk changed`,q:{en:`What is the root cause and fix?`,hi:`Root cause aur fix kya hai?`},o:[{en:`Both circuits are down; call the ISP`,hi:`Dono circuits down hain; ISP ko call karo`},{en:`The FQDN is not registered; create a new credential`,hi:`FQDN registered nahi hai; naya credential banao`},{en:`The edge PSK no longer equals the credential PSK; set the agreed key on both, activate and verify UP`,hi:`Edge PSK ab credential PSK ke barabar nahi; dono par agreed key set karo, activate karo aur UP verify karo`},{en:`The MSS clamp is off`,hi:`MSS clamp off hai`}],a:2,w:{en:`Circuits are up and the FQDN is bound, so identity is fine. The reason line says key mismatch and the audit log shows who changed it.`,hi:`Circuits up hain aur FQDN bound hai, to identity theek hai. Reason line key mismatch kehti hai aur audit log batata hai kisne badla.`}},{title:{en:`Chennai GRE after the ISP visit`,hi:`ISP visit ke baad Chennai GRE`},ticket:{en:`Ticket 320050: Chennai web returns connection failed since the ISP technician visited. The ISP says it migrated the link to a new address range.`,hi:`Ticket 320050: ISP technician ke visit ke baad Chennai web connection failed deta hai. ISP kehta hai usne link naye address range par migrate kiya.`},out:`Locations and edge devices  >  Chennai Branch
+Method: gre    Registered static IP: 198.51.100.20
+Edge FW-CHN: tunnel gre  source 198.51.100.20  destination 203.0.113.101
+Circuit wan1 BB-CHN-01: up   address now 198.51.100.66
+Tunnel: DOWN   reason: source IP does not match registered static IP
+Failover: block`,q:{en:`What should you do?`,hi:`Aap kya karoge?`},o:[{en:`Confirm the new address with the ISP, then make the registered static IP and the edge source equal it, activate and verify`,hi:`ISP se naya address confirm karo, phir registered static IP aur edge source ko uske barabar karo, activate karo aur verify karo`},{en:`Switch failover to direct and leave it`,hi:`Failover direct karke chhod do`},{en:`Change the destination to the secondary node`,hi:`Destination secondary node par badlo`},{en:`Turn off the MSS clamp`,hi:`MSS clamp off karo`}],a:0,w:{en:`GRE identifies the site by source IP. The circuit address moved, so the registered and configured addresses no longer match the real one. Failover direct only hides the fault and removes protection.`,hi:`GRE site ko source IP se pehchanta hai. Circuit address badal gaya, to registered aur configured addresses real wale se match nahi karte. Failover direct sirf fault chhupata hai aur protection hata deta hai.`}},{title:{en:`Jaipur mail dies after a PAC change`,hi:`PAC change ke baad Jaipur mail band`},ticket:{en:`Ticket 320060: Jaipur cannot open mail.saas.example since Friday evening. Pune users are fine.`,hi:`Ticket 320060: Friday shaam se Jaipur mail.saas.example nahi khol pa raha. Pune users theek hain.`},out:`C:\\> pac test mail.saas.example
+mail.saas.example  ->  DIRECT (rule 1)
+C:\\> curl mail.saas.example
+connection failed (0)   path: direct
+
+Forwarding  >  PAC rules
+1  mail.saas.example   DIRECT
+2  *.corp.example      DIRECT
+3  *                   PROXY
+Jaipur edge: direct internet = block`,q:{en:`What is the best explanation?`,hi:`Sabse achha explanation kya hai?`},o:[{en:`The cloud service is down`,hi:`Cloud service down hai`},{en:`Mail was categorised as Gaming`,hi:`Mail ko Gaming category mili`},{en:`The browser lacks the root certificate`,hi:`Browser ke paas root certificate nahi`},{en:`A DIRECT rule for mail was added and the Jaipur edge blocks direct internet`,hi:`Mail ke liye DIRECT rule add hua aur Jaipur edge direct internet block karta hai`}],a:3,w:{en:`Rule 1 sends the host DIRECT and the edge firewall refuses direct connections. Removing rule 1 sends mail to the cloud proxy.`,hi:`Rule 1 host ko DIRECT bhejta hai aur edge firewall direct connections refuse karta hai. Rule 1 hatane se mail cloud proxy ko jaata hai.`}},{title:{en:`Pages load, big files hang`,hi:`Pages load, bade files atakte hain`},ticket:{en:`Ticket 320090: In Chennai every web page opens, but the Q3 report download freezes at the start. A smaller PDF downloads fine.`,hi:`Ticket 320090: Chennai mein har web page khulta hai, lekin Q3 report download shuru mein freeze ho jaata hai. Chhota PDF theek download hota hai.`},out:`C:\\> curl docs.share.example
+200 OK   path: tunnel
+C:\\> download partners.example/price-list.pdf
+Downloaded 118 KB
+C:\\> download docs.share.example/q3-report.xlsx
+<stalled>
+
+Edge FW-CHN: tunnel gre   Tunnel: UP   MSS clamp: off`,q:{en:`What is the likely cause?`,hi:`Likely cause kya hai?`},o:[{en:`The URL rule blocks xlsx files`,hi:`URL rule xlsx files block karta hai`},{en:`The tunnel adds header bytes and the MSS clamp is off, so full-size packets are dropped`,hi:`Tunnel header bytes jodta hai aur MSS clamp off hai, to full-size packets drop hote hain`},{en:`Authentication is off`,hi:`Authentication off hai`},{en:`DNS is failing`,hi:`DNS fail ho raha hai`}],a:1,w:{en:`Small pages and small files work while large transfers stall: classic MTU or MSS. A policy block would return 403, and DNS failure would break small pages too.`,hi:`Chhote pages aur files chalte hain jabki bade transfers atakte hain: classic MTU ya MSS. Policy block 403 deta, aur DNS failure chhote pages bhi todta.`}},{title:{en:`Pune laptops lose the office rule`,hi:`Pune laptops office rule kho dete hain`},ticket:{en:`Ticket 321050: Finance in the Pune office is blocked from docs.share.example by a rule that allows Finance only at Pune HQ. It worked last week.`,hi:`Ticket 321050: Pune office mein Finance ko docs.share.example se woh rule block karta hai jo Finance ko sirf Pune HQ par allow karta hai. Pichhle hafte chal raha tha.`},out:`C:\\> ipconfig
+DNS suffix: ad.sahyadri.example
+C:\\> zapp status
+Client connector: installed  signed in: ravi  state: enabled
+Network: off-trusted   Action: tunnel
+
+Forwarding  >  Client connector profile
+Trusted network (DNS suffix): ad.sahyadri.exmaple
+Log: ravi docs.share.example blocked Block-FileShare web remote`,q:{en:`Which correction fixes it?`,hi:`Kaun sa correction ise theek karta hai?`},o:[{en:`Add docs.share.example to the bypass list`,hi:`docs.share.example ko bypass list mein daalo`},{en:`Disable the connector on all laptops`,hi:`Saare laptops par connector disable karo`},{en:`Correct the trusted DNS suffix to ad.sahyadri.example, activate and run zapp update-policy`,hi:`Trusted DNS suffix ko ad.sahyadri.example sahi karo, activate karo aur zapp update-policy chalao`},{en:`Move the rule to another location`,hi:`Rule ko doosri location par le jao`}],a:2,w:{en:`The profile trusted value has a typo, so laptops decide they are off the office network and tunnel, which makes the location remote. A bypass would create a hole; disabling the connector removes protection.`,hi:`Profile ki trusted value mein typo hai, to laptops sochte hain ki woh office network par nahi aur tunnel karte hain, jisse location remote ho jaati hai. Bypass hole banata; connector disable karna protection hata deta.`}},{title:{en:`Remote engineer cannot open the ERP`,hi:`Remote engineer ERP nahi khol pa raha`},ticket:{en:`Ticket 321080: vikram at home can open public sites but erp.corp.example fails. The connector shows connected.`,hi:`Ticket 321080: ghar par vikram public sites khol leta hai lekin erp.corp.example fail hota hai. Connector connected dikhata hai.`},out:`C:\\> zapp status
+Client connector: installed  signed in: vikram  state: enabled
+Network: off-trusted   Action: tunnel
+
+Forwarding  >  Client connector profile
+Private access: on
+Bypass domains: corp.example
+
+Policy tester (private access)
+User: vikram  Destination: erp.corp.example
+Result: NOT REACHABLE   reason: domain is on the client bypass list`,q:{en:`What should you change?`,hi:`Aap kya badloge?`},o:[{en:`Remove corp.example from the bypass domains (or narrow it to one exact host that needs it), activate and update policy`,hi:`corp.example ko bypass domains se hatao (ya sirf us ek exact host tak narrow karo jise chahiye), activate karo aur policy update karo`},{en:`Reinstall the client connector`,hi:`Client connector reinstall karo`},{en:`Change the Pune tunnel to GRE`,hi:`Pune tunnel ko GRE karo`},{en:`Raise the MSS value`,hi:`MSS value badhao`}],a:0,w:{en:`The connector is healthy; the bypass entry sends the corporate domain straight out, so it never reaches private access. Fix the list.`,hi:`Connector theek hai; bypass entry corporate domain ko seedha bahar bhejti hai, to woh private access tak kabhi nahi pahunchta. List fix karo.`}}];export{e as default};

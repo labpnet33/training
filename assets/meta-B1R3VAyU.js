@@ -1,0 +1,1 @@
+var e={read:45,blurb:{en:`VOS and the headend: Director, Controller, Analytics and Concerto roles, headend networking, linking the nodes, transport domains and fault ownership.`,hi:`VOS aur headend: Director, Controller, Analytics aur Concerto ke roles, headend networking, nodes ko link karna, transport domains aur fault ownership.`}};export{e as default};

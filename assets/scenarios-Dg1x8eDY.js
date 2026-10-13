@@ -1,0 +1,44 @@
+var e=[{title:{en:`Changes typed but nothing happens`,hi:`Changes type kiye lekin kuch nahi hota`},ticket:{en:`An engineer added the address 10.20.1.1/30 to ge-0/0/0 on R1 and says it is not on the interface. Look at the output. What explains it?`,hi:`Ek engineer ne R1 ke ge-0/0/0 par address 10.20.1.1/30 add kiya aur kehta hai interface par nahi hai. Output dekho. Kya explain karta hai?`},out:`lab@R1# show | compare
+[edit interfaces]
++   ge-0/0/0 {
++       unit 0 {
++           family inet {
++               address 10.20.1.1/30;
++           }
++       }
++   }
+
+lab@R1# run show interfaces terse ge-0/0/0
+Interface               Admin Link Proto    Local                 Remote
+ge-0/0/0                up    up`,q:{en:`Why is the address missing from the interface?`,hi:`Interface par address kyun nahi hai?`},o:[{en:`The change has not been committed yet`,hi:`Change abhi commit nahi hua`},{en:`The interface is administratively down`,hi:`Interface administratively down hai`},{en:`The family inet statement is missing`,hi:`family inet statement missing hai`},{en:`The address needs a reboot`,hi:`Address ke liye reboot chahiye`}],a:0,w:{en:`The + lines in show | compare are still only in the candidate. The operational output reads the active configuration, so it needs a commit.`,hi:`show | compare ki + lines abhi sirf candidate mein hain. Operational output active configuration padhta hai, isliye commit chahiye.`}},{title:{en:`Prompt says it is a different place`,hi:`Prompt kehta hai jagah alag hai`},ticket:{en:`A junior says the OSPF configuration disappeared. The output shows what he typed. What is the most likely reason?`,hi:`Junior kehta hai OSPF configuration gayab ho gayi. Output wahi dikhata hai jo usne type kiya. Sabse likely wajah kya hai?`},out:`[edit interfaces ge-0/0/1]
+lab@R1# show protocols
+
+[edit interfaces ge-0/0/1]
+lab@R1# `,q:{en:`What should he do first?`,hi:`Use pehle kya karna chahiye?`},o:[{en:`Run rollback 1`,hi:`rollback 1 chalana`},{en:`Reboot the router`,hi:`Router reboot karna`},{en:`Run top and repeat the command (or show configuration protocols)`,hi:`top chalakar command dobara chalana (ya show configuration protocols)`},{en:`Run commit check`,hi:`commit check chalana`}],a:2,w:{en:`show in configuration mode is relative to the current [edit] level. He is inside interfaces ge-0/0/1, so protocols is not under it.`,hi:`Configuration mode mein show current [edit] level ke relative hota hai. Woh interfaces ge-0/0/1 ke andar hai, isliye protocols uske neeche nahi hai.`}},{title:{en:`Two addresses on one port`,hi:`Ek port par do addresses`},ticket:{en:`The uplink was meant to move from 10.20.1.1/30 to 10.20.9.1/30. After commit the monitoring system shows odd routes. Read the interface output.`,hi:`Uplink 10.20.1.1/30 se 10.20.9.1/30 par jaana tha. Commit ke baad monitoring system ajeeb routes dikhata hai. Interface output padho.`},out:`lab@R1> show interfaces terse ge-0/0/0
+Interface               Admin Link Proto    Local                 Remote
+ge-0/0/0                up    up
+ge-0/0/0.0              up    up   inet     10.20.1.1/30
+                                            10.20.9.1/30`,q:{en:`What mistake was made?`,hi:`Kaunsi galti hui?`},o:[{en:`The old address was not deleted before setting the new one`,hi:`Naya set karne se pehle purana address delete nahi kiya`},{en:`The prefix length is wrong`,hi:`Prefix length galat hai`},{en:`The unit number is wrong`,hi:`Unit number galat hai`},{en:`The link is down`,hi:`Link down hai`}],a:0,w:{en:`A second set adds a second address. The fix is to delete the old address (check show | compare shows a "-" line next time).`,hi:`Dusra set doosra address add karta hai. Fix purana address delete karna hai (agli baar show | compare mein "-" line dikhni chahiye).`}},{title:{en:`Locked out after renumbering`,hi:`Renumbering ke baad lockout`},ticket:{en:`You moved R1's uplink with commit confirmed 5 and the SSH session froze. Five minutes later you can log in again. The log is shown.`,hi:`Aapne R1 ka uplink commit confirmed 5 se move kiya aur SSH session freeze ho gaya. Paanch minute baad dobara login ho paaye. Log neeche hai.`},out:`lab@R1> show log messages | match CONFIRMED
+Oct  1 11:20:44 R1 mgd[1203]: UI_COMMIT_CONFIRMED: User 'lab' requested 'commit confirmed' operation (timeout: 5 minutes)
+Oct  1 11:25:44 R1 mgd[1203]: UI_COMMIT_CONFIRMED_TIMEOUT: confirmed commit timed out; rolling back`,q:{en:`What does the log tell you?`,hi:`Log aapko kya batata hai?`},o:[{en:`The change was permanent`,hi:`Change permanent tha`},{en:`The router rolled the change back automatically because it was not confirmed`,hi:`Router ne change automatically rollback kiya kyunki confirm nahi hua`},{en:`Someone ran rollback 0`,hi:`Kisi ne rollback 0 chalaya`},{en:`The router rebooted`,hi:`Router reboot hua`}],a:1,w:{en:`UI_COMMIT_CONFIRMED_TIMEOUT means no confirming commit arrived in time, so Junos restored the previous configuration.`,hi:`UI_COMMIT_CONFIRMED_TIMEOUT ka matlab confirming commit time par nahi aaya, isliye Junos ne pichli configuration restore ki.`}},{title:{en:`Who broke OSPF?`,hi:`OSPF kisne toda?`},ticket:{en:`R1 lost the route to 172.16.50.0/24 this morning. Ping to R2 works. Use the compare output to find the cause.`,hi:`R1 ne aaj subah 172.16.50.0/24 ka route kho diya. R2 ka ping chalta hai. Compare output se cause dhoondho.`},out:`lab@R1> show system commit
+0   2026-10-01 08:12:40 UTC by lab via cli
+    tuning
+1   2026-10-01 07:55:03 UTC by lab via cli
+    baseline
+
+lab@R1> show system rollback 1 compare 0
+[edit protocols ospf area 0.0.0.0 interface ge-0/0/0.0]
++       hello-interval 30;
+lab@R1> show ospf neighbor`,q:{en:`Which action fixes the problem with the smallest change?`,hi:`Kaunsa action sabse chhote change se problem theek karta hai?`},o:[{en:`Reboot R1`,hi:`R1 reboot karo`},{en:`Change R2 to hello 30 and R1 to dead 30`,hi:`R2 ko hello 30 aur R1 ko dead 30 karo`},{en:`Add a static route for 172.16.50.0/24`,hi:`172.16.50.0/24 ka static route add karo`},{en:`Delete the hello-interval statement (or rollback 1) and commit`,hi:`hello-interval statement delete karo (ya rollback 1) aur commit karo`}],a:3,w:{en:`The hello interval mismatch stops the adjacency. Removing the extra statement returns R1 to the default 10 seconds, matching R2.`,hi:`Hello interval mismatch adjacency rokta hai. Extra statement hatane se R1 default 10 second par aa jaata hai, R2 se match.`}},{title:{en:`Override wiped the configuration`,hi:`Override ne configuration saaf kar di`},ticket:{en:`After "applying the template" the branch lost its static routes. The candidate before commit looked like this.`,hi:`"Template apply karne" ke baad branch ke static routes gayab. Commit se pehle candidate aisa dikhta tha.`},out:`lab@R1# load override /var/tmp/template.conf
+load complete
+lab@R1# show | compare
+[edit routing-options]
+-   static {
+-       route 10.90.2.0/24 next-hop 10.90.12.2;
+-   }
+[edit interfaces lo0 unit 0 family inet]
+-       address 192.0.2.1/32;`,q:{en:`Which command should have been used for adding only the template statements?`,hi:`Sirf template statements add karne ke liye kaunsa command use hona chahiye tha?`},o:[{en:`load merge (or load set)`,hi:`load merge (ya load set)`},{en:`load override`,hi:`load override`},{en:`rollback 0`,hi:`rollback 0`},{en:`commit confirmed`,hi:`commit confirmed`}],a:0,w:{en:`override replaces the whole candidate with the file. merge or set adds statements and keeps the rest. The compare output exposed the problem before commit.`,hi:`override poora candidate file se replace karta hai. merge ya set statements add karta hai aur baaki rakhta hai. Compare output ne commit se pehle problem dikha di.`}},{title:{en:`Commit refused`,hi:`Commit refuse hua`},ticket:{en:`An engineer cannot commit. The router prints the output below.`,hi:`Engineer commit nahi kar paa raha. Router neeche wala output print karta hai.`},out:`lab@R1# commit
+[edit interfaces ge-0/0/0 unit 0 family inet]
+  'address 10.20.1.1/33'
+    invalid prefix length
+error: configuration check-out failed`,q:{en:`What is the state of the active configuration?`,hi:`Active configuration ki state kya hai?`},o:[{en:`Half applied: interfaces updated, rest ignored`,hi:`Aadhi apply: interfaces update, baaki ignore`},{en:`Unchanged: a failed commit applies nothing`,hi:`Unchanged: failed commit kuch apply nahi karta`},{en:`Rolled back to rollback 5`,hi:`rollback 5 par rollback`},{en:`Erased`,hi:`Erase ho gayi`}],a:1,w:{en:`Junos commits are atomic. The bracketed path points at the bad statement; fix it and commit again.`,hi:`Junos commits atomic hote hain. Bracket wala path kharab statement batata hai; theek karke dobara commit karo.`}}];export{e as default};

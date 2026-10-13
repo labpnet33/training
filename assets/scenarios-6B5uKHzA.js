@@ -1,0 +1,5 @@
+var e=[{title:{en:`Authentication succeeded, authorization was not applied`,hi:`Authentication successful, authorization apply nahi`},ticket:{en:`Staff identity is accepted and ISE returns VLAN 20. The switch keeps the static access VLAN because network authorization is absent.`,hi:`Staff identity accepted hai aur ISE VLAN 20 return karta hai. Network authorization absent hone se switch static access VLAN rakhta hai.`},out:`Status: Authorized
+Method: dot1x
+VLAN: 10
+VLAN source: static
+Returned profile: VLAN 20`,q:{en:`What should be repaired?`,hi:`Kya repair karna chahiye?`},o:[{en:`The network authorization method list on ACCESS`,hi:`ACCESS ki network authorization method list`},{en:`The already-valid staff password`,hi:`Already-valid staff password`},{en:`The printer MAC`,hi:`Printer MAC`},{en:`The ISE IP address`,hi:`ISE IP address`}],a:0,w:{en:`Identity success does not ensure the NAD applies returned authorization attributes.`,hi:`Identity success se NAD returned authorization attributes apply kare yeh guaranteed nahi.`}}];export{e as default};

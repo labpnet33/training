@@ -1,0 +1,1 @@
+var e={read:8,blurb:{en:`Hide NAT and return-path evidence; Publish a DMZ service deliberately. Complete the three assessed labs after reading.`,hi:`Hide NAT aur return-path evidence; DMZ service soch-samajhkar publish karo. Reading ke baad teen assessed labs complete karo.`}};export{e as default};

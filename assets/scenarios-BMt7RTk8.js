@@ -1,0 +1,37 @@
+var e=[{title:{en:`Delhi switch offline after 99 was removed`,hi:`99 hatane ke baad Delhi switch offline`},ticket:{en:`Ticket 3301: SW-DEL and AP-DEL went offline at 09:12. MX-DEL is online. Native VLANs match on both ends.`,hi:`Ticket 3301: 09:12 par SW-DEL aur AP-DEL offline ho gaye. MX-DEL online hai. Dono ends par native VLANs match karti hain.`},out:`MX-DEL LAN port 3        SW-DEL port 1 (uplink)
+Type    trunk            Type    trunk
+Native  99               Native  99
+Allowed 10,20,30         Allowed 10,20,30,99
+
+Alerts and events
+09:13  alert  SW-DEL offline
+09:12  event  Imran changed MX-DEL LAN port 3 allowed list 10,20,30,99 to 10,20,30`,q:{en:`What is the fix?`,hi:`Fix kya hai?`},o:[{en:`Disable PoE on port 2`,hi:`Port 2 par PoE disable karo`},{en:`Add VLAN 99 back to the allowed list on the MX port and save`,hi:`MX port ki allowed list mein VLAN 99 wapas jodo aur save karo`},{en:`Change the STP priority`,hi:`STP priority badlo`},{en:`Add an ACL deny rule`,hi:`ACL deny rule jodo`}],a:1,w:{en:`Management VLAN 99 must be in the allowed list as well as native. The log shows the removal.`,hi:`Management VLAN 99 native ke saath allowed list mein bhi honi chahiye. Log hatane ka entry dikhata hai.`}},{title:{en:`AP offline, switch online`,hi:`AP offline, switch online`},ticket:{en:`Ticket 3302: AP-DEL is offline at 15:20. SW-DEL is online. Staff report no Wi-Fi.`,hi:`Ticket 3302: 15:20 par AP-DEL offline hai. SW-DEL online hai. Staff ko Wi-Fi nahi mil raha.`},out:`Switch ports  (SW-DEL)
+Port  Name    Enabled  Type    VLAN / native  Allowed    PoE   Status
+1     uplink  yes      trunk   native 99      10,20,30,99  off  connected
+2     AP-DEL  yes      trunk   native 99      10,30,99     off  disconnected
+
+Alerts and events
+15:19  event  Imran changed SW-DEL port 2 PoE on to off`,q:{en:`What is the most likely fix?`,hi:`Sabse likely fix kya hai?`},o:[{en:`Change the native VLAN to 1`,hi:`Native VLAN 1 karo`},{en:`Replace the uplink cable`,hi:`Uplink cable badlo`},{en:`Remove VLAN 30 from the allowed list`,hi:`Allowed list se VLAN 30 hatao`},{en:`Turn PoE on for port 2`,hi:`Port 2 par PoE on karo`}],a:3,w:{en:`The AP has no power. The port is otherwise correct and the log shows the PoE change.`,hi:`AP ko power nahi mil rahi. Port baaki sab theek hai aur log PoE change dikhata hai.`}},{title:{en:`Guests get no DHCP on the AP`,hi:`AP par guests ko DHCP nahi milta`},ticket:{en:`Ticket 3303: At Bengaluru, guests on BharatRetail-Guest get 169.254.x.x. Staff Wi-Fi is fine and AP-BLR is online.`,hi:`Ticket 3303: Bengaluru mein BharatRetail-Guest par guests ko 169.254.x.x milta hai. Staff Wi-Fi theek hai aur AP-BLR online hai.`},out:`Switch ports  (SW-BLR)
+Port  Name    Type    VLAN / native  Allowed
+1     uplink  trunk   native 99      10,20,30,99
+2     AP-BLR  trunk   native 99      10,99
+
+Addressing and VLANs / DHCP  (MX-BLR)
+VLAN 30  Guest  10.2.30.0/24  server  12 / 101`,q:{en:`What explains it?`,hi:`Ise kya explain karta hai?`},o:[{en:`VLAN 30 is missing from the allowed list of the AP port`,hi:`AP port ki allowed list se VLAN 30 missing hai`},{en:`The DHCP pool is exhausted`,hi:`DHCP pool exhausted hai`},{en:`The native VLAN is wrong on the uplink`,hi:`Uplink par native VLAN galat hai`},{en:`BPDU guard is on`,hi:`BPDU guard on hai`}],a:0,w:{en:`Guest frames are tagged VLAN 30 and are dropped at the AP port. The pool has space and the AP is online, so the management path is fine.`,hi:`Guest frames VLAN 30 tagged hain aur AP port par drop hote hain. Pool mein jagah hai aur AP online hai, isliye management path theek hai.`}},{title:{en:`Port 3 went dark at 14:21`,hi:`Port 3 14:21 par band ho gaya`},ticket:{en:`Ticket 3304: PC-BLR lost its network at 14:21. The cable is fine and the PC link light is off.`,hi:`Ticket 3304: 14:21 par PC-BLR ka network chala gaya. Cable theek hai aur PC ki link light off hai.`},out:`Switch ports  (SW-BLR)
+Port  Name     Type    VLAN  BPDU guard  Status
+3     PC-BLR   access  10    on          err-disabled
+
+Alerts and events
+14:21  alert  SW-BLR port 3 err-disabled: BPDU received on a BPDU guard port`,q:{en:`What is the right sequence?`,hi:`Sahi sequence kya hai?`},o:[{en:`Turn BPDU guard off on all ports`,hi:`Saare ports par BPDU guard off karo`},{en:`Change the PC VLAN to 99`,hi:`PC VLAN 99 karo`},{en:`Find and remove the device that sent the BPDU, then re-enable the port`,hi:`BPDU bhejne wala device dhoondh kar hatao, phir port re-enable karo`},{en:`Re-enable the port immediately`,hi:`Port turant re-enable karo`}],a:2,w:{en:`A rogue switch or loop caused it. Re-enabling first would err-disable the port again.`,hi:`Rogue switch ya loop ne yeh kiya. Pehle re-enable karne se port phir err-disabled ho jaata.`}},{title:{en:`Staff can reach the backup server`,hi:`Staff backup server tak pahunch pa raha hai`},ticket:{en:`Ticket 3305: Audit shows staff laptops in VLAN 10 reach the backup host 10.1.20.20. Policy says staff may reach only 10.1.20.10.`,hi:`Ticket 3305: Audit dikhata hai ki VLAN 10 ke staff laptops backup host 10.1.20.20 tak pahunchte hain. Policy kehti hai staff sirf 10.1.20.10 tak pahunch sakta hai.`},out:`Switch ACL and STP  (SW-MUM)
+#  Policy  Protocol  Source         Destination     Hits
+1  Allow   any       10.1.10.0/24   10.1.20.0/24    2,104
+2  Allow   any       10.1.10.0/24   10.1.20.10/32   0
+3  Deny    any       10.1.10.0/24   10.1.20.0/24    0
+D  Allow   any       any            any             5,321  (default)`,q:{en:`What is the root cause and fix?`,hi:`Root cause aur fix kya hai?`},o:[{en:`STP root is wrong: change priority`,hi:`STP root galat hai: priority badlo`},{en:`The default rule is missing`,hi:`Default rule missing hai`},{en:`PoE is on`,hi:`PoE on hai`},{en:`Rule 1 allows the whole server VLAN and shadows rules 2 and 3: remove it so the narrow permit comes first`,hi:`Rule 1 poori server VLAN allow karta hai aur rules 2 aur 3 ko shadow karta hai: use hatao taaki narrow permit pehle aaye`}],a:3,w:{en:`First match wins. Rule 1 matches all VLAN 20 traffic. Zero hits on rules 2 and 3 confirm they are shadowed.`,hi:`Pehla match jeetta hai. Rule 1 VLAN 20 ka saara traffic match karta hai. Rules 2 aur 3 par zero hits confirm karte hain ki woh shadowed hain.`}},{title:{en:`STP root change alert`,hi:`STP root change alert`},ticket:{en:`Ticket 3306: An STP root change alert fired at Mumbai after a new floor switch was added. Users report slowness.`,hi:`Ticket 3306: Mumbai mein naya floor switch jodne ke baad STP root change alert fire hua. Users slowness report karte hain.`},out:`Switch ACL and STP  (network: Mumbai HQ)
+Protocol : RSTP
+Switch      Priority   Role
+SW-MUM      32768      designated
+SW-MUM-F2   32768      root   (lowest MAC)
+
+Alerts and events
+11:40  alert  STP root changed to SW-MUM-F2`,q:{en:`What should you do?`,hi:`Aapko kya karna chahiye?`},o:[{en:`Disable RSTP`,hi:`RSTP disable karo`},{en:`Set SW-MUM to a lower priority than the others so the core is root`,hi:`SW-MUM ko doosron se kam priority do taaki core root bane`},{en:`Make the new switch the permanent root`,hi:`Naye switch ko permanent root banao`},{en:`Disable all access ports`,hi:`Saare access ports disable karo`}],a:1,w:{en:`Equal priorities let the lowest MAC win. Setting the core priority low makes the root deterministic.`,hi:`Barabar priorities mein sabse kam MAC jeet jaata hai. Core ki priority kam karne se root deterministic ho jaata hai.`}}];export{e as default};

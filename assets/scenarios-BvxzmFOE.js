@@ -1,0 +1,32 @@
+var e=[{title:{en:`Pipeline red at lint`,hi:`Pipeline lint par red`},ticket:{en:`Store 14 pushed a new VLAN and the pipeline is red. Read the output. Which job do you open first?`,hi:`Store 14 ne naya VLAN push kiya aur pipeline red hai. Output padho. Pehle kaun sa job khologe?`},out:`AUTO$ ci status
+Pipeline #101 failed on main (7d546f7)
+  validate   lint               failed
+  test       unit-test          skipped
+  deploy     push-vlans         skipped`,q:{en:`What do you do?`,hi:`Aap kya karoge?`},o:[{en:`Open push-vlans`,hi:`Open push-vlans`},{en:`Open lint with ci log lint`,hi:`Open lint with ci log lint`},{en:`Re-run the deploy by hand on the switch`,hi:`Re-run the deploy by hand on the switch`},{en:`Delete the pipeline file`,hi:`Delete the pipeline file`}],a:1,w:{en:`The first failed job is lint. The two below are skipped because of it.`,hi:`Pehla failed job lint hai. Neeche ke do uski wajah se skipped hain.`}},{title:{en:`Indentation error`,hi:`Indentation error`},ticket:{en:`The lint log names a line and column. What is the problem?`,hi:`Lint log line aur column batata hai. Samasya kya hai?`},out:`AUTO$ ci log lint
+$ yamllint vlans.yml
+vlans.yml:8:4: error: bad indentation of a sequence entry (this line is indented more than the list item above it)
+
+AUTO$ nl vlans.yml
+     7    - id: 4100
+     8     name: GUEST-WIFI`,q:{en:`What is the fix for line 8?`,hi:`Line 8 ka fix kya hai?`},o:[{en:`Delete the whole file`,hi:`Delete the whole file`},{en:`Change the stage name`,hi:`Change the stage name`},{en:`Add a space so name lines up with id above it`,hi:`Add a space so name lines up with id above it`},{en:`Remove the comment on line 1`,hi:`Remove the comment on line 1`}],a:2,w:{en:`In YAML the keys of one item must line up; line 8 has one space too few.`,hi:`YAML mein ek item ke keys seedh mein hote hain; line 8 mein ek space kam hai.`}},{title:{en:`Lint is green, test is red`,hi:`Lint green, test red`},ticket:{en:`After the indentation fix, the next pipeline fails at a different job. What does the log say?`,hi:`Indentation fix ke baad agli pipeline alag job par fail hoti hai. Log kya kehta hai?`},out:`AUTO$ ci log unit-test
+$ python3 check.py
+Traceback (most recent call last):
+  File "check.py", line 10, in module
+AssertionError: VLAN 4100 is out of range 1-4094`,q:{en:`What is the correct conclusion?`,hi:`Sahi nishkarsh kya hai?`},o:[{en:`The indentation fix did not work`,hi:`The indentation fix did not work`},{en:`The value 4100 breaks the id range rule, so correct it to the intended id`,hi:`The value 4100 breaks the id range rule, so correct it to the intended id`},{en:`Lint is broken`,hi:`Lint is broken`},{en:`The switch rejected the VLAN`,hi:`The switch rejected the VLAN`}],a:1,w:{en:`The pipeline progressed to the test stage; now a value error is visible.`,hi:`Pipeline test stage tak pahunchi; ab value error dikh rahi hai.`}},{title:{en:`Stage does not exist`,hi:`Stage maujood nahi`},ticket:{en:`A new deploy job was added and the pipeline cannot be built. Read the message.`,hi:`Naya deploy job joda gaya aur pipeline ban nahi paa rahi. Message padho.`},out:`AUTO$ ci run
+
+Pipeline #102 created for main (working)
+Pipeline failed: job deploy: chosen stage ship does not exist`,q:{en:`What should you check?`,hi:`Kya check karoge?`},o:[{en:`The stages list and the stage name in the deploy job`,hi:`The stages list and the stage name in the deploy job`},{en:`The switch cable`,hi:`The switch cable`},{en:`The VLAN names`,hi:`The VLAN names`},{en:`The runner version`,hi:`The runner version`}],a:0,w:{en:`The job stage must match a name in stages; here ship was a typo.`,hi:`Job ka stage stages ke naam se match karna chahiye; yahan ship typo tha.`}},{title:{en:`Manual job pending`,hi:`Manual job pending`},ticket:{en:`The pipeline says passed, but the VLAN is not on the switch. Look at the output.`,hi:`Pipeline passed kehti hai, par VLAN switch par nahi hai. Output dekho.`},out:`AUTO$ ci status
+Pipeline #104 passed on main (ea90b84)
+  validate   lint               warning
+  deploy     push               manual
+
+AUTO$ ci log push
+Job "push" (manual)
+(no log: manual)`,q:{en:`Why is the VLAN missing?`,hi:`VLAN kyon missing hai?`},o:[{en:`The runner is offline`,hi:`The runner is offline`},{en:`The deploy job is manual and has not been started`,hi:`The deploy job is manual and has not been started`},{en:`Lint failed and blocked it`,hi:`Lint failed and blocked it`},{en:`The log was deleted`,hi:`The log was deleted`}],a:1,w:{en:`A manual job waits for a person; the pipeline still shows passed.`,hi:`Manual job insaan ka intezaar karta hai; pipeline phir bhi passed dikhati hai.`}},{title:{en:`Warning on lint`,hi:`Lint par warning`},ticket:{en:`A lint job shows warning, and the pipeline continued. Read the log.`,hi:`Lint job warning dikhata hai aur pipeline aage badhi. Log padho.`},out:`AUTO$ ci log lint
+Job "lint" (warning)
+$ git checkout working
+$ echo preparing
+preparing
+$ exit 1
+ERROR: Job failed: command "exit 1" exited with a non-zero status`,q:{en:`Why did the pipeline not stop?`,hi:`Pipeline kyon nahi ruki?`},o:[{en:`The job has allow_failure: true`,hi:`The job has allow_failure: true`},{en:`Warnings are errors`,hi:`Warnings are errors`},{en:`before_script cancelled it`,hi:`before_script cancelled it`},{en:`The pipeline was manual`,hi:`The pipeline was manual`}],a:0,w:{en:`allow_failure turns a failure into a warning. Do not use it on safety checks.`,hi:`allow_failure failure ko warning bana deta hai. Safety checks par mat lagao.`}},{title:{en:`Password in the script`,hi:`Script mein password`},ticket:{en:`During review you open deploy.py before adding it to the shared project.`,hi:`Shared project mein jodne se pehle review mein deploy.py kholte ho.`},out:`AUTO$ cat deploy.py
+conn = ConnectHandler(device_type="nk_ios", host="10.99.0.11", username="netops", password="(typed in the file)")`,q:{en:`What is the safe change?`,hi:`Safe badlav kya hai?`},o:[{en:`Keep it, the repository is private`,hi:`Keep it, the repository is private`},{en:`Move the password to a comment`,hi:`Move the password to a comment`},{en:`Read host, user and password from masked CI variables and rotate any exposed value`,hi:`Read host, user and password from masked CI variables and rotate any exposed value`},{en:`Rename the file`,hi:`Rename the file`}],a:2,w:{en:`Secrets belong in masked, protected variables or a vault, not in the repository.`,hi:`Secrets masked, protected variables ya vault mein hote hain, repository mein nahi.`}}];export{e as default};

@@ -1,0 +1,75 @@
+var e=[{title:{en:`Internet down after edge hardening`,hi:`Edge hardening ke baad internet down`},ticket:{en:`Kaveri Textiles: "Since last night's security change on CUST-EDGE nobody can reach the internet." The ISP (AS 64500) confirms nothing changed on its side.`,hi:`Kaveri Textiles: "CUST-EDGE par kal raat ke security change ke baad koi internet tak nahi pahunch pa raha." ISP (AS 64500) confirm karta hai ki uski side kuch nahi badla.`},out:`CUST-EDGE# show ip bgp summary
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+100.64.10.1     4        64500       0       0        1    0    0 00:41:07 Active
+
+CUST-EDGE# ping 100.64.10.1 source GigabitEthernet0/0
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/2 ms
+
+CUST-EDGE# show ip access-lists EDGE-IN
+Extended IP access list EDGE-IN
+    10 permit icmp any any (27 matches)
+    20 permit udp any any eq domain (112 matches)
+    30 deny ip any any (64 matches)`,q:{en:`What is the correct fix?`,hi:`Sahi fix kya hai?`},o:[{en:`Add ebgp-multihop 2 towards 100.64.10.1`,hi:`100.64.10.1 ki taraf ebgp-multihop 2 jodo`},{en:`Change the remote-as to 65010`,hi:`remote-as ko 65010 karo`},{en:`Permit TCP port 179 from 100.64.10.1 in EDGE-IN, both as destination and as source port`,hi:`EDGE-IN mein 100.64.10.1 se TCP port 179 permit karo, destination aur source port dono ke roop mein`},{en:`Run clear ip bgp * to restart all sessions`,hi:`Saare sessions restart karne ke liye clear ip bgp * chalao`}],a:2,w:{en:`Active with a working ping means TCP 179 is failing. The ACL allows ICMP and DNS but drops BGP. Either router may open the session, so permit the ISP's SYN to port 179 and replies from its port 179. Multihop and AS changes are irrelevant; clear ip bgp * only causes more disruption.`,hi:`Chalte ping ke saath Active matlab TCP 179 fail ho raha hai. ACL ICMP aur DNS allow karta hai par BGP drop karta hai. Koi bhi router session khol sakta hai, isliye ISP ka port 179 par SYN aur uske port 179 se replies dono permit karo. Multihop aur AS changes se matlab nahi; clear ip bgp * sirf aur disruption laata hai.`}},{title:{en:`Carrier loopback session never starts`,hi:`Carrier loopback session kabhi shuru nahi hota`},ticket:{en:`The metro carrier (R3, AS 65103) says its session to the transit carrier's loopback 2.2.2.2 has never come up. R2 is already configured with update-source and ebgp-multihop.`,hi:`Metro carrier (R3, AS 65103) kehta hai ki transit carrier ke loopback 2.2.2.2 wala uska session kabhi up nahi hua. R2 par update-source aur ebgp-multihop pehle se configured hain.`},out:`R3# show running-config | section router bgp
+router bgp 65103
+ bgp router-id 3.3.3.3
+ neighbor 2.2.2.2 remote-as 65102
+ neighbor 2.2.2.2 update-source Loopback0
+ neighbor 10.34.0.2 remote-as 65104
+
+R3# show ip bgp neighbors 2.2.2.2 | include state|connected
+  BGP state = Idle
+  External BGP neighbor not directly connected.`,q:{en:`What should be added on R3?`,hi:`R3 par kya jodna chahiye?`},o:[{en:`neighbor 2.2.2.2 ebgp-multihop 2`,hi:`neighbor 2.2.2.2 ebgp-multihop 2`},{en:`neighbor 2.2.2.2 next-hop-self`,hi:`neighbor 2.2.2.2 next-hop-self`},{en:`A second update-source towards 10.23.0.1`,hi:`10.23.0.1 ki taraf doosra update-source`},{en:`network 3.3.3.3 mask 255.255.255.255`,hi:`network 3.3.3.3 mask 255.255.255.255`}],a:0,w:{en:`eBGP expects a directly connected peer; 2.2.2.2 is a loopback, so the connected check fails and the session stays Idle. ebgp-multihop 2 disables the check and raises the TTL. The static route to 2.2.2.2 and update-source are already in place.`,hi:`eBGP directly connected peer expect karta hai; 2.2.2.2 loopback hai, isliye connected check fail hota hai aur session Idle rehta hai. ebgp-multihop 2 check band karta hai aur TTL badhata hai. 2.2.2.2 ka static route aur update-source pehle se hain.`}},{title:{en:`Session resets right after TCP comes up`,hi:`TCP up hote hi session reset`},ticket:{en:`A new CUST-EDGE engineer configured BGP towards the ISP. The session never reaches Established and the log keeps printing the same message.`,hi:`Ek naye CUST-EDGE engineer ne ISP ki taraf BGP configure kiya. Session kabhi Established tak nahi pahunchta aur log wahi message baar baar print karta hai.`},out:`%BGP-3-NOTIFICATION: sent to neighbor 100.64.10.1 passive 2/2 (peer in wrong AS) 2 bytes FBF4
+
+CUST-EDGE# show running-config | include neighbor
+ neighbor 100.64.10.1 remote-as 64050
+ neighbor 100.64.10.1 description Skyline-Net`,q:{en:`What is wrong?`,hi:`Kya galat hai?`},o:[{en:`TCP port 179 is blocked`,hi:`TCP port 179 blocked hai`},{en:`remote-as is 64050, but the ISP's real AS is 64500 (0xFBF4)`,hi:`remote-as 64050 hai, par ISP ka asli AS 64500 (0xFBF4) hai`},{en:`The router IDs are duplicated`,hi:`Router IDs duplicate hain`},{en:`The hold timers do not match`,hi:`Hold timers match nahi karte`}],a:1,w:{en:`NOTIFICATION 2/2 means the AS in the peer's OPEN does not match the configured remote-as. TCP clearly worked, so port 179 is fine. FBF4 in hex is 64500; correct the typo 64050. Hold timers are negotiated, not required to match.`,hi:`NOTIFICATION 2/2 matlab peer ke OPEN ka AS configured remote-as se match nahi karta. TCP saaf chala, isliye port 179 theek hai. FBF4 hex mein 64500 hai; typo 64050 theek karo. Hold timers negotiate hote hain, match hona zaroori nahi.`}},{title:{en:`One-way internet: pings leave, replies never return`,hi:`One-way internet: pings jaate hain, replies wapas nahi aate`},ticket:{en:`PC1 (192.168.50.10) cannot ping 203.0.113.1. CUST-EDGE shows the ISP's routes. The ISP says it has no route to 192.168.50.0/24.`,hi:`PC1 (192.168.50.10) 203.0.113.1 ko ping nahi kar pata. CUST-EDGE par ISP ke routes dikhte hain. ISP kehta hai uske paas 192.168.50.0/24 ka route nahi hai.`},out:`CUST-EDGE# show running-config | section router bgp
+router bgp 65010
+ bgp router-id 10.10.10.10
+ neighbor 100.64.10.1 remote-as 64500
+ network 192.168.0.0 mask 255.255.0.0
+
+CUST-EDGE# show ip route connected
+C        192.168.50.0/24 is directly connected, GigabitEthernet0/1
+C        100.64.10.0/30 is directly connected, GigabitEthernet0/0
+
+CUST-EDGE# show ip bgp
+     Network          Next Hop            Metric LocPrf Weight Path
+ *>   198.51.100.0     100.64.10.1              0             0 64500 i
+ *>   203.0.113.0      100.64.10.1              0             0 64500 i`,q:{en:`Why is the LAN not advertised?`,hi:`LAN advertise kyun nahi ho raha?`},o:[{en:`The ISP filters private addresses`,hi:`ISP private addresses filter karta hai`},{en:`The session is not Established`,hi:`Session Established nahi hai`},{en:`The LAN needs to be redistributed with redistribute connected`,hi:`LAN ko redistribute connected se redistribute karna zaroori hai`},{en:`The network statement does not match the RIB; it must be network 192.168.50.0 mask 255.255.255.0`,hi:`Network statement RIB se match nahi karta; yeh network 192.168.50.0 mask 255.255.255.0 hona chahiye`}],a:3,w:{en:`BGP network originates a prefix only if the exact prefix and mask are in the RIB. Only 192.168.50.0/24 exists, so 192.168.0.0/16 produces nothing, as the missing 0.0.0.0 line shows. The session is up (ISP routes are present). Redistribution would work but is not needed and gives origin ?.`,hi:`BGP network prefix tabhi originate karta hai jab exact prefix aur mask RIB mein ho. Sirf 192.168.50.0/24 hai, isliye 192.168.0.0/16 kuch nahi banata, jaisa missing 0.0.0.0 line dikhati hai. Session up hai (ISP routes maujood hain). Redistribution chalega par zaroori nahi aur origin ? deta hai.`}},{title:{en:`BGP route marked r`,hi:`BGP route r mark hua`},ticket:{en:`During an audit you notice an unusual status code on CUST-EDGE and are asked what it means for failover.`,hi:`Audit ke dauraan aap CUST-EDGE par ek unusual status code dekhte ho aur aapse poocha jaata hai ki failover ke liye iska kya matlab hai.`},out:`CUST-EDGE# show ip bgp
+     Network          Next Hop            Metric LocPrf Weight Path
+ *>   192.168.50.0     0.0.0.0                  0         32768 i
+ r>   203.0.113.0      100.64.10.1              0             0 64500 i
+
+CUST-EDGE# show ip route 203.0.113.0
+Routing entry for 203.0.113.0/24
+  Known via "static", distance 1, metric 0
+  Routing Descriptor Blocks:
+  * 100.64.10.1`,q:{en:`What does the r mean here?`,hi:`Yahan r ka kya matlab hai?`},o:[{en:`RIB-failure: the BGP best path lost to a static route with lower AD, so failover will not follow BGP`,hi:`RIB-failure: BGP best path kam AD wale static route se haar gaya, isliye failover BGP ko follow nahi karega`},{en:`The route was received from a route reflector`,hi:`Route route reflector se mila`},{en:`The route is suppressed by an aggregate`,hi:`Route aggregate ne suppress kiya`},{en:`The next hop is unreachable`,hi:`Next hop unreachable hai`}],a:0,w:{en:`r means RIB-failure: BGP chose a best path, but the routing table installed another source with a better AD (static, AD 1). Suppressed is s; an unreachable next hop removes the *. Remove the static route so the BGP route (AD 20) is used and can fail over.`,hi:`r matlab RIB-failure: BGP ne best path chuna, par routing table ne behtar AD wala doosra source install kiya (static, AD 1). Suppressed s hota hai; unreachable next hop * hata deta hai. Static route hatao taaki BGP route (AD 20) use ho aur failover kar sake.`}},{title:{en:`Traffic prefers the backup ISP`,hi:`Traffic backup ISP prefer kar raha hai`},ticket:{en:`Kaveri Textiles added ISP-B (AS 64510) as backup. Outbound traffic to 203.0.113.0/24 now goes through ISP-B, although ISP-A's path is shorter.`,hi:`Kaveri Textiles ne ISP-B (AS 64510) ko backup ki tarah joda. 203.0.113.0/24 ka outbound traffic ab ISP-B se jaata hai, jabki ISP-A ka path chhota hai.`},out:`CUST-EDGE# show ip bgp 203.0.113.0
+BGP routing table entry for 203.0.113.0/24, version 9
+Paths: (2 available, best #1, table default)
+  64510 64500
+    100.64.20.1 from 100.64.20.1 (64.51.0.1)
+      Origin IGP, localpref 100, weight 150, valid, external, best
+  64500
+    100.64.10.1 from 100.64.10.1 (64.50.0.1)
+      Origin IGP, metric 0, localpref 100, valid, external`,q:{en:`Why is the ISP-B path best?`,hi:`ISP-B path best kyun hai?`},o:[{en:`Its origin code is better`,hi:`Uska origin code behtar hai`},{en:`It has a lower MED`,hi:`Uska MED kam hai`},{en:`Its weight of 150 is compared at step 1, before AS_PATH length`,hi:`Uska weight 150 step 1 par compare hota hai, AS_PATH length se pehle`},{en:`It is the oldest path`,hi:`Yeh sabse purana path hai`}],a:2,w:{en:`Weight is the first step and higher wins, so 150 beats 0 before AS_PATH (2 against 1) is ever considered. Both origins are IGP; MED is only compared within one neighbouring AS; age is a late tie-breaker. Remove the neighbor weight and soft-clear inbound.`,hi:`Weight pehla step hai aur zyada jeetta hai, isliye 150 AS_PATH (2 vs 1) dekhe jaane se pehle 0 ko hara deta hai. Dono origins IGP hain; MED sirf ek padosi AS ke andar compare hota hai; umar late tie-breaker hai. Neighbor weight hatao aur inbound soft-clear karo.`}},{title:{en:`iBGP routes without a star`,hi:`Bina star ke iBGP routes`},ticket:{en:`A second internal router, CORE1, peers over iBGP with CUST-EDGE. CORE1 has the ISP prefixes in its BGP table but not in its routing table.`,hi:`Ek doosra internal router, CORE1, CUST-EDGE ke saath iBGP par peer karta hai. CORE1 ki BGP table mein ISP prefixes hain par routing table mein nahi.`},out:`CORE1# show ip bgp
+     Network          Next Hop            Metric LocPrf Weight Path
+  i  198.51.100.0     100.64.10.1              0    100      0 64500 i
+  i  203.0.113.0      100.64.10.1              0    100      0 64500 i
+
+CORE1# show ip route 100.64.10.1
+% Network not in table`,q:{en:`What is the best fix?`,hi:`Sabse achha fix kya hai?`},o:[{en:`Add ebgp-multihop on CORE1`,hi:`CORE1 par ebgp-multihop jodo`},{en:`Configure neighbor CORE1 next-hop-self on CUST-EDGE (or advertise 100.64.10.0/30 in the IGP)`,hi:`CUST-EDGE par neighbor CORE1 next-hop-self configure karo (ya 100.64.10.0/30 ko IGP mein advertise karo)`},{en:`Raise the local preference to 200`,hi:`Local preference 200 karo`},{en:`Change CORE1's AS number`,hi:`CORE1 ka AS number badlo`}],a:1,w:{en:`iBGP does not change the next hop, so CORE1 sees 100.64.10.1, which it cannot reach. Without a reachable next hop the paths are not valid (no *) and never best. next-hop-self on the edge, or advertising the link subnet into the IGP, fixes it. Local preference is only evaluated for valid paths.`,hi:`iBGP next hop nahi badalta, isliye CORE1 ko 100.64.10.1 dikhta hai, jahan woh nahi pahunch sakta. Reachable next hop ke bina paths valid nahi (koi * nahi) aur kabhi best nahi. Edge par next-hop-self, ya link subnet ko IGP mein advertise karna, ise theek karta hai. Local preference sirf valid paths ke liye evaluate hoti hai.`}},{title:{en:`The summary that never appears`,hi:`Woh summary jo kabhi nahi dikhta`},ticket:{en:`An engineer added a summary for Kaveri's four LANs so the ISP would see one /22. The ISP sees nothing new, and neither does CUST-EDGE's own BGP table.`,hi:`Ek engineer ne Kaveri ke chaar LANs ke liye summary joda taaki ISP ko ek /22 dikhe. ISP ko kuch naya nahi dikhta, aur CUST-EDGE ki apni BGP table mein bhi nahi.`},out:`CUST-EDGE# show running-config | section router bgp
+router bgp 65010
+ bgp router-id 10.10.10.10
+ neighbor 100.64.10.1 remote-as 64500
+ aggregate-address 192.168.48.0 255.255.252.0 summary-only
+
+CUST-EDGE# show ip route connected | include 192.168
+C        192.168.48.0/24 is directly connected, GigabitEthernet0/1
+C        192.168.49.0/24 is directly connected, GigabitEthernet0/2
+C        192.168.50.0/24 is directly connected, GigabitEthernet0/3
+C        192.168.51.0/24 is directly connected, GigabitEthernet0/4
+
+CUST-EDGE# show ip bgp | include 192.168
+CUST-EDGE#`,q:{en:`Why is the aggregate missing?`,hi:`Aggregate missing kyun hai?`},o:[{en:`summary-only hides the aggregate itself`,hi:`summary-only khud aggregate ko chhupa deta hai`},{en:`The mask should be 255.255.255.0`,hi:`Mask 255.255.255.0 hona chahiye`},{en:`as-set is mandatory for aggregates`,hi:`Aggregates ke liye as-set zaroori hai`},{en:`No component prefix is in the BGP table; the LANs must first be advertised with network statements`,hi:`Koi component prefix BGP table mein nahi hai; LANs ko pehle network statements se advertise karna hoga`}],a:3,w:{en:`aggregate-address needs at least one more-specific prefix in the BGP table, not just in the RIB. Add network statements for the /24s (or redistribute them); then the /22 appears and summary-only suppresses the specifics. summary-only never hides the aggregate, and as-set is optional.`,hi:`aggregate-address ko BGP table mein kam se kam ek more-specific prefix chahiye, sirf RIB mein nahi. /24s ke liye network statements jodo (ya unhe redistribute karo); phir /22 dikhega aur summary-only specifics suppress karega. summary-only kabhi aggregate nahi chhupata, aur as-set optional hai.`}}];export{e as default};

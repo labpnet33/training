@@ -1,0 +1,1 @@
+var e={read:14,blurb:{en:`Wired 802.1X from supplicant to session. Practise the three assessed labs and validate both permitted and denied behavior.`,hi:`Supplicant se session tak wired 802.1X. Teen assessed labs practice karo aur permitted aur denied behavior validate karo.`}};export{e as default};

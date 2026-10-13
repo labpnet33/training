@@ -1,0 +1,97 @@
+var e={id:`cloudblades-events-verify`,h:{en:`CloudBlades, Strata Cloud Manager, SASE events and verification`,hi:`CloudBlades, Strata Cloud Manager, SASE events aur verification`},body:{en:`
+<p>A modern phone has apps. The phone itself does the basics, and apps add features such as maps or banking. <b>CloudBlades</b> are the apps of the Prisma SD-WAN controller: small integration modules that connect the controller to another platform and automate a task. This chapter explains CloudBlades and Strata Cloud Manager at concept level, shows which events to watch in a SASE design, and gives a verification routine you can use after every change.</p>
+<h3>CloudBlades at concept level</h3>
+<p>A CloudBlade is an integration module that runs on the controller side and uses APIs to automate work between Prisma SD-WAN and another product. The documentation lists several. Three matter for you:</p>
+<table class="cmp"><tr><th>CloudBlade</th><th>What it does</th></tr><tr><td>Prisma Access integration</td><td>Automates IPsec connections from remote ION devices to Prisma Access, for Panorama-managed and cloud-managed Prisma Access. Requires matching CloudBlade versions (3.x or later for Panorama-managed, 3.x to 4.x for cloud managed in the page I reviewed)</td></tr><tr><td>Public cloud integrations</td><td>For example the Azure Virtual WAN integration, which helps build SD-WAN connectivity to a cloud environment</td></tr><tr><td>Email Notifications for Alarms-Alerts</td><td>Sends selected event codes to email recipients (psd-ops)</td></tr></table>
+<p>The older route to Prisma Access used the CloudBlade. Today the native <b>SASE Easy Onboarding</b> (chapter 4) does the same job inside Strata Cloud Manager, without a CloudBlade. The documentation for the native method says that if you already have a CloudBlade connection you must deactivate it and contact Palo Alto Networks support before switching. For the exam, remember: CloudBlades are integration modules; the native integration replaces the CloudBlade for onboarding branches to Prisma Access.</p>
+<h3>Strata Cloud Manager at concept level</h3>
+<p><b>Strata Cloud Manager</b> is the cloud management interface of Palo Alto Networks. For Prisma SD-WAN it is where you configure sites, devices, circuits, policy and SASE connectivity, and where the dashboards, incidents and reports of psd-ops live. For Prisma Access cloud managed it holds the remote network and bandwidth settings, and it shows ADEM data. Because both products can be managed there, a single tenant service group, a single login and a single audit trail cover the whole SASE design. A Panorama-managed Prisma Access still works with the ION, but some prerequisites sit on Panorama (chapter 4).</p>
+<div class="dia"><svg viewBox="0 0 640 260" role="img" aria-label="diagram">
+<rect x="10" y="15" width="620" height="45" rx="10" fill="#e2e8f0"/><text x="320" y="43" text-anchor="middle" class="svg-ink" font-size="13">Strata Cloud Manager (one tenant service group)</text>
+<rect x="10" y="95" width="180" height="70" rx="10" fill="#bae6fd"/><text x="100" y="125" text-anchor="middle" class="svg-ink" font-size="12">Prisma SD-WAN</text><text x="100" y="143" text-anchor="middle" class="svg-muted" font-size="11">controller + ION</text>
+<rect x="230" y="95" width="180" height="70" rx="10" fill="#ddd6fe"/><text x="320" y="125" text-anchor="middle" class="svg-ink" font-size="12">Prisma Access</text><text x="320" y="143" text-anchor="middle" class="svg-muted" font-size="11">cloud or Panorama managed</text>
+<rect x="450" y="95" width="180" height="70" rx="10" fill="#fde68a"/><text x="540" y="125" text-anchor="middle" class="svg-ink" font-size="12">CloudBlades</text><text x="540" y="143" text-anchor="middle" class="svg-muted" font-size="11">integration modules</text>
+<line x1="100" y1="60" x2="100" y2="95" stroke="#64748b" stroke-width="2"/><line x1="320" y1="60" x2="320" y2="95" stroke="#64748b" stroke-width="2"/><line x1="540" y1="60" x2="540" y2="95" stroke="#64748b" stroke-width="2"/>
+<rect x="150" y="200" width="340" height="45" rx="10" fill="#bbf7d0"/><text x="320" y="228" text-anchor="middle" class="svg-ink" font-size="12">Native SASE Easy Onboarding replaces the CloudBlade for branches</text>
+<line x1="190" y1="130" x2="230" y2="130" stroke="#64748b" stroke-width="2"/><line x1="320" y1="165" x2="320" y2="200" stroke="#64748b" stroke-width="2"/>
+</svg><p class="cap">Strata Cloud Manager manages both products. CloudBlades are optional integration modules; for branch onboarding the native method replaces them.</p></div>
+<h3>SASE-related events</h3>
+<p>psd-ops introduced the eight incident categories. For SASE, start with <b>Security Services</b> and <b>Services</b> for connectivity to cloud security services, and check Network and Traffic and Device for the circuit and the ION. I did not find a documented list of SASE event codes that I can verify, so this module does not give codes. Do the following instead: open the incident view for the site, filter to those categories, note the code, time and whether it is still raised, and keep the codes your release raises in your runbook. The ION also keeps a local list of standing alarms: <code>dump standingalarms</code> shows alarm codes, severity, time and site or peer identifiers (the documentation example mentions codes such as a VPN peer unavailable alarm). Think in layers: circuit, tunnel, routing, policy.</p>
+<h3>A verification routine after every SASE change</h3>
+<ol>
+<li><b>Connection status:</b> Branch Sites, SASE Connection column.</li>
+<li><b>Tunnels:</b> the site, Overlay Connections, Branch-Standard VPN; tunnels should be up on each connected circuit.</li>
+<li><b>BGP:</b> in a remote session run <code>dump routing peer status</code> and check the Prisma Access peer is Established.</li>
+<li><b>Policy:</b> look at a live flow for a test user and confirm the path is the Prisma Access tunnel for the internet application and the fabric for the private one (chapter 8 of psd-ts shows the flow view).</li>
+<li><b>Experience:</b> ADEM score for the test application, and compare the Prisma Access path with the direct path.</li>
+<li><b>Alarms:</b> incidents for Security Services and Services are clear; <code>dump standingalarms</code> shows nothing new.</li>
+</ol>
+<h4>Reference configuration (not run in the simulator)</h4>
+<pre class="code"><span class="c">Reference configuration (not run in the simulator)</span>
+<span class="c">! From a remote session on the br-pune-01 ION; read-only commands</span>
+dump controller status
+dump routing peer status all
+dump standingalarms</pre>
+<p>Command names are from the ION CLI reference; options depend on your release, so use the CLI help.</p>
+<h4>Illustrative output, not captured from a device</h4>
+<pre class="out">dump routing peer status all
+BGP Peer IP : <span class="hl">192.0.2.1</span>
+ID : 15269236938690175
+State : <span class="hl">Established</span>
+Uptime : 02:14:51</pre>
+<p>The format follows the documentation example (peer IP, ID, state and uptime). A state other than Established means routing to Prisma Access is not working even if the tunnel looks up; see psd-ts.</p>
+<div class="eg"><p><b>Worked example.</b> Harbor Retail connects br-delhi-02. Branch Sites shows the connection, Branch-Standard VPN lists two tunnels, the BGP peer is Established. A test laptop opens a SaaS CRM: the flow shows the Prisma Access path. ADEM shows a good score. The engineer records all six checks in the change ticket as evidence.</p></div>
+<div class="warn"><p><b>Common mistakes.</b> Declaring success when tunnels are up but BGP is not Established. Never looking at a real flow. Forgetting to note the incident codes for the runbook. Leaving the old CloudBlade integration running next to the native one.</p></div>
+<div class="exam"><p><b>Exam trap.</b> CloudBlades are integration modules; native SASE Easy Onboarding replaces the CloudBlade for onboarding. Strata Cloud Manager manages both products in one tenant service group. For SASE events look at Security Services and Services incidents first.</p></div>
+<div class="scn"><h4>Two integrations, one tunnel</h4><p>An engineer enabled SASE Easy Onboarding on br-chennai-03 while an old CloudBlade connection still existed. The tunnels flapped because two systems tried to manage the same objects. Support helped deactivate the CloudBlade, and after cleanup the native connection stayed stable.</p><p><b>Lesson:</b> only one integration should own the Prisma Access connection of a site.</p></div>
+<div class="iv"><p class="q">"What is a CloudBlade and when would you still use one?"</p><p>A CloudBlade is an integration module on the Prisma SD-WAN controller that automates a task with another platform, such as a public cloud or email notifications. For branch onboarding to Prisma Access the native SASE Easy Onboarding in Strata Cloud Manager replaces the CloudBlade; I use CloudBlades for integrations the native features do not cover, and never run both for the same connection.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>CloudBlades are integration modules; native onboarding replaces the Prisma Access CloudBlade for branches.</li><li>Strata Cloud Manager is the single management interface for both products.</li><li>For SASE events start with Security Services and Services incidents and dump standingalarms.</li><li>Verify in layers: connection, tunnels, BGP, flow, ADEM, alarms.</li><li>Record the incident codes your release raises.</li></ul></div>
+`,hi:`
+<p>Modern phone mein apps hote hain. Phone khud basics karta hai, aur apps maps ya banking jaise features jodte hain. <b>CloudBlades</b> Prisma SD-WAN controller ke apps hain: chhote integration modules jo controller ko kisi doosre platform se jodte hain aur ek kaam automate karte hain. Yeh chapter CloudBlades aur Strata Cloud Manager ko concept level par samjhata hai, SASE design mein kaun se events dekhne hain batata hai, aur har change ke baad use karne ke liye verification routine deta hai.</p>
+<h3>CloudBlades concept level par</h3>
+<p>CloudBlade controller side par chalne wala integration module hai jo APIs se Prisma SD-WAN aur kisi doosre product ke beech kaam automate karta hai. Documentation kai list karti hai. Teen aapke liye matter karte hain:</p>
+<table class="cmp"><tr><th>CloudBlade</th><th>Kya karta hai</th></tr><tr><td>Prisma Access integration</td><td>Remote ION devices se Prisma Access tak IPsec connections automate karta hai, Panorama-managed aur cloud-managed Prisma Access dono ke liye. Matching CloudBlade versions chahiye (jo page maine dekha usme Panorama-managed ke liye 3.x ya baad, cloud managed ke liye 3.x se 4.x)</td></tr><tr><td>Public cloud integrations</td><td>Jaise Azure Virtual WAN integration, jo cloud environment tak SD-WAN connectivity banane mein madad karta hai</td></tr><tr><td>Email Notifications for Alarms-Alerts</td><td>Chune hue event codes email recipients ko bhejta hai (psd-ops)</td></tr></table>
+<p>Prisma Access ka purana raasta CloudBlade use karta tha. Aaj native <b>SASE Easy Onboarding</b> (chapter 4) wahi kaam Strata Cloud Manager ke andar bina CloudBlade ke karta hai. Native method ki documentation kehti hai ki agar aapke paas pehle se CloudBlade connection hai to switch karne se pehle use deactivate karna aur Palo Alto Networks support se contact karna hoga. Exam ke liye yaad rakho: CloudBlades integration modules hain; branches ko Prisma Access par onboard karne ke liye native integration CloudBlade ki jagah leta hai.</p>
+<h3>Strata Cloud Manager concept level par</h3>
+<p><b>Strata Cloud Manager</b> Palo Alto Networks ka cloud management interface hai. Prisma SD-WAN ke liye yahan aap sites, devices, circuits, policy aur SASE connectivity configure karte ho, aur yahin psd-ops ke dashboards, incidents aur reports rehte hain. Prisma Access cloud managed ke liye isme remote network aur bandwidth settings hoti hain, aur yeh ADEM data dikhata hai. Kyunki dono products wahin manage ho sakte hain, ek tenant service group, ek login aur ek audit trail poore SASE design ko cover karte hain. Panorama-managed Prisma Access bhi ION ke saath chalta hai, par kuch prerequisites Panorama par hote hain (chapter 4).</p>
+<div class="dia"><svg viewBox="0 0 640 260" role="img" aria-label="diagram">
+<rect x="10" y="15" width="620" height="45" rx="10" fill="#e2e8f0"/><text x="320" y="43" text-anchor="middle" class="svg-ink" font-size="13">Strata Cloud Manager (ek tenant service group)</text>
+<rect x="10" y="95" width="180" height="70" rx="10" fill="#bae6fd"/><text x="100" y="125" text-anchor="middle" class="svg-ink" font-size="12">Prisma SD-WAN</text><text x="100" y="143" text-anchor="middle" class="svg-muted" font-size="11">controller + ION</text>
+<rect x="230" y="95" width="180" height="70" rx="10" fill="#ddd6fe"/><text x="320" y="125" text-anchor="middle" class="svg-ink" font-size="12">Prisma Access</text><text x="320" y="143" text-anchor="middle" class="svg-muted" font-size="11">cloud ya Panorama managed</text>
+<rect x="450" y="95" width="180" height="70" rx="10" fill="#fde68a"/><text x="540" y="125" text-anchor="middle" class="svg-ink" font-size="12">CloudBlades</text><text x="540" y="143" text-anchor="middle" class="svg-muted" font-size="11">integration modules</text>
+<line x1="100" y1="60" x2="100" y2="95" stroke="#64748b" stroke-width="2"/><line x1="320" y1="60" x2="320" y2="95" stroke="#64748b" stroke-width="2"/><line x1="540" y1="60" x2="540" y2="95" stroke="#64748b" stroke-width="2"/>
+<rect x="150" y="200" width="340" height="45" rx="10" fill="#bbf7d0"/><text x="320" y="228" text-anchor="middle" class="svg-ink" font-size="12">Native SASE Easy Onboarding branches ke liye CloudBlade ki jagah leta hai</text>
+<line x1="190" y1="130" x2="230" y2="130" stroke="#64748b" stroke-width="2"/><line x1="320" y1="165" x2="320" y2="200" stroke="#64748b" stroke-width="2"/>
+</svg><p class="cap">Strata Cloud Manager dono products manage karta hai. CloudBlades optional integration modules hain; branch onboarding ke liye native method unki jagah leta hai.</p></div>
+<h3>SASE-related events</h3>
+<p>psd-ops ne aath incident categories introduce ki thin. SASE ke liye cloud security services tak connectivity ke liye <b>Security Services</b> aur <b>Services</b> se shuru karo, aur circuit tatha ION ke liye Network and Traffic aur Device check karo. Mujhe SASE event codes ki aisi documented list nahi mili jo main verify kar sakoon, isliye yeh module codes nahi deta. Iske bajay yeh karo: site ka incident view kholo, un categories par filter karo, code, time aur abhi raised hai ya nahi note karo, aur apni release jo codes raise karti hai unhe runbook mein rakho. ION apni local standing alarms ki list bhi rakhta hai: <code>dump standingalarms</code> alarm codes, severity, time aur site ya peer identifiers dikhata hai (documentation example mein VPN peer unavailable jaise alarm ka zikr hai). Layers mein socho: circuit, tunnel, routing, policy.</p>
+<h3>Har SASE change ke baad verification routine</h3>
+<ol>
+<li><b>Connection status:</b> Branch Sites, SASE Connection column.</li>
+<li><b>Tunnels:</b> site, Overlay Connections, Branch-Standard VPN; har connected circuit par tunnels up hone chahiye.</li>
+<li><b>BGP:</b> remote session mein <code>dump routing peer status</code> chalao aur check karo ki Prisma Access peer Established hai.</li>
+<li><b>Policy:</b> test user ka live flow dekho aur confirm karo ki internet application ke liye path Prisma Access tunnel hai aur private ke liye fabric (psd-ts ka chapter 8 flow view dikhata hai).</li>
+<li><b>Experience:</b> test application ka ADEM score, aur Prisma Access path ko direct path se compare karo.</li>
+<li><b>Alarms:</b> Security Services aur Services ke incidents clear hain; <code>dump standingalarms</code> mein kuch naya nahi.</li>
+</ol>
+<h4>Reference configuration (not run in the simulator)</h4>
+<pre class="code"><span class="c">Reference configuration (not run in the simulator)</span>
+<span class="c">! From a remote session on the br-pune-01 ION; read-only commands</span>
+dump controller status
+dump routing peer status all
+dump standingalarms</pre>
+<p>Command names ION CLI reference se hain; options aapki release par nirbhar hain, isliye CLI help use karo.</p>
+<h4>Illustrative output, not captured from a device</h4>
+<pre class="out">dump routing peer status all
+BGP Peer IP : <span class="hl">192.0.2.1</span>
+ID : 15269236938690175
+State : <span class="hl">Established</span>
+Uptime : 02:14:51</pre>
+<p>Format documentation ke example (peer IP, ID, state aur uptime) ko follow karta hai. Established ke alawa koi state ka matlab hai Prisma Access tak routing kaam nahi kar rahi, chahe tunnel up dikhe; psd-ts dekho.</p>
+<div class="eg"><p><b>Worked example.</b> Harbor Retail br-delhi-02 ko connect karta hai. Branch Sites connection dikhata hai, Branch-Standard VPN do tunnels list karta hai, BGP peer Established hai. Test laptop SaaS CRM kholta hai: flow Prisma Access path dikhata hai. ADEM achha score dikhata hai. Engineer chhahon checks ko change ticket mein saboot ke roop mein record karta hai.</p></div>
+<div class="warn"><p><b>Common galtiyan.</b> Tunnels up hone par success declare kar dena jabki BGP Established nahi. Kabhi real flow na dekhna. Runbook ke liye incident codes note karna bhool jaana. Native integration ke saath purana CloudBlade integration chalta chhod dena.</p></div>
+<div class="exam"><p><b>Exam trap.</b> CloudBlades integration modules hain; onboarding ke liye native SASE Easy Onboarding CloudBlade ki jagah leta hai. Strata Cloud Manager ek tenant service group mein dono products manage karta hai. SASE events ke liye pehle Security Services aur Services incidents dekho.</p></div>
+<div class="scn"><h4>Do integrations, ek tunnel</h4><p>Ek engineer ne br-chennai-03 par SASE Easy Onboarding enable kiya jabki purana CloudBlade connection abhi tha. Tunnels flap karne lage kyunki do systems ek hi objects manage karne ki koshish kar rahe the. Support ne CloudBlade deactivate karne mein madad ki, aur cleanup ke baad native connection stable raha.</p><p><b>Seekh:</b> site ke Prisma Access connection ka maalik sirf ek integration hona chahiye.</p></div>
+<div class="iv"><p class="q">"CloudBlade kya hai aur kab bhi use karoge?"</p><p>CloudBlade Prisma SD-WAN controller par integration module hai jo kisi doosre platform ke saath kaam automate karta hai, jaise public cloud ya email notifications. Branch ko Prisma Access par onboard karne ke liye Strata Cloud Manager ka native SASE Easy Onboarding CloudBlade ki jagah leta hai; main CloudBlades un integrations ke liye use karta hoon jo native features cover nahi karte, aur ek hi connection ke liye dono kabhi nahi chalata.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>CloudBlades integration modules hain; branches ke liye native onboarding Prisma Access CloudBlade ki jagah leta hai.</li><li>Strata Cloud Manager dono products ka single management interface hai.</li><li>SASE events ke liye Security Services aur Services incidents aur dump standingalarms se shuru karo.</li><li>Layers mein verify karo: connection, tunnels, BGP, flow, ADEM, alarms.</li><li>Apni release ke raise kiye incident codes record karo.</li></ul></div>
+`}};export{e as default};

@@ -1,0 +1,38 @@
+var e=[{title:{en:`No neighbours`,hi:`Koi neighbour nahi`},ticket:{en:`R1 and R2 in Vizag have a working cable but no OSPF neighbour. This is R2.`,hi:`Vizag mein R1 aur R2 ke beech cable theek hai lekin OSPF neighbour nahi. Yeh R2 hai.`},out:`lab@R2-VIZAG> show ospf interface ge-0/0/0.0 detail
+Interface           State   Area            DR ID           BDR ID          Nbrs
+ge-0/0/0.0          DR      0.0.0.0         10.255.5.2      0.0.0.0            0
+  Type: LAN, Address: 10.5.12.2, Mask: 255.255.255.252, MTU: 1500, Cost: 1
+  DR addr: 10.5.12.2, Priority: 128
+  Adj count: 0
+  Hello: 5, Dead: 20, ReXmit: 5, Not Stub
+  Auth type: None`,q:{en:`What is the likely fault if R1 uses the defaults?`,hi:`R1 defaults use karta ho to sambhavit fault kya hai?`},o:[{en:`Wrong subnet mask`,hi:`Galat subnet mask`},{en:`Hello and dead interval mismatch`,hi:`Hello aur dead interval mismatch`},{en:`Duplicate router ID`,hi:`Duplicate router ID`},{en:`MTU mismatch`,hi:`MTU mismatch`}],a:1,w:{en:`Hello 5 and dead 20 differ from the default 10 and 40, so hellos are discarded and Nbrs stays 0.`,hi:`Hello 5 aur dead 20 default 10 aur 40 se alag hain, isliye hellos discard hote hain aur Nbrs 0 rehta hai.`}},{title:{en:`Area mismatch`,hi:`Area mismatch`},ticket:{en:`R3 and R4 are cabled correctly and have addresses in the same /30, but are not neighbours. R3 shows this.`,hi:`R3 aur R4 sahi cabled hain aur same /30 mein addresses hain, lekin neighbour nahi. R3 yeh dikhata hai.`},out:`lab@R3-VIZAG> show ospf interface
+Interface           State   Area            DR ID           BDR ID          Nbrs
+ge-0/0/0.0          DR      0.0.0.0         10.255.5.3      10.255.5.2         1
+ge-0/0/1.0          DR      0.0.0.1         10.255.5.3      0.0.0.0            0
+ge-0/0/2.0          DRother 0.0.0.0         0.0.0.0         0.0.0.0            0
+lo0.0               DR      0.0.0.0         0.0.0.0         0.0.0.0            0`,q:{en:`What is the fix?`,hi:`Fix kya hai?`},o:[{en:`Change the hello timer`,hi:`Hello timer badlo`},{en:`Move ge-0/0/1.0 into area 0.0.0.0 to match R4`,hi:`ge-0/0/1.0 ko R4 ke match ke liye area 0.0.0.0 mein daalo`},{en:`Reboot R4`,hi:`R4 reboot karo`},{en:`Add a static route`,hi:`Static route lagao`}],a:1,w:{en:`Both ends of a link must be in the same area. R3 uses 0.0.0.1, R4 uses 0.0.0.0.`,hi:`Link ke dono ends same area mein hone chahiye. R3 0.0.0.1 use karta hai, R4 0.0.0.0.`}},{title:{en:`Interface not in OSPF`,hi:`Interface OSPF mein nahi`},ticket:{en:`R4 has no neighbour on ge-0/0/1. The interface is up with an address, and R1 has OSPF enabled on its side.`,hi:`R4 ka ge-0/0/1 par koi neighbour nahi. Interface up hai address ke saath, aur R1 ne apni side par OSPF enable kiya hai.`},out:`lab@R4-VIZAG> show ospf interface
+Interface           State   Area            DR ID           BDR ID          Nbrs
+ge-0/0/0.0          DR      0.0.0.0         10.255.5.4      0.0.0.0            0
+lo0.0               DR      0.0.0.0         0.0.0.0         0.0.0.0            0`,q:{en:`What is missing?`,hi:`Kya missing hai?`},o:[{en:`A default route`,hi:`Default route`},{en:`A longer dead interval`,hi:`Lamba dead interval`},{en:`A router ID`,hi:`Router ID`},{en:`set protocols ospf area 0.0.0.0 interface ge-0/0/1.0`,hi:`set protocols ospf area 0.0.0.0 interface ge-0/0/1.0`}],a:3,w:{en:`ge-0/0/1.0 is not in the list; it was never added under the area.`,hi:`ge-0/0/1.0 list mein nahi hai; ise area ke neeche kabhi add nahi kiya gaya.`}},{title:{en:`Two paths`,hi:`Do paths`},ticket:{en:`In Indore R1 learns the loopback of R4 over two paths. This is R1.`,hi:`Indore mein R1 R4 ka loopback do paths se seekhta hai. Yeh R1 hai.`},out:`lab@R1-INDORE> show route 10.255.4.4
+inet.0: 14 destinations, 14 routes (14 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+10.255.4.4/32      *[OSPF/10] 00:00:26, metric 2
+                    >  to 10.4.12.2 via ge-0/0/0.0
+                       to 10.4.13.2 via ge-0/0/1.0`,q:{en:`What does this output show?`,hi:`Yeh output kya dikhata hai?`},o:[{en:`A loop`,hi:`Loop`},{en:`Equal-cost multipath: two next hops of the same cost`,hi:`Equal-cost multipath: same cost ke do next hops`},{en:`An error`,hi:`Error`},{en:`A backup that is inactive`,hi:`Inactive backup`}],a:1,w:{en:`Same prefix and same metric from OSPF yield two next hops, ECMP.`,hi:`OSPF se same prefix aur same metric do next hops dete hain, ECMP.`}},{title:{en:`Wrong cost`,hi:`Galat cost`},ticket:{en:`In Mysuru a gigabit link shows cost 100 and the 10 Mbps path looks the same. This is R1.`,hi:`Mysuru mein gigabit link ka cost 100 dikhta hai. Yeh R1 hai.`},out:`lab@R1-MYSURU> show ospf interface ge-0/0/0.0 detail
+Interface           State   Area            DR ID           BDR ID          Nbrs
+ge-0/0/0.0          BDR     0.0.0.0         10.255.6.2      10.255.6.1         1
+  Type: LAN, Address: 10.6.12.1, Mask: 255.255.255.252, MTU: 1500, Cost: 100
+  DR addr: 10.6.12.2, Priority: 128
+  Adj count: 1
+  Hello: 10, Dead: 40, ReXmit: 5, Not Stub
+  Auth type: None
+lab@R1-MYSURU> show configuration protocols ospf
+reference-bandwidth 100g;`,q:{en:`Why is the cost 100?`,hi:`Cost 100 kyun hai?`},o:[{en:`The link is 100 Mbps`,hi:`Link 100 Mbps hai`},{en:`Dead interval is 100`,hi:`Dead interval 100 hai`},{en:`Reference bandwidth 100g divided by 1g equals 100`,hi:`Reference bandwidth 100g bhaag 1g barabar 100`},{en:`It is the OSPF default`,hi:`Yeh OSPF ka default hai`}],a:2,w:{en:`100 Gbps / 1 Gbps = 100. The Junos default of 100 Mbps would give 1.`,hi:`100 Gbps / 1 Gbps = 100. Junos ka default 100 Mbps 1 deta.`}},{title:{en:`Steered path`,hi:`Modha hua path`},ticket:{en:`After metric 500 on R1 ge-0/0/1.0, you check R1 in Mysuru.`,hi:`R1 ge-0/0/1.0 par metric 500 ke baad aap Mysuru mein R1 check karte ho.`},out:`lab@R1-MYSURU> show route 172.16.66.0/24
+inet.0: 14 destinations, 14 routes (14 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+172.16.66.0/24     *[OSPF/10] 00:00:30, metric 300
+                    >  to 10.6.12.2 via ge-0/0/0.0`,q:{en:`What happened?`,hi:`Kya hua?`},o:[{en:`The R1 to R3 path is now more expensive, so only R2 remains`,hi:`R1 se R3 path ab mehenga hai, isliye sirf R2 bacha`},{en:`The R2 link failed`,hi:`R2 link fail hua`},{en:`The static route took over`,hi:`Static route ne le liya`},{en:`OSPF stopped`,hi:`OSPF ruk gaya`}],a:0,w:{en:`A higher cost removes the second equal path; one next hop remains.`,hi:`Zyada cost doosra barabar path hata deta hai; ek next hop bachta hai.`}},{title:{en:`Stuck state`,hi:`Atki hui state`},ticket:{en:`A neighbour stays in ExStart after the link comes up. This is R1.`,hi:`Link up hone ke baad neighbour ExStart mein atka hai. Yeh R1 hai.`},out:`lab@R1> show ospf neighbor
+Address          Interface              State           ID               Pri  Dead
+10.0.12.2        ge-0/0/0.0             ExStart         10.0.0.2         128    34`,q:{en:`What do you compare?`,hi:`Kya compare karoge?`},o:[{en:`The MTU on both interfaces`,hi:`Dono interfaces ka MTU`},{en:`The loopback address`,hi:`Loopback address`},{en:`The OSPF reference bandwidth`,hi:`OSPF reference bandwidth`},{en:`The area ID`,hi:`Area ID`}],a:0,w:{en:`ExStart is where database descriptions are exchanged; an MTU mismatch typically blocks it. Area would stop the neighbour earlier.`,hi:`ExStart mein database descriptions exchange hote hain; MTU mismatch aam taur par ise rokta hai. Area neighbour ko pehle rok deta.`}}];export{e as default};

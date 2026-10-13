@@ -1,0 +1,105 @@
+var e={id:`big-picture`,h:{en:`IP services at CCNP depth: the big picture`,hi:`CCNP depth par IP services: badi picture`},body:{en:`
+<p><b>What you will learn in this module.</b> By the end of these twelve chapters you will be able to design an NTP hierarchy and lock it down with keys, trusted keys and access groups; read <code>show ntp associations detail</code> like a doctor reads an X-ray; explain what PTP (IEEE 1588) adds, what a grandmaster, boundary clock and transparent clock are, and interpret a PTP configuration on a Catalyst switch; predict exactly when a router routes and when it translates in NAT, and use route-map NAT, the NAT Virtual Interface idea and double NAT for overlapping networks; build HSRP version 2 for IPv4 and IPv6 with authentication, preempt delay and object tracking of interfaces and IP SLA probes; share load across gateways with several groups or GLBP; configure VRRP in both the classic and the IOS XE VRRPv3 address-family syntax and make it interoperate with another vendor's router; and troubleshoot all of it from real tickets. This covers CCNP ENCOR 350-401 v1.2 objective 3.3, IP services: interpret network time protocol configurations such as NTP and PTP, configure NAT/PAT, and configure first hop redundancy protocols such as HSRP and VRRP.</p>
+
+<p><b>Prerequisites.</b> You finished the CCNA modules <i>First hop redundancy</i>, <i>NAT</i> and <i>Operational services</i> (NTP, syslog, SNMP). You already know what a virtual IP and virtual MAC are, the HSRP states from Initial to Active, the four NAT address terms, how PAT uses ports, and what a stratum is. We will not re-teach those; we will go one level deeper, into the details an ENCOR exam question or a production outage actually depends on. You should also be comfortable with static routes, OSPF basics and standard/extended ACLs.</p>
+
+<h3>An analogy: a railway station that must never stop</h3>
+<p>Think of a big Indian railway junction. Three invisible services keep it running. First, <b>every clock on every platform must show the same time</b>; if platform 4 is two minutes fast, passengers miss trains and the control room cannot line up the logs of who did what. That is <b>NTP</b>, and for the signalling system that needs microsecond precision, <b>PTP</b>. Second, <b>the station has one famous public address</b> that the whole country knows, while hundreds of internal offices have their own internal numbers; the enquiry desk translates between them. That is <b>NAT</b>. Third, <b>the station master's office must never be empty</b>: if the station master falls ill, the deputy takes the same chair, the same phone number and the same badge, so nobody outside even notices. That is a <b>first hop redundancy protocol</b> such as HSRP or VRRP.</p>
+<p>None of these services is glamorous, and that is exactly why they break silently. Wrong time does not stop traffic; it quietly corrupts logs, certificates and authentication. A NAT mistake looks like "the internet is slow for some users". An FHRP that does not track the uplink keeps attracting traffic into a dead ISP. CCNP engineers are expected to prevent all three.</p>
+
+<div class="dia"><svg viewBox="0 0 640 250" role="img" aria-label="Where the three IP services sit in a site">
+<rect x="20" y="30" width="170" height="60" rx="10" fill="#fde68a"/><text x="105" y="55" text-anchor="middle" class="svg-ink" font-size="14">Time: NTP / PTP</text><text x="105" y="75" text-anchor="middle" class="svg-muted" font-size="12">HQ stratum 3, branches 4</text>
+<rect x="235" y="30" width="170" height="60" rx="10" fill="#bae6fd"/><text x="320" y="55" text-anchor="middle" class="svg-ink" font-size="14">Edge: NAT / PAT</text><text x="320" y="75" text-anchor="middle" class="svg-muted" font-size="12">private to public</text>
+<rect x="450" y="30" width="170" height="60" rx="10" fill="#bbf7d0"/><text x="535" y="55" text-anchor="middle" class="svg-ink" font-size="14">Gateway: FHRP</text><text x="535" y="75" text-anchor="middle" class="svg-muted" font-size="12">HSRP, VRRP, GLBP</text>
+<rect x="150" y="150" width="120" height="44" rx="8" fill="#e2e8f0"/><text x="210" y="177" text-anchor="middle" class="svg-ink" font-size="13">R1 .2</text>
+<rect x="370" y="150" width="120" height="44" rx="8" fill="#e2e8f0"/><text x="430" y="177" text-anchor="middle" class="svg-ink" font-size="13">R2 .3</text>
+<rect x="260" y="205" width="120" height="36" rx="8" fill="#ddd6fe"/><text x="320" y="228" text-anchor="middle" class="svg-ink" font-size="13">VIP .1</text>
+<line x1="105" y1="90" x2="200" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="320" y1="90" x2="220" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="535" y1="90" x2="430" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="270" y1="185" x2="300" y2="205" stroke="#64748b" stroke-width="2"/><line x1="370" y1="185" x2="340" y2="205" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="135" text-anchor="middle" class="svg-accent" font-size="12">all three run on the same edge routers</text>
+</svg><p class="cap">The three families of IP services in this module usually live on the same pair of edge routers.</p></div>
+
+<h3>Why these three belong together</h3>
+<p>In a real branch or campus edge, the same two routers usually do all three jobs: they are the default gateway pair (FHRP), they translate private addresses to the provider's addresses (NAT), and they are NTP clients of HQ and NTP servers for the switches behind them. The services also interact. If NAT runs on both routers but HSRP moves the gateway role, existing translations live only on the old router. If the routers' clocks differ, their logs cannot be correlated during an outage. If you track an IP SLA probe, the probe uses the router's own source address, which must not be caught by the NAT rule. Seeing them as one system is a senior-engineer skill.</p>
+
+<div class="eg"><p><b>Worked example.</b> The Hyderabad office has 180 users on 192.168.20.0/24 with gateway 192.168.20.1. R1 (192.168.20.2) goes to ISP-A, R2 (192.168.20.3) to ISP-B. With no FHRP, 180 PCs point at one router; one reboot means 180 help-desk calls. With HSRP, the VIP 192.168.20.1 moves in about 10 seconds with default timers, or under 1 second with millisecond timers. With tracking, it also moves when ISP-A's upstream dies even though R1's own cable is fine. With NTP, both routers stamp the failover logs with the same time, so the post-mortem shows R1's track went down at 10:15:02.110 and R2 became Active at 10:15:02.980.</p></div>
+
+<h3>The three labs you will build</h3>
+<p><b>Lab 1, HSRPv2 with object tracking.</b> R1 and R2 share VIP 192.168.20.1 in HSRP version 2 group 1 with MD5 key-string NK-HSRP. R1 (priority 110) probes 203.0.113.53 beyond ISP-A with IP SLA 1; track 10 lowers its priority by 20 when the probe fails, so R2 takes over. <b>Lab 2, VRRP between two vendors' gateways.</b> VRRP group 5, VIP 192.168.30.254, R1 priority 120 as Master, text key NKvrrp5, failover and automatic preemption. <b>Lab 3, Authenticated NTP hierarchy.</b> HQ (loopback 10.255.0.1) is the internal stratum 3 master, BR1 and BR2 must accept time only when signed with MD5 key 1, secret NK-Time, and BR2 has a hidden fault to find.</p>
+
+<table class="cmp"><tr><th>Chapters</th><th>What you build in your head</th></tr>
+<tr><td>2 to 4</td><td>NTP modes and hierarchy, NTP security and verification, PTP</td></tr>
+<tr><td>5 to 6</td><td>NAT order of operations, route-map NAT, NVI, overlapping networks, troubleshooting translations</td></tr>
+<tr><td>7 to 10</td><td>HSRPv2 and IPv6, priority, preempt and tracking, load sharing and GLBP, VRRPv2/v3 and interoperability</td></tr>
+<tr><td>11 to 12</td><td>Troubleshooting workflow through all three labs, summary and exam checklist</td></tr></table>
+
+<div class="warn"><p><b>Common mistake.</b> Treating these topics as "CCNA again". The ENCOR exam asks you to <i>interpret</i> configurations: which router is Active after a track goes down, why a client is still at stratum 16, which address an outside ACL sees. Memorising commands without predicting behaviour will fail those questions.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> Blueprint 3.3 says <i>interpret</i> NTP and PTP but <i>configure</i> NAT/PAT and FHRPs. Expect to read PTP output and roles, not to type long PTP configurations, but expect to build HSRP, VRRP and NAT from memory in a simulation.</p></div>
+
+<div class="scn"><h4>The outage nobody could reconstruct</h4><p>A retail head office lost internet for 40 minutes. Afterwards the team pulled logs from the firewall, both edge routers and the core switch. The firewall said the ISP link dropped at 14:02, R1 said HSRP changed at 13:49, R2 said 14:07 and the switch had 2019 dates because it had never had NTP. Nobody could tell whether HSRP moved before or after the ISP failed, so the root cause stayed "unknown". The fix was a proper NTP hierarchy with authentication, and HSRP tracking of the ISP path, which the post-mortem later showed was the real gap.</p><p><b>Lesson:</b> time, translation and gateway redundancy fail together; design and verify them together.</p></div>
+
+<div class="iv"><p class="q">"Why does a network engineer care about NTP if traffic flows fine with the wrong time?"</p><p>A strong answer lists concrete dependencies: log correlation across devices during incidents, certificate validity for SSH, TLS and 802.1X, time-based ACLs and Kerberos, and accurate NetFlow and SLA measurements. Then add that the time source itself must be trusted, which is why you authenticate NTP and restrict who may serve or query it.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>ENCOR 3.3 covers NTP and PTP (interpret), NAT/PAT (configure) and FHRPs such as HSRP and VRRP (configure).</li>
+<li>The same edge routers usually run all three services, and the services interact.</li>
+<li>Wrong time breaks logs, certificates and authentication silently, not traffic.</li>
+<li>An FHRP that does not track the upstream path can blackhole traffic while looking healthy.</li>
+<li>The three labs: HSRPv2 with IP SLA tracking, VRRP between vendors, authenticated NTP hierarchy.</li>
+</ul></div>
+`,hi:`
+<p><b>Is module mein aap kya seekhoge.</b> In barah chapters ke end tak aap NTP hierarchy design kar paoge aur use keys, trusted keys aur access groups se lock kar paoge; <code>show ntp associations detail</code> ko waise padh paoge jaise doctor X-ray padhta hai; samjha paoge ki PTP (IEEE 1588) kya jodta hai, grandmaster, boundary clock aur transparent clock kya hote hain, aur Catalyst switch par PTP configuration interpret kar paoge; exactly predict kar paoge ki NAT mein router kab route karta hai aur kab translate, aur route-map NAT, NAT Virtual Interface ka idea aur overlapping networks ke liye double NAT use kar paoge; IPv4 aur IPv6 ke liye HSRP version 2 bana paoge authentication, preempt delay aur interfaces aur IP SLA probes ki object tracking ke saath; kai groups ya GLBP se gateways par load share kar paoge; VRRP ko classic aur IOS XE VRRPv3 address-family dono syntax mein configure karke doosre vendor ke router ke saath chala paoge; aur yeh sab real tickets se troubleshoot kar paoge. Yeh CCNP ENCOR 350-401 v1.2 objective 3.3, IP services, cover karta hai: NTP aur PTP jaise network time protocol configurations interpret karna, NAT/PAT configure karna, aur HSRP aur VRRP jaise first hop redundancy protocols configure karna.</p>
+
+<p><b>Prerequisites.</b> Aap CCNA ke modules <i>First hop redundancy</i>, <i>NAT</i> aur <i>Operational services</i> (NTP, syslog, SNMP) khatam kar chuke ho. Aapko pehle se pata hai ki virtual IP aur virtual MAC kya hote hain, Initial se Active tak HSRP states, NAT ke chaar address terms, PAT ports kaise use karta hai, aur stratum kya hota hai. Hum yeh dobara nahi padhayenge; hum ek level gehraai mein jaayenge, un details mein jin par ENCOR exam ka sawaal ya production outage asal mein depend karta hai. Aapko static routes, OSPF basics aur standard/extended ACLs mein bhi comfortable hona chahiye.</p>
+
+<h3>Ek analogy: railway station jo kabhi rukna nahi chahiye</h3>
+<p>Ek bade Indian railway junction ke baare mein socho. Teen invisible services use chalaati hain. Pehli, <b>har platform ki har ghadi same time dikhaye</b>; agar platform 4 do minute aage hai to passengers ki train chhoot jaati hai aur control room logs line up nahi kar paata ki kisne kya kiya. Yeh <b>NTP</b> hai, aur signalling system ke liye jise microsecond precision chahiye, <b>PTP</b>. Doosri, <b>station ka ek famous public address hai</b> jo poora desh jaanta hai, jabki sainkdon internal offices ke apne internal numbers hain; enquiry desk dono ke beech translate karta hai. Yeh <b>NAT</b> hai. Teesri, <b>station master ka office kabhi khaali nahi hona chahiye</b>: agar station master beemar pad jaaye, to deputy wahi kursi, wahi phone number aur wahi badge le leta hai, taaki bahar kisi ko pata bhi na chale. Yeh HSRP ya VRRP jaisa <b>first hop redundancy protocol</b> hai.</p>
+<p>In mein se koi service glamorous nahi hai, aur isi wajah se yeh chupchaap toot-ti hain. Galat time traffic nahi rokta; woh logs, certificates aur authentication ko chupchaap kharab karta hai. NAT ki galti aisi dikhti hai jaise "kuch users ke liye internet slow hai". Jo FHRP uplink track nahi karta woh traffic ko mare hue ISP mein kheenchta rehta hai. CCNP engineers se teeno rokne ki ummeed ki jaati hai.</p>
+
+<div class="dia"><svg viewBox="0 0 640 250" role="img" aria-label="Site mein teen IP services kahan baithti hain">
+<rect x="20" y="30" width="170" height="60" rx="10" fill="#fde68a"/><text x="105" y="55" text-anchor="middle" class="svg-ink" font-size="14">Time: NTP / PTP</text><text x="105" y="75" text-anchor="middle" class="svg-muted" font-size="12">HQ stratum 3, branches 4</text>
+<rect x="235" y="30" width="170" height="60" rx="10" fill="#bae6fd"/><text x="320" y="55" text-anchor="middle" class="svg-ink" font-size="14">Edge: NAT / PAT</text><text x="320" y="75" text-anchor="middle" class="svg-muted" font-size="12">private se public</text>
+<rect x="450" y="30" width="170" height="60" rx="10" fill="#bbf7d0"/><text x="535" y="55" text-anchor="middle" class="svg-ink" font-size="14">Gateway: FHRP</text><text x="535" y="75" text-anchor="middle" class="svg-muted" font-size="12">HSRP, VRRP, GLBP</text>
+<rect x="150" y="150" width="120" height="44" rx="8" fill="#e2e8f0"/><text x="210" y="177" text-anchor="middle" class="svg-ink" font-size="13">R1 .2</text>
+<rect x="370" y="150" width="120" height="44" rx="8" fill="#e2e8f0"/><text x="430" y="177" text-anchor="middle" class="svg-ink" font-size="13">R2 .3</text>
+<rect x="260" y="205" width="120" height="36" rx="8" fill="#ddd6fe"/><text x="320" y="228" text-anchor="middle" class="svg-ink" font-size="13">VIP .1</text>
+<line x1="105" y1="90" x2="200" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="320" y1="90" x2="220" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="535" y1="90" x2="430" y2="150" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<line x1="270" y1="185" x2="300" y2="205" stroke="#64748b" stroke-width="2"/><line x1="370" y1="185" x2="340" y2="205" stroke="#64748b" stroke-width="2"/>
+<text x="320" y="135" text-anchor="middle" class="svg-accent" font-size="12">teeno same edge routers par chalti hain</text>
+</svg><p class="cap">Is module ki teen IP service families aam taur par edge routers ke ek hi pair par rehti hain.</p></div>
+
+<h3>Yeh teeno saath kyun hain</h3>
+<p>Real branch ya campus edge par, aam taur par wahi do routers teeno kaam karte hain: woh default gateway pair hain (FHRP), private addresses ko provider ke addresses mein translate karte hain (NAT), aur HQ ke NTP clients aur apne peeche ke switches ke NTP servers hain. Services ek doosre par asar bhi daalti hain. Agar NAT dono routers par chal raha hai lekin HSRP gateway role move kar deta hai, to existing translations sirf purane router par rehti hain. Agar routers ki clocks alag hain, to outage ke dauraan unke logs correlate nahi ho sakte. Agar aap IP SLA probe track karte ho, to probe router ka apna source address use karta hai, jo NAT rule mein nahi phansna chahiye. Inhe ek system ki tarah dekhna senior-engineer skill hai.</p>
+
+<div class="eg"><p><b>Worked example.</b> Hyderabad office mein 192.168.20.0/24 par 180 users hain, gateway 192.168.20.1. R1 (192.168.20.2) ISP-A ko jaata hai, R2 (192.168.20.3) ISP-B ko. Bina FHRP ke, 180 PCs ek router ko point karte hain; ek reboot matlab 180 help-desk calls. HSRP ke saath VIP 192.168.20.1 default timers par lagbhag 10 second mein move hota hai, ya millisecond timers ke saath 1 second se kam mein. Tracking ke saath, yeh tab bhi move hota hai jab ISP-A ka upstream mar jaaye jabki R1 ki apni cable theek ho. NTP ke saath dono routers failover logs par same time lagaate hain, to post-mortem dikhata hai ki R1 ka track 10:15:02.110 par down hua aur R2 10:15:02.980 par Active bana.</p></div>
+
+<h3>Teen labs jo aap banaoge</h3>
+<p><b>Lab 1, object tracking ke saath HSRPv2.</b> R1 aur R2 HSRP version 2 group 1 mein VIP 192.168.20.1 share karte hain, MD5 key-string NK-HSRP ke saath. R1 (priority 110) IP SLA 1 se ISP-A ke aage 203.0.113.53 ko probe karta hai; probe fail hone par track 10 uski priority 20 kam karta hai, to R2 kaam le leta hai. <b>Lab 2, do vendors ke gateways ke beech VRRP.</b> VRRP group 5, VIP 192.168.30.254, R1 priority 120 ke saath Master, text key NKvrrp5, failover aur automatic preemption. <b>Lab 3, authenticated NTP hierarchy.</b> HQ (loopback 10.255.0.1) internal stratum 3 master hai, BR1 aur BR2 time sirf tab accept karein jab woh MD5 key 1, secret NK-Time se signed ho, aur BR2 mein ek chhupa hua fault dhoondhna hai.</p>
+
+<table class="cmp"><tr><th>Chapters</th><th>Aap dimaag mein kya banaoge</th></tr>
+<tr><td>2 se 4</td><td>NTP modes aur hierarchy, NTP security aur verification, PTP</td></tr>
+<tr><td>5 se 6</td><td>NAT order of operations, route-map NAT, NVI, overlapping networks, translations troubleshoot karna</td></tr>
+<tr><td>7 se 10</td><td>HSRPv2 aur IPv6, priority, preempt aur tracking, load sharing aur GLBP, VRRPv2/v3 aur interoperability</td></tr>
+<tr><td>11 se 12</td><td>Teeno labs ke through troubleshooting workflow, summary aur exam checklist</td></tr></table>
+
+<div class="warn"><p><b>Common galti.</b> In topics ko "CCNA dobara" samajhna. ENCOR exam aapse configurations <i>interpret</i> karwata hai: track down hone ke baad kaunsa router Active hai, client abhi bhi stratum 16 par kyun hai, outside ACL kaunsa address dekhta hai. Behaviour predict kiye bina commands ratna in sawaalon mein fail karwayega.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> Blueprint 3.3 NTP aur PTP ke liye <i>interpret</i> kehta hai lekin NAT/PAT aur FHRPs ke liye <i>configure</i>. PTP output aur roles padhne ki ummeed rakho, lambi PTP configurations type karne ki nahi, lekin simulation mein HSRP, VRRP aur NAT yaad se banane ki ummeed rakho.</p></div>
+
+<div class="scn"><h4>Woh outage jise koi reconstruct nahi kar paaya</h4><p>Ek retail head office ka internet 40 minute ke liye gaya. Baad mein team ne firewall, dono edge routers aur core switch se logs nikaale. Firewall ne kaha ISP link 14:02 par gira, R1 ne kaha HSRP 13:49 par badla, R2 ne kaha 14:07 aur switch par 2019 ki dates thi kyunki us par kabhi NTP tha hi nahi. Koi nahi bata paaya ki HSRP ISP fail hone se pehle move hua ya baad mein, to root cause "unknown" reh gaya. Fix tha authentication ke saath proper NTP hierarchy, aur ISP path ki HSRP tracking, jo post-mortem ne baad mein asli gap dikhaya.</p><p><b>Seekh:</b> time, translation aur gateway redundancy saath mein fail hoti hain; inhe saath mein design aur verify karo.</p></div>
+
+<div class="iv"><p class="q">"Agar galat time ke saath bhi traffic theek chal raha hai to network engineer ko NTP ki parwaah kyun?"</p><p>Strong answer concrete dependencies list karta hai: incidents ke dauraan devices ke logs ka correlation, SSH, TLS aur 802.1X ke liye certificate validity, time-based ACLs aur Kerberos, aur sahi NetFlow aur SLA measurements. Phir jodo ki time source khud trusted hona chahiye, isliye aap NTP authenticate karte ho aur restrict karte ho ki kaun serve ya query kar sakta hai.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>ENCOR 3.3 NTP aur PTP (interpret), NAT/PAT (configure) aur HSRP aur VRRP jaise FHRPs (configure) cover karta hai.</li>
+<li>Aam taur par wahi edge routers teeno services chalaate hain, aur services ek doosre par asar daalti hain.</li>
+<li>Galat time chupchaap logs, certificates aur authentication todta hai, traffic nahi.</li>
+<li>Jo FHRP upstream path track nahi karta woh healthy dikhte hue bhi traffic blackhole kar sakta hai.</li>
+<li>Teen labs: IP SLA tracking ke saath HSRPv2, vendors ke beech VRRP, authenticated NTP hierarchy.</li>
+</ul></div>
+`}};export{e as default};

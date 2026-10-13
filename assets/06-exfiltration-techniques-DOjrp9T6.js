@@ -1,0 +1,99 @@
+var e={id:`exfiltration-techniques`,h:{en:`Data exfiltration: the channels attackers abuse, explained for defenders`,hi:`Data exfiltration: attackers kaunse channels abuse karte hain, defenders ke liye samjhaya`},body:{en:`
+<p>Picture a factory where a dishonest worker wants to take out secret drawings. The guards search big bags at the gate, so he never carries a bag. He hides one page a day in his lunch box, posts a few pages to himself, and photographs others and carries only the phone. Each trip looks normal; the pattern only shows when someone notices that he takes his lunch box home full every single day. <b>Data exfiltration</b> is the unauthorised transfer of data out of an organisation, and on a network it works exactly like that: it hides inside traffic that is normally allowed.</p>
+
+<h3>Where exfiltration sits in an attack</h3>
+<p>Exfiltration usually comes late. The attacker first gets in (phishing, an exposed service), establishes command and control, moves laterally, <b>collects</b> data and often <b>stages</b> it: copies files to one place, compresses and encrypts them into archives. Only then does the data leave. The MITRE ATT&amp;CK framework lists this as the <b>Exfiltration</b> tactic, with techniques such as exfiltration over the command-and-control channel, over an alternative protocol, and over a web service including cloud storage. For defenders this means two chances: catch the staging inside the network, or catch the transfer at the edge.</p>
+
+<div class="dia"><svg viewBox="0 0 640 220" role="img" aria-label="Attack stages leading to exfiltration">
+<rect x="10" y="70" width="110" height="50" rx="8" fill="#e2e8f0"/><text x="65" y="100" text-anchor="middle" class="svg-ink" font-size="12">Initial access</text>
+<rect x="135" y="70" width="110" height="50" rx="8" fill="#e2e8f0"/><text x="190" y="100" text-anchor="middle" class="svg-ink" font-size="12">C2 + lateral</text>
+<rect x="260" y="70" width="110" height="50" rx="8" fill="#fde68a"/><text x="315" y="93" text-anchor="middle" class="svg-ink" font-size="12">Collect +</text><text x="315" y="110" text-anchor="middle" class="svg-ink" font-size="12">stage</text>
+<rect x="385" y="70" width="110" height="50" rx="8" fill="#fed7aa"/><text x="440" y="100" text-anchor="middle" class="svg-ink" font-size="12">Exfiltrate</text>
+<rect x="510" y="70" width="120" height="50" rx="8" fill="#ddd6fe"/><text x="570" y="93" text-anchor="middle" class="svg-ink" font-size="12">Extortion /</text><text x="570" y="110" text-anchor="middle" class="svg-ink" font-size="12">ransom</text>
+<line x1="120" y1="95" x2="135" y2="95" stroke="#64748b" stroke-width="2"/><line x1="245" y1="95" x2="260" y2="95" stroke="#64748b" stroke-width="2"/><line x1="370" y1="95" x2="385" y2="95" stroke="#64748b" stroke-width="2"/><line x1="495" y1="95" x2="510" y2="95" stroke="#64748b" stroke-width="2"/>
+<text x="315" y="150" text-anchor="middle" class="svg-accent" font-size="12">detect: data hoarding</text><text x="440" y="170" text-anchor="middle" class="svg-accent" font-size="12">detect: unusual outbound</text>
+<text x="320" y="205" text-anchor="middle" class="svg-muted" font-size="12">Two chances to catch it: while data is staged inside, or while it leaves</text>
+</svg><p class="cap">Exfiltration is usually preceded by collection and staging, which is itself detectable.</p></div>
+
+<h3>The channels, how they hide, and how they show</h3>
+<table class="cmp"><tr><th>Channel</th><th>Why it works</th><th>Indicators</th><th>Controls</th></tr>
+<tr><td><b>DNS tunnelling</b></td><td>DNS is allowed almost everywhere and internal resolvers forward any query</td><td>Many long, random-looking subdomains of one domain; many TXT or NULL queries; high query rate from one host</td><td>Force all DNS through a protective resolver (Umbrella / Secure Access), block direct outbound 53, analytics on length and volume</td></tr>
+<tr><td><b>HTTPS to an attacker server</b></td><td>Encrypted web traffic is normal and content is hidden</td><td>Large uploads (bytes out much bigger than bytes in) to a new or low-reputation domain, odd hours, regular beacons</td><td>Web proxy / SWG with reputation, decryption where policy allows, NetFlow analytics</td></tr>
+<tr><td><b>Cloud storage and web services</b></td><td>Legitimate, trusted services: file sync, personal webmail, paste sites, code repositories</td><td>Uploads to personal (unsanctioned) accounts or instances, sudden volume spikes</td><td>CASB / SSE application control, tenant restrictions, DLP</td></tr>
+<tr><td><b>Email</b></td><td>Mail is business-critical</td><td>Attachments or auto-forward rules to personal addresses, bulk sends</td><td>Email DLP, block external auto-forwarding, mailbox rule alerts</td></tr>
+<tr><td><b>FTP, SFTP, SCP, SSH</b></td><td>Admin tools often allowed outbound</td><td>Outbound TCP 21 or 22 to unknown hosts, long sessions with large uploads</td><td>Egress filtering by destination, allow-lists for admin tools</td></tr>
+<tr><td><b>ICMP</b></td><td>Ping is rarely inspected</td><td>Oversized or high-rate echo traffic leaving the network, payloads that are not the usual pattern</td><td>Rate-limit and size-limit outbound ICMP, inspect payload length</td></tr>
+<tr><td><b>Other covert channels</b></td><td>NTP, IRC, messengers, even timing of packets</td><td>A protocol used at unusual volume or to unusual hosts</td><td>Default-deny egress, behaviour analytics</td></tr></table>
+<p>Exfiltration can also leave without the network: USB drives and printouts are handled by endpoint DLP and device control, not by the tools in this module.</p>
+
+<h3>DNS tunnelling, step by step</h3>
+<p>The attacker registers a domain, here the lab's fictional <code>tunnel.badexfil.top</code>, and runs its authoritative name server. Software on the infected host splits a file into small chunks, encodes each chunk into letters and digits, and sends it as the leftmost labels of a query, for example <code>mzxw6ytboi4dc.tunnel.badexfil.top</code>. The company's internal resolver does not know the answer, so it forwards the query out to the internet, and it eventually reaches the attacker's server, which decodes the chunk. The reply, often a TXT record, can carry instructions back. No firewall rule is broken: the PC only ever talked to the internal DNS server.</p>
+<p>The weakness is size. A DNS label holds at most 63 characters and a full name at most 253, so every query carries only a little data. Moving any real amount of data takes thousands of queries, and that volume and randomness is what you detect.</p>
+
+<div class="eg"><p><b>Worked example.</b> An attacker wants to steal a 10 MB database export over DNS. After encoding overhead each query carries roughly 150 bytes of real data. 10,000,000 / 150 is about 67,000 queries, all to one parent domain, all with unique random subdomains. A normal workstation makes a few thousand DNS queries a day to hundreds of different domains. A host making 67,000 unique lookups under one domain stands out immediately in a simple <code>stats count by host</code> search, which is exactly what you will run in the Splunk lab.</p></div>
+
+<div class="warn"><p><b>Common mistake.</b> Relying only on block lists of known bad domains. Attackers register fresh domains for each operation. Combine reputation with behaviour: newly seen domains, query length and randomness, upload volume, and destinations nobody else in the company uses.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> Know the list of channels: DNS, HTTPS/web, cloud storage, email, FTP/SSH/SCP/SFTP, ICMP, and covert channels such as NTP and messengers. Configuring a VLAN or an access port is never an exfiltration channel. The classic DNS tunnelling sign is many long, unique subdomains (often TXT) to one domain from one host.</p></div>
+
+<div class="scn"><h4>The developer's "backup"</h4><p>Before resigning, a developer uploaded 3 GB of source code to a personal cloud-storage account over HTTPS. The firewall allowed it because the service was popular and trusted. The SSE platform's application control saw an upload to a personal (not the company) instance of the service, and its DLP engine matched source-code patterns. The upload was blocked after 40 MB and an alert went to the SOC, which confirmed the activity with NetFlow showing the bytes-out spike from the developer's laptop.</p><p><b>Lesson:</b> the hardest exfiltration uses trusted services; you need identity-aware application control and DLP, not just reputation.</p></div>
+
+<div class="iv"><p class="q">"Name the ways data can be exfiltrated from a network and how you would detect each."</p><p>Strong answer: DNS tunnelling (volume and length of queries to one domain), HTTPS uploads (bytes-out ratio, new or low-reputation destinations), cloud storage and web services (CASB/SSE application control and DLP), email (DLP and forwarding rules), FTP/SSH (egress filtering, unusual destinations), ICMP (payload size and rate), plus staging inside the network (data hoarding in NetFlow analytics). Finish with controls: default-deny egress, forced DNS through a protective resolver, and behaviour analytics.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Exfiltration hides in allowed traffic and usually follows collection and staging inside the network.</li>
+<li>Main channels: DNS tunnelling, HTTPS uploads, cloud storage and web services, email, FTP/SSH, ICMP and covert channels.</li>
+<li>DNS tunnelling encodes data into subdomains; its size limits force huge volumes of unique queries to one domain.</li>
+<li>Detection relies on behaviour: volume, ratios, randomness and new destinations, not only block lists.</li>
+<li>Controls: forced protective DNS, default-deny egress, SSE/CASB with DLP, and telemetry analytics.</li>
+</ul></div>
+`,hi:`
+<p>Ek factory socho jahan ek beimaan worker secret drawings bahar le jaana chahta hai. Guards gate par bade bags check karte hain, isliye woh kabhi bag nahi le jaata. Woh roz ek page tiffin box mein chhupata hai, kuch pages khud ko post karta hai, aur baaki ki photo leta hai aur sirf phone le jaata hai. Har trip normal lagti hai; pattern tabhi dikhta hai jab koi notice kare ki woh har din tiffin bhara hua ghar le jaata hai. <b>Data exfiltration</b> organisation se data ka unauthorised transfer hai, aur network par yeh bilkul aise hi kaam karta hai: aam taur par allowed traffic ke andar chhupta hai.</p>
+
+<h3>Attack mein exfiltration kahan aata hai</h3>
+<p>Exfiltration aam taur par der se aata hai. Attacker pehle andar aata hai (phishing, exposed service), command and control banata hai, laterally move karta hai, data <b>collect</b> karta hai aur aksar use <b>stage</b> karta hai: files ek jagah copy karta hai, unhe compress aur encrypt karke archives banata hai. Uske baad hi data bahar jaata hai. MITRE ATT&amp;CK framework ise <b>Exfiltration</b> tactic ki tarah list karta hai, command-and-control channel par exfiltration, alternative protocol par, aur cloud storage samet web service par exfiltration jaisi techniques ke saath. Defenders ke liye iska matlab do mauke: network ke andar staging pakdo, ya edge par transfer pakdo.</p>
+
+<div class="dia"><svg viewBox="0 0 640 220" role="img" aria-label="Attack stages leading to exfiltration">
+<rect x="10" y="70" width="110" height="50" rx="8" fill="#e2e8f0"/><text x="65" y="100" text-anchor="middle" class="svg-ink" font-size="12">Initial access</text>
+<rect x="135" y="70" width="110" height="50" rx="8" fill="#e2e8f0"/><text x="190" y="100" text-anchor="middle" class="svg-ink" font-size="12">C2 + lateral</text>
+<rect x="260" y="70" width="110" height="50" rx="8" fill="#fde68a"/><text x="315" y="93" text-anchor="middle" class="svg-ink" font-size="12">Collect +</text><text x="315" y="110" text-anchor="middle" class="svg-ink" font-size="12">stage</text>
+<rect x="385" y="70" width="110" height="50" rx="8" fill="#fed7aa"/><text x="440" y="100" text-anchor="middle" class="svg-ink" font-size="12">Exfiltrate</text>
+<rect x="510" y="70" width="120" height="50" rx="8" fill="#ddd6fe"/><text x="570" y="93" text-anchor="middle" class="svg-ink" font-size="12">Extortion /</text><text x="570" y="110" text-anchor="middle" class="svg-ink" font-size="12">ransom</text>
+<line x1="120" y1="95" x2="135" y2="95" stroke="#64748b" stroke-width="2"/><line x1="245" y1="95" x2="260" y2="95" stroke="#64748b" stroke-width="2"/><line x1="370" y1="95" x2="385" y2="95" stroke="#64748b" stroke-width="2"/><line x1="495" y1="95" x2="510" y2="95" stroke="#64748b" stroke-width="2"/>
+<text x="315" y="150" text-anchor="middle" class="svg-accent" font-size="12">detect: data hoarding</text><text x="440" y="170" text-anchor="middle" class="svg-accent" font-size="12">detect: unusual outbound</text>
+<text x="320" y="205" text-anchor="middle" class="svg-muted" font-size="12">Pakadne ke do mauke: jab data andar stage ho, ya jab bahar jaaye</text>
+</svg><p class="cap">Exfiltration se pehle aam taur par collection aur staging hoti hai, jo khud detect ho sakti hai.</p></div>
+
+<h3>Channels, kaise chhupte hain, aur kaise dikhte hain</h3>
+<table class="cmp"><tr><th>Channel</th><th>Kyun kaam karta hai</th><th>Indicators</th><th>Controls</th></tr>
+<tr><td><b>DNS tunnelling</b></td><td>DNS lagbhag har jagah allowed hai aur internal resolvers koi bhi query forward karte hain</td><td>Ek domain ke kai lambe, random-looking subdomains; kai TXT ya NULL queries; ek host se high query rate</td><td>Saara DNS protective resolver (Umbrella / Secure Access) se force karo, direct outbound 53 block karo, length aur volume par analytics</td></tr>
+<tr><td><b>Attacker server par HTTPS</b></td><td>Encrypted web traffic normal hai aur content chhupa rehta hai</td><td>Naye ya low-reputation domain par bade uploads (bytes out bytes in se kaafi zyada), ajeeb ghante, regular beacons</td><td>Reputation ke saath web proxy / SWG, jahan policy allow kare decryption, NetFlow analytics</td></tr>
+<tr><td><b>Cloud storage aur web services</b></td><td>Legitimate, trusted services: file sync, personal webmail, paste sites, code repositories</td><td>Personal (unsanctioned) accounts ya instances par uploads, achanak volume spikes</td><td>CASB / SSE application control, tenant restrictions, DLP</td></tr>
+<tr><td><b>Email</b></td><td>Mail business-critical hai</td><td>Personal addresses par attachments ya auto-forward rules, bulk sends</td><td>Email DLP, external auto-forwarding block, mailbox rule alerts</td></tr>
+<tr><td><b>FTP, SFTP, SCP, SSH</b></td><td>Admin tools aksar outbound allowed hote hain</td><td>Unknown hosts par outbound TCP 21 ya 22, bade uploads wale lambe sessions</td><td>Destination ke hisaab se egress filtering, admin tools ke liye allow-lists</td></tr>
+<tr><td><b>ICMP</b></td><td>Ping ko shayad hi inspect kiya jaata hai</td><td>Network se bahar jaata oversized ya high-rate echo traffic, payloads jo usual pattern nahi</td><td>Outbound ICMP ko rate-limit aur size-limit karo, payload length inspect karo</td></tr>
+<tr><td><b>Doosre covert channels</b></td><td>NTP, IRC, messengers, packets ki timing tak</td><td>Protocol unusual volume ya unusual hosts par use hona</td><td>Default-deny egress, behaviour analytics</td></tr></table>
+<p>Exfiltration bina network ke bhi ho sakta hai: USB drives aur printouts endpoint DLP aur device control handle karte hain, is module ke tools nahi.</p>
+
+<h3>DNS tunnelling, step by step</h3>
+<p>Attacker ek domain register karta hai, yahan lab ka fictional <code>tunnel.badexfil.top</code>, aur uska authoritative name server chalata hai. Infected host par software file ko chhote chunks mein todta hai, har chunk ko letters aur digits mein encode karta hai, aur query ke leftmost labels ki tarah bhejta hai, jaise <code>mzxw6ytboi4dc.tunnel.badexfil.top</code>. Company ka internal resolver jawab nahi jaanta, isliye query internet par forward karta hai, aur woh aakhir mein attacker ke server tak pahunchti hai, jo chunk decode karta hai. Reply, aksar TXT record, instructions wapas la sakta hai. Koi firewall rule nahi tootta: PC ne sirf internal DNS server se baat ki.</p>
+<p>Kamzori size hai. DNS label mein zyada se zyada 63 characters aur poore naam mein 253 aate hain, isliye har query thoda hi data le jaati hai. Kuch bhi real amount ka data le jaane mein hazaaron queries lagti hain, aur wahi volume aur randomness aap detect karte ho.</p>
+
+<div class="eg"><p><b>Worked example.</b> Attacker DNS par 10 MB database export churana chahta hai. Encoding overhead ke baad har query lagbhag 150 bytes real data le jaati hai. 10,000,000 / 150 lagbhag 67,000 queries, sab ek parent domain par, sab unique random subdomains ke saath. Normal workstation roz sainkdon alag domains par kuch hazaar DNS queries karta hai. Ek domain ke neeche 67,000 unique lookups karne wala host simple <code>stats count by host</code> search mein turant alag dikhta hai, aur yahi aap Splunk lab mein chalaoge.</p></div>
+
+<div class="warn"><p><b>Common galti.</b> Sirf known bad domains ki block lists par bharosa karna. Attackers har operation ke liye fresh domains register karte hain. Reputation ko behaviour ke saath jodo: newly seen domains, query length aur randomness, upload volume, aur aise destinations jinhe company mein koi aur use nahi karta.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> Channels ki list jaano: DNS, HTTPS/web, cloud storage, email, FTP/SSH/SCP/SFTP, ICMP, aur NTP aur messengers jaise covert channels. VLAN ya access port configure karna kabhi exfiltration channel nahi hota. Classic DNS tunnelling sign hai ek host se ek domain par kai lambe, unique subdomains (aksar TXT).</p></div>
+
+<div class="scn"><h4>Developer ka "backup"</h4><p>Resign karne se pehle ek developer ne HTTPS par 3 GB source code personal cloud-storage account par upload kiya. Firewall ne allow kiya kyunki service popular aur trusted thi. SSE platform ke application control ne service ke personal (company ka nahi) instance par upload dekha, aur uske DLP engine ne source-code patterns match kiye. 40 MB ke baad upload block hua aur SOC ko alert gaya, jisne NetFlow se developer ke laptop ka bytes-out spike dekhkar activity confirm ki.</p><p><b>Seekh:</b> sabse mushkil exfiltration trusted services use karta hai; aapko sirf reputation nahi, identity-aware application control aur DLP chahiye.</p></div>
+
+<div class="iv"><p class="q">"Network se data exfiltrate hone ke tarike batao aur har ek ko kaise detect karoge."</p><p>Strong answer: DNS tunnelling (ek domain par queries ka volume aur length), HTTPS uploads (bytes-out ratio, naye ya low-reputation destinations), cloud storage aur web services (CASB/SSE application control aur DLP), email (DLP aur forwarding rules), FTP/SSH (egress filtering, unusual destinations), ICMP (payload size aur rate), plus network ke andar staging (NetFlow analytics mein data hoarding). Controls ke saath khatam karo: default-deny egress, protective resolver se forced DNS, aur behaviour analytics.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Exfiltration allowed traffic mein chhupta hai aur aam taur par network ke andar collection aur staging ke baad aata hai.</li>
+<li>Main channels: DNS tunnelling, HTTPS uploads, cloud storage aur web services, email, FTP/SSH, ICMP aur covert channels.</li>
+<li>DNS tunnelling data ko subdomains mein encode karta hai; size limits ek domain par unique queries ke bade volume ko majboor karti hain.</li>
+<li>Detection behaviour par tikti hai: volume, ratios, randomness aur naye destinations, sirf block lists nahi.</li>
+<li>Controls: forced protective DNS, default-deny egress, DLP ke saath SSE/CASB, aur telemetry analytics.</li>
+</ul></div>
+`}};export{e as default};

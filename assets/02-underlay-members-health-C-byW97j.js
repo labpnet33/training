@@ -1,0 +1,89 @@
+var e={id:`underlay-members-health`,h:{en:`Rungs 1 and 2: underlay, members, health checks and SLA status`,hi:`Rung 1 aur 2: underlay, members, health checks aur SLA status`},body:{en:`
+<p>Everything in SD-WAN stands on two facts: the link works, and the FortiGate <b>knows</b> the link works. This chapter covers both. First the member (is the interface in the right zone with a usable gateway), then the measurement (is the health check alive, and does it meet the SLA).</p>
+<h3>Rung 1: the underlay and the member</h3>
+<p>The <b>underlay</b> is the real transport: ISP1 and ISP2 links, plus any LTE backup. A <b>member</b> is an interface (a physical port or an IPsec tunnel) that has joined the SD-WAN, with a gateway for physical ports. The overlay tunnels HUB1-ISP1 and HUB1-ISP2 are members too, in their own zone. Check in this order:</p>
+<ul><li>Is the physical interface up, with the right IP and gateway?</li><li>Is it a member, in the right zone, with the right gateway and a sensible cost or priority?</li><li>Does a tunnel member really ride the intended underlay link (the tunnel's <code>interface</code> setting)?</li></ul>
+<pre class="code"><span class="c">! Try it: lab "After the change window: no internet from the branch"</span>
+BR1-FGT # diagnose sys sdwan member
+BR1-FGT # get system interface physical
+BR1-FGT # execute ping-options source 203.0.113.2
+BR1-FGT # execute ping 203.0.113.1
+BR1-FGT # execute traceroute-options source 198.51.100.2
+BR1-FGT # execute traceroute 192.0.2.20</pre>
+<p>Illustrative output of the member view (fields vary by build):</p>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan member
+Member(1): interface: port1, flags=0x0 , gateway: 203.0.113.1, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(2): interface: port2, flags=0x0 , gateway: 198.51.100.1, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(3): interface: HUB1-ISP1, flags=0x0 , gateway: 0.0.0.0, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(4): interface: HUB1-ISP2, flags=0x0 , gateway: 0.0.0.0, peer: , source 0.0.0.0, priority: 1 1024, weight: 0</pre>
+<p>Look at the sequence numbers. They are the <b>member IDs</b>: rules, health checks and sessions refer to them (<code>sdwan_mbr_seq</code>, see chapter 5). A tunnel member shows a gateway of 0.0.0.0 because the next hop is the tunnel itself. If a member you expect is missing, an interface that is still referenced elsewhere may have been refused when the member was added.</p>
+<h3>Rung 2: the health check</h3>
+<p>The <b>health check</b> (also called performance SLA) probes a server through each member and measures loss, latency and jitter. Its <b>state</b> is <code>alive</code> or <code>dead</code>. Separately, each <b>SLA target</b> inside it says whether the member currently meets the thresholds. The result is stored in a bitmap shown as <code>sla_map</code>: bit 0 is SLA target 1, bit 1 is SLA target 2, and so on. <code>sla_map=0x1</code> means SLA 1 is met; <code>sla_map=0x0</code> means no target is met.</p>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+BR1-FGT # diagnose sys sdwan health-check
+BR1-FGT # diagnose sys sdwan health-check HUB-HC
+BR1-FGT # diagnose sys sdwan intf-sla-log HUB1-ISP1
+BR1-FGT # diagnose sys sdwan sla-log HUB-HC 3</pre>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan health-check HUB-HC
+Health Check(HUB-HC):
+Seq(3 HUB1-ISP1): state(alive), packet-loss(0.000%) latency(11.482), jitter(0.620), <span class="hl">sla_map=0x1</span>
+Seq(4 HUB1-ISP2): state(alive), packet-loss(0.000%) latency(38.904), jitter(21.115), <span class="hl">sla_map=0x0</span></pre>
+<div class="dia"><svg viewBox="0 0 640 200" role="img" aria-label="diagram"><rect x="10" y="20" width="130" height="50" rx="10" fill="#bae6fd"/><text x="75" y="42" text-anchor="middle" class="svg-ink" font-size="13">BR1-FGT</text><text x="75" y="58" text-anchor="middle" class="svg-muted" font-size="11">health check HUB-HC</text><rect x="250" y="10" width="130" height="34" rx="8" fill="#bbf7d0"/><text x="315" y="32" text-anchor="middle" class="svg-ink" font-size="12">HUB1-ISP1 alive</text><rect x="250" y="56" width="130" height="34" rx="8" fill="#fde68a"/><text x="315" y="78" text-anchor="middle" class="svg-ink" font-size="12">HUB1-ISP2 alive</text><rect x="500" y="20" width="130" height="50" rx="10" fill="#ddd6fe"/><text x="565" y="42" text-anchor="middle" class="svg-ink" font-size="13">Probe target</text><text x="565" y="58" text-anchor="middle" class="svg-muted" font-size="11">10.200.99.1 on hub</text><line x1="140" y1="35" x2="250" y2="27" stroke="#64748b" stroke-width="2"/><line x1="140" y1="55" x2="250" y2="73" stroke="#64748b" stroke-width="2"/><line x1="380" y1="27" x2="500" y2="35" stroke="#64748b" stroke-width="2"/><line x1="380" y1="73" x2="500" y2="55" stroke="#64748b" stroke-width="2"/><text x="320" y="130" text-anchor="middle" class="svg-accent" font-size="13">alive says: probe replies come back.</text><text x="320" y="152" text-anchor="middle" class="svg-accent" font-size="13">sla_map says: the thresholds are met.</text><text x="320" y="180" text-anchor="middle" class="svg-muted" font-size="12">A member can be alive and still fail its SLA.</text></svg><p class="cap">Two separate questions: is the link alive, and is it good enough?</p></div>
+<h3>Reading the symptoms</h3>
+<table class="cmp"><tr><th>What you see</th><th>Likely cause</th><th>Next check</th></tr><tr><td>state(dead) on one member only</td><td>Probe cannot reach the server through that member: route, policy, NAT, or the ISP</td><td>Ping the target with the member's source; sniff the probe</td></tr><tr><td>dead on all members</td><td>Server down, probe blocked, or a wrong probe protocol</td><td>Check the server, protocol, port and the <code>server</code> setting</td></tr><tr><td>alive but sla_map=0x0</td><td>Thresholds too strict or real quality problem</td><td>Compare numbers with the SLA targets; use intf-sla-log history</td></tr><tr><td>Values flap around the threshold</td><td>Threshold set at normal behaviour with no margin</td><td>Add margin; consider the health check timers</td></tr><tr><td>Member missing from the health check</td><td>Not listed under <code>members</code> of the health check</td><td>Review the health check member list</td></tr></table>
+<p>To see the probe itself, sniff it on the member interface. The exact filter depends on the probe protocol; here an ICMP probe to the hub loopback:</p>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+BR1-FGT # diagnose sniffer packet HUB1-ISP2 'icmp and host 10.200.99.1' 4 20 l</pre>
+<p>Replies present but the SLA failing means a quality problem in the path. No replies means the probe is lost before it comes back, and you continue with routes and policies in the next chapters.</p>
+<div class="warn"><p><b>Common mistake.</b> Declaring a link "bad" because the health check is dead, without checking <b>where</b> the probe goes. A probe server reachable only through ISP1 will show ISP2 as dead even when ISP2 is perfect. Choose a server that every member can reach (for an overlay, an address on the hub).</p></div>
+<div class="exam"><p><b>Exam trap.</b> <b>alive</b> and <b>in SLA</b> are different. The member state is about probe replies, the SLA is about thresholds. Rules that use SLA mode look at <code>sla_map</code>, not at alive alone.</p></div>
+<div class="scn"><h4>The ISP that was fine</h4><p>BR1-FGT showed HUB1-ISP2 dead for an hour and the NOC blamed ISP2. A ping with source 198.51.100.2 to the hub underlay address worked. The health check target was a hub loopback that was only advertised over the ISP1 tunnel, so ISP2 probes were dropped at the hub. Advertising the loopback on both tunnels turned the member alive again.</p><p><b>Lesson:</b> Test the probe path, not the ISP, before you blame the provider.</p></div>
+<div class="iv"><p class="q">"A member is marked dead but the ISP says the link is fine. What do you check?"</p><p>I check that the probe server is reachable through that member: route to the server, policy and NAT for the probe, correct source and protocol. I sniff the probe on the member interface to see requests and replies, and compare with a manual ping using the member's source address.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Rung 1: member exists, right zone, right gateway, tunnel rides the right underlay.</li><li>Rung 2: health check state (alive or dead) and SLA status (sla_map) are different things.</li><li>diagnose sys sdwan member, health-check, intf-sla-log and sla-log are the tools.</li><li>Dead members are usually a probe-path problem, not an ISP problem.</li><li>Sniff the probe on the member interface to see what really happens.</li></ul></div>
+`,hi:`
+<p>SD-WAN mein sab kuch do facts par khada hai: link kaam karti hai, aur FortiGate ko <b>pata</b> hai ki link kaam karti hai. Yeh chapter dono cover karta hai. Pehle member (interface sahi zone mein hai aur usable gateway ke saath), phir measurement (health check alive hai, aur SLA meet karta hai).</p>
+<h3>Rung 1: underlay aur member</h3>
+<p><b>Underlay</b> real transport hai: ISP1 aur ISP2 links, aur koi LTE backup. <b>Member</b> ek interface hai (physical port ya IPsec tunnel) jo SD-WAN se judi hai, physical ports ke liye gateway ke saath. Overlay tunnels HUB1-ISP1 aur HUB1-ISP2 bhi members hain, apni zone mein. Is order mein check karo:</p>
+<ul><li>Physical interface up hai, sahi IP aur gateway ke saath?</li><li>Woh member hai, sahi zone mein, sahi gateway aur sensible cost ya priority ke saath?</li><li>Tunnel member sach mein intended underlay link par chalta hai (tunnel ka <code>interface</code> setting)?</li></ul>
+<pre class="code"><span class="c">! Try it: lab "Change window ke baad: branch se internet nahi"</span>
+BR1-FGT # diagnose sys sdwan member
+BR1-FGT # get system interface physical
+BR1-FGT # execute ping-options source 203.0.113.2
+BR1-FGT # execute ping 203.0.113.1
+BR1-FGT # execute traceroute-options source 198.51.100.2
+BR1-FGT # execute traceroute 192.0.2.20</pre>
+<p>Member view ka illustrative output (fields build ke hisaab se badalte hain):</p>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan member
+Member(1): interface: port1, flags=0x0 , gateway: 203.0.113.1, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(2): interface: port2, flags=0x0 , gateway: 198.51.100.1, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(3): interface: HUB1-ISP1, flags=0x0 , gateway: 0.0.0.0, peer: , source 0.0.0.0, priority: 1 1024, weight: 0
+Member(4): interface: HUB1-ISP2, flags=0x0 , gateway: 0.0.0.0, peer: , source 0.0.0.0, priority: 1 1024, weight: 0</pre>
+<p>Sequence numbers dekho. Yeh <b>member IDs</b> hain: rules, health checks aur sessions inhe refer karte hain (<code>sdwan_mbr_seq</code>, chapter 5 dekho). Tunnel member ka gateway 0.0.0.0 dikhta hai kyunki next hop tunnel khud hai. Agar koi expected member missing hai, to woh interface jo kahin aur referenced tha member banate waqt refuse hua ho sakta hai.</p>
+<h3>Rung 2: health check</h3>
+<p><b>Health check</b> (performance SLA bhi kehte hain) har member ke through ek server ko probe karta hai aur loss, latency aur jitter naapta hai. Iska <b>state</b> <code>alive</code> ya <code>dead</code> hota hai. Alag se, andar ka har <b>SLA target</b> batata hai ki member abhi thresholds meet karta hai ya nahi. Result ek bitmap mein store hota hai jo <code>sla_map</code> dikhata hai: bit 0 SLA target 1 hai, bit 1 SLA target 2, aise hi aage. <code>sla_map=0x1</code> ka matlab SLA 1 met hai; <code>sla_map=0x0</code> ka matlab koi target met nahi.</p>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+BR1-FGT # diagnose sys sdwan health-check
+BR1-FGT # diagnose sys sdwan health-check HUB-HC
+BR1-FGT # diagnose sys sdwan intf-sla-log HUB1-ISP1
+BR1-FGT # diagnose sys sdwan sla-log HUB-HC 3</pre>
+<pre class="out"><span class="c">! Illustrative output, not captured from a device</span>
+BR1-FGT # diagnose sys sdwan health-check HUB-HC
+Health Check(HUB-HC):
+Seq(3 HUB1-ISP1): state(alive), packet-loss(0.000%) latency(11.482), jitter(0.620), <span class="hl">sla_map=0x1</span>
+Seq(4 HUB1-ISP2): state(alive), packet-loss(0.000%) latency(38.904), jitter(21.115), <span class="hl">sla_map=0x0</span></pre>
+<div class="dia"><svg viewBox="0 0 640 200" role="img" aria-label="diagram"><rect x="10" y="20" width="130" height="50" rx="10" fill="#bae6fd"/><text x="75" y="42" text-anchor="middle" class="svg-ink" font-size="13">BR1-FGT</text><text x="75" y="58" text-anchor="middle" class="svg-muted" font-size="11">health check HUB-HC</text><rect x="250" y="10" width="130" height="34" rx="8" fill="#bbf7d0"/><text x="315" y="32" text-anchor="middle" class="svg-ink" font-size="12">HUB1-ISP1 alive</text><rect x="250" y="56" width="130" height="34" rx="8" fill="#fde68a"/><text x="315" y="78" text-anchor="middle" class="svg-ink" font-size="12">HUB1-ISP2 alive</text><rect x="500" y="20" width="130" height="50" rx="10" fill="#ddd6fe"/><text x="565" y="42" text-anchor="middle" class="svg-ink" font-size="13">Probe target</text><text x="565" y="58" text-anchor="middle" class="svg-muted" font-size="11">hub par 10.200.99.1</text><line x1="140" y1="35" x2="250" y2="27" stroke="#64748b" stroke-width="2"/><line x1="140" y1="55" x2="250" y2="73" stroke="#64748b" stroke-width="2"/><line x1="380" y1="27" x2="500" y2="35" stroke="#64748b" stroke-width="2"/><line x1="380" y1="73" x2="500" y2="55" stroke="#64748b" stroke-width="2"/><text x="320" y="130" text-anchor="middle" class="svg-accent" font-size="13">alive kehta hai: probe replies wapas aate hain.</text><text x="320" y="152" text-anchor="middle" class="svg-accent" font-size="13">sla_map kehta hai: thresholds meet hain.</text><text x="320" y="180" text-anchor="middle" class="svg-muted" font-size="12">Member alive ho sakta hai aur phir bhi SLA fail kar sakta hai.</text></svg><p class="cap">Do alag sawaal: link alive hai, aur kya woh kaafi achhi hai?</p></div>
+<h3>Symptoms padhna</h3>
+<table class="cmp"><tr><th>Kya dikhta hai</th><th>Likely cause</th><th>Agla check</th></tr><tr><td>sirf ek member par state(dead)</td><td>Probe us member se server tak nahi pahunchta: route, policy, NAT, ya ISP</td><td>Member ke source se target ping karo; probe sniff karo</td></tr><tr><td>saare members par dead</td><td>Server down, probe blocked, ya galat probe protocol</td><td>Server, protocol, port aur <code>server</code> setting dekho</td></tr><tr><td>alive lekin sla_map=0x0</td><td>Thresholds bahut strict ya real quality problem</td><td>Numbers ko SLA targets se compare karo; intf-sla-log history use karo</td></tr><tr><td>Values threshold ke aaspaas flap karti hain</td><td>Threshold normal behaviour par bina margin ke set hai</td><td>Margin do; health check timers dekho</td></tr><tr><td>Member health check mein missing</td><td>Health check ke <code>members</code> mein listed nahi</td><td>Health check ki member list review karo</td></tr></table>
+<p>Probe ko khud dekhne ke liye member interface par sniff karo. Exact filter probe protocol par depend karta hai; yahan hub loopback par ICMP probe:</p>
+<pre class="code"><span class="c">! Reference configuration (not run in the simulator)</span>
+BR1-FGT # diagnose sniffer packet HUB1-ISP2 'icmp and host 10.200.99.1' 4 20 l</pre>
+<p>Replies hain lekin SLA fail hai to path mein quality problem hai. Replies nahi aate to probe wapas aane se pehle kho jaata hai, aur aap agle chapters mein routes aur policies ke saath aage badhte ho.</p>
+<div class="warn"><p><b>Common galti.</b> Health check dead dekh kar link ko "kharab" kehna, bina yeh dekhe ki probe <b>kahan</b> jaata hai. Jo probe server sirf ISP1 se reachable hai woh ISP2 ko dead dikhayega chahe ISP2 perfect ho. Aisa server chuno jo har member reach kar sake (overlay ke liye hub par ek address).</p></div>
+<div class="exam"><p><b>Exam trap.</b> <b>alive</b> aur <b>in SLA</b> alag hain. Member state probe replies ke baare mein hai, SLA thresholds ke baare mein. SLA mode ke rules <code>sla_map</code> dekhte hain, sirf alive nahi.</p></div>
+<div class="scn"><h4>Woh ISP jo theek thi</h4><p>BR1-FGT ne HUB1-ISP2 ko ek ghante dead dikhaya aur NOC ne ISP2 ko blame kiya. Source 198.51.100.2 se hub underlay address ka ping chal gaya. Health check target ek hub loopback tha jo sirf ISP1 tunnel par advertise hota tha, isliye ISP2 probes hub par drop ho rahe the. Loopback ko dono tunnels par advertise karne se member wapas alive ho gaya.</p><p><b>Seekh:</b> Provider ko blame karne se pehle probe path test karo, ISP nahi.</p></div>
+<div class="iv"><p class="q">"Member dead marked hai lekin ISP kehta hai link theek hai. Aap kya check karte ho?"</p><p>Main check karta hoon ki probe server us member se reachable hai: server ka route, probe ki policy aur NAT, sahi source aur protocol. Main member interface par probe sniff karta hoon requests aur replies dekhne ke liye, aur member ke source address se manual ping se compare karta hoon.</p></div>
+<div class="kt"><p><b>Key takeaways</b></p><ul><li>Rung 1: member maujood, sahi zone, sahi gateway, tunnel sahi underlay par.</li><li>Rung 2: health check state (alive ya dead) aur SLA status (sla_map) alag cheezein hain.</li><li>diagnose sys sdwan member, health-check, intf-sla-log aur sla-log tools hain.</li><li>Dead members aksar probe-path problem hote hain, ISP problem nahi.</li><li>Member interface par probe sniff karo, dekho sach mein kya hota hai.</li></ul></div>
+`}};export{e as default};

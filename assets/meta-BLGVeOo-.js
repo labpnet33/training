@@ -1,0 +1,1 @@
+var e={read:18,blurb:{en:`Prepare DNS, time, licenses, certificates and cluster roles before access policies.`,hi:`Access policies se pehle DNS, time, licenses, certificates aur cluster roles prepare karein.`}};export{e as default};

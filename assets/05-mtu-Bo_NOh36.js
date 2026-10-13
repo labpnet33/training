@@ -1,0 +1,137 @@
+var e={id:`mtu`,h:{en:`MTU and fragmentation: the cost of the extra header`,hi:`MTU aur fragmentation: extra header ki keemat`},body:{en:`
+<p>A tunnel adds bytes to every packet. An Ethernet link carries at most 1500 bytes of IP packet (this limit is the <b>MTU</b>, maximum transmission unit). If the wrapper pushes a packet above 1500, something has to give. Understanding this is a favourite exam topic and a daily cause of "the site opens but the file download hangs" tickets.</p>
+
+<h3>The arithmetic</h3>
+<p>The underlay link between R1 and the ISP has an MTU of 1500. The outer packet must fit in 1500 bytes. Therefore the inner packet can only be 1500 minus the overhead:</p>
+<table class="cmp"><tr><th>Tunnel</th><th>Overhead</th><th>Largest inner IP packet</th><th>Shown as</th></tr>
+<tr><td>GRE</td><td>20 + 4 = 24</td><td>1476</td><td>Protocol inet, MTU: 1476</td></tr>
+<tr><td>IP-IP</td><td>20</td><td>1480</td><td>Protocol inet, MTU: 1480</td></tr></table>
+<p>Junos works this out for you and prints the result as the protocol MTU of the tunnel unit. You saw it in the previous two chapters. Options such as a GRE key would add more bytes and lower the number further.</p>
+
+<div class="dia"><svg viewBox="0 0 640 170" role="img" aria-label="MTU budget of a GRE tunnel">
+<rect x="20" y="40" width="600" height="46" rx="6" fill="#e2e8f0"/>
+<text x="320" y="30" text-anchor="middle" class="svg-ink" font-size="13">Underlay MTU 1500 bytes</text>
+<rect x="20" y="40" width="60" height="46" rx="6" fill="#fde68a"/><text x="50" y="68" text-anchor="middle" class="svg-ink" font-size="12">IP 20</text>
+<rect x="80" y="40" width="40" height="46" rx="6" fill="#fed7aa"/><text x="100" y="68" text-anchor="middle" class="svg-ink" font-size="12">GRE 4</text>
+<rect x="120" y="40" width="500" height="46" rx="6" fill="#bae6fd"/><text x="370" y="68" text-anchor="middle" class="svg-ink" font-size="13">Inner packet: at most 1476</text>
+<text x="320" y="125" text-anchor="middle" class="svg-accent" font-size="13">A 1500-byte inner packet would become 1524 on the wire: too big</text>
+<text x="320" y="148" text-anchor="middle" class="svg-muted" font-size="12">So it is fragmented, or dropped if DF is set</text>
+</svg><p class="cap">Every byte of header comes out of the passenger's budget.</p></div>
+
+<h3>What happens to an oversized packet</h3>
+<ol>
+<li>If the inner packet is bigger than the tunnel MTU and its <b>DF (Don't Fragment)</b> bit is <b>clear</b>, the router fragments it. Fragments are sent separately and reassembled by the far end. This works but costs CPU and delays traffic.</li>
+<li>If DF is <b>set</b>, the router must not fragment. It drops the packet and returns an ICMP "fragmentation needed" message to the sender. A sender that understands <b>path MTU discovery</b> then shrinks its packets. If a firewall blocks that ICMP, the sender never learns and the connection hangs, the classic black-hole symptom.</li>
+</ol>
+
+<h3>Proving the MTU with ping</h3>
+<p>The Junos <code>ping size</code> value counts the <b>data</b> bytes only; the packet adds 8 bytes of ICMP header and 20 of IP header. So an inner packet of 1476 bytes corresponds to <code>size 1448</code>. Add <code>do-not-fragment</code> to set DF. Real output from the GRE lab:</p>
+<pre class="out">lab@R1&gt; ping 192.168.63.10 size 1448 do-not-fragment count 2
+PING 192.168.63.10 (192.168.63.10): 1448 data bytes
+1456 bytes from 192.168.63.10: icmp_seq=0 ttl=63 time=2.600 ms
+1456 bytes from 192.168.63.10: icmp_seq=1 ttl=63 time=1.200 ms
+--- 192.168.63.10 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+
+lab@R1&gt; ping 192.168.63.10 size 1472 do-not-fragment count 2
+PING 192.168.63.10 (192.168.63.10): 1472 data bytes
+<span class="hl">ping: sendto: Message too long</span>
+<span class="hl">ping: sendto: Message too long</span>
+
+--- 192.168.63.10 ping statistics ---
+2 packets transmitted, 0 packets received, 100% packet loss</pre>
+<p>1448 + 28 = 1476 fits. 1472 + 28 = 1500 does not, because 1500 is bigger than the tunnel's 1476. That boundary test is the standard way to find the real path MTU: raise the size until the DF ping fails.</p>
+
+<h3>Ways to live with the overhead</h3>
+<ul>
+<li><b>Lower the MTU of the tunnel or LAN side</b> so that sources never build packets that are too large: <code>set interfaces gr-0/0/0 unit 0 family inet mtu 1400</code>. Check that both ends agree.</li>
+<li><b>Clamp the TCP MSS</b> (maximum segment size) so TCP never sends oversize segments. On firewalls such as SRX this is done in the security flow configuration; on routers it is often handled by a policy or by the end hosts. It is conceptual for this exam: know that MSS clamping exists and why.</li>
+<li><b>Raise the underlay MTU</b> (for example to 1600) where you control the whole path. This removes the problem but only if every hop supports it.</li>
+</ul>
+<p>Remember that the tunnel changes the budget for <i>transit</i> traffic, not for packets generated by the router itself such as OSPF hellos, which are small.</p>
+
+<div class="eg"><p><b>Worked example.</b> A user in Kanpur uploads a 5 MB file to a server in Lucknow. TCP builds 1460-byte segments (1500 minus 40 bytes of IP and TCP headers). Inside the tunnel the packet becomes 1460 + 40 + 24 = 1524 bytes, over the underlay MTU. With DF set the packet is dropped. Clamping MSS to 1400 gives 1400 + 40 + 24 = 1464 bytes, which fits easily.</p></div>
+
+<div class="warn"><p><b>Common mistake.</b> Testing the tunnel with a default 56-byte ping and declaring it healthy. Small packets always fit. Test with large DF pings to expose MTU trouble. The opposite mistake is blocking all ICMP at a firewall, which breaks path MTU discovery.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Memorise: GRE 1476, IP-IP 1480 over a 1500-byte link. And note that the ping size is data bytes: add 28 to compare with the MTU.</p></div>
+
+<div class="scn"><h4>Web works, file shares hang</h4><p>After a GRE tunnel went live, users could browse small pages but large downloads stalled. A DF ping of 1472 data bytes failed with "Message too long" while 1448 passed. The team set a lower TCP MSS on the branch firewall and the stalls disappeared. No routing change was needed.</p><p><b>Lesson:</b> when only big packets fail, think MTU first.</p></div>
+
+<div class="iv"><p class="q">"Why is the MTU of a GRE tunnel 1476?"</p><p>The outer IP header is 20 bytes and the GRE header is 4 bytes, so 24 bytes of overhead come off the 1500-byte underlay MTU, leaving 1476 for the inner packet. IP-IP has only the 20-byte IP header, so 1480. Add that oversized packets are fragmented or dropped when DF is set, and that MSS clamping is the usual remedy.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Tunnel MTU = underlay MTU minus encapsulation overhead.</li>
+<li>GRE gives 1476 and IP-IP gives 1480 over a 1500-byte link.</li>
+<li>Oversize packets are fragmented, or dropped if DF is set.</li>
+<li>Test with <code>ping size N do-not-fragment</code>, where N + 28 is the packet size.</li>
+<li>Fix by lowering MTU or clamping TCP MSS, and keep ICMP path-MTU messages alive.</li>
+</ul></div>
+`,hi:`
+<p>Tunnel har packet mein bytes jodta hai. Ethernet link adhiktam 1500 bytes ka IP packet le jaata hai (is limit ko <b>MTU</b> kehte hain, maximum transmission unit). Wrapper packet ko 1500 se upar dhakel de to kuch na kuch toot-ta hai. Yeh samajhna exam ka favourite topic hai aur "site khulti hai lekin file download atak jaata hai" tickets ki roz ki wajah.</p>
+
+<h3>Hisaab</h3>
+<p>R1 aur ISP ke beech underlay link ka MTU 1500 hai. Outer packet 1500 bytes mein fit hona chahiye. Isliye inner packet sirf 1500 minus overhead ho sakta hai:</p>
+<table class="cmp"><tr><th>Tunnel</th><th>Overhead</th><th>Sabse bada inner IP packet</th><th>Dikhta hai</th></tr>
+<tr><td>GRE</td><td>20 + 4 = 24</td><td>1476</td><td>Protocol inet, MTU: 1476</td></tr>
+<tr><td>IP-IP</td><td>20</td><td>1480</td><td>Protocol inet, MTU: 1480</td></tr></table>
+<p>Junos yeh hisaab khud karta hai aur tunnel unit ke protocol MTU ke roop mein print karta hai. Pichhle do chapters mein aapne dekha. GRE key jaise options aur bytes jodte hain aur number aur kam kar dete hain.</p>
+
+<div class="dia"><svg viewBox="0 0 640 170" role="img" aria-label="GRE tunnel ka MTU budget">
+<rect x="20" y="40" width="600" height="46" rx="6" fill="#e2e8f0"/>
+<text x="320" y="30" text-anchor="middle" class="svg-ink" font-size="13">Underlay MTU 1500 bytes</text>
+<rect x="20" y="40" width="60" height="46" rx="6" fill="#fde68a"/><text x="50" y="68" text-anchor="middle" class="svg-ink" font-size="12">IP 20</text>
+<rect x="80" y="40" width="40" height="46" rx="6" fill="#fed7aa"/><text x="100" y="68" text-anchor="middle" class="svg-ink" font-size="12">GRE 4</text>
+<rect x="120" y="40" width="500" height="46" rx="6" fill="#bae6fd"/><text x="370" y="68" text-anchor="middle" class="svg-ink" font-size="13">Inner packet: adhiktam 1476</text>
+<text x="320" y="125" text-anchor="middle" class="svg-accent" font-size="13">1500-byte inner packet wire par 1524 ho jaata: bahut bada</text>
+<text x="320" y="148" text-anchor="middle" class="svg-muted" font-size="12">Isliye fragment hota hai, ya DF set ho to drop</text>
+</svg><p class="cap">Header ka har byte passenger ke budget se kat-ta hai.</p></div>
+
+<h3>Oversize packet ka kya hota hai</h3>
+<ol>
+<li>Inner packet tunnel MTU se bada hai aur uska <b>DF (Don't Fragment)</b> bit <b>clear</b> hai to router use fragment karta hai. Fragments alag bheje jaate hain aur far end jodta hai. Kaam karta hai lekin CPU aur delay lagta hai.</li>
+<li>DF <b>set</b> hai to router fragment nahi kar sakta. Woh packet drop karta hai aur sender ko ICMP "fragmentation needed" message bhejta hai. <b>Path MTU discovery</b> samajhne wala sender tab packets chhote kar leta hai. Firewall us ICMP ko block kare to sender ko pata hi nahi chalta aur connection atak jaata hai, yahi classic black-hole symptom hai.</li>
+</ol>
+
+<h3>Ping se MTU saabit karna</h3>
+<p>Junos <code>ping size</code> sirf <b>data</b> bytes ginta hai; packet mein 8 byte ICMP header aur 20 byte IP header jud jaate hain. To 1476 bytes ka inner packet <code>size 1448</code> ke barabar hai. DF set karne ke liye <code>do-not-fragment</code> lagao. GRE lab ka real output:</p>
+<pre class="out">lab@R1&gt; ping 192.168.63.10 size 1448 do-not-fragment count 2
+PING 192.168.63.10 (192.168.63.10): 1448 data bytes
+1456 bytes from 192.168.63.10: icmp_seq=0 ttl=63 time=2.600 ms
+1456 bytes from 192.168.63.10: icmp_seq=1 ttl=63 time=1.200 ms
+--- 192.168.63.10 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+
+lab@R1&gt; ping 192.168.63.10 size 1472 do-not-fragment count 2
+PING 192.168.63.10 (192.168.63.10): 1472 data bytes
+<span class="hl">ping: sendto: Message too long</span>
+<span class="hl">ping: sendto: Message too long</span>
+
+--- 192.168.63.10 ping statistics ---
+2 packets transmitted, 0 packets received, 100% packet loss</pre>
+<p>1448 + 28 = 1476 fit hota hai. 1472 + 28 = 1500 fit nahi hota, kyunki 1500 tunnel ke 1476 se bada hai. Yeh boundary test asli path MTU nikaalne ka standard tareeka hai: size badhao jab tak DF ping fail na ho.</p>
+
+<h3>Overhead ke saath jeene ke tareeke</h3>
+<ul>
+<li><b>Tunnel ya LAN side ka MTU kam karo</b> taaki sources bahut bade packets banaye hi nahi: <code>set interfaces gr-0/0/0 unit 0 family inet mtu 1400</code>. Dono ends par same rakho.</li>
+<li><b>TCP MSS clamp karo</b> (maximum segment size) taaki TCP oversize segments bheje hi nahi. SRX jaise firewalls par yeh security flow configuration mein hota hai; routers par aksar policy ya end hosts se. Is exam ke liye yeh conceptual hai: MSS clamping hoti hai aur kyun, yeh jaano.</li>
+<li><b>Underlay MTU badhao</b> (jaise 1600) jahan poora path aapke control mein ho. Isse problem hat jaati hai lekin tabhi jab har hop support kare.</li>
+</ul>
+<p>Yaad rakho tunnel <i>transit</i> traffic ka budget badalta hai, router ke khud ke packets jaise OSPF hellos ka nahi, jo chhote hote hain.</p>
+
+<div class="eg"><p><b>Worked example.</b> Kanpur ka user Lucknow ke server par 5 MB file upload karta hai. TCP 1460-byte segments banata hai (1500 minus 40 byte IP aur TCP headers). Tunnel ke andar packet 1460 + 40 + 24 = 1524 bytes ho jaata hai, underlay MTU se upar. DF set ho to packet drop. MSS ko 1400 par clamp karne se 1400 + 40 + 24 = 1464 bytes, jo aaram se fit hota hai.</p></div>
+
+<div class="warn"><p><b>Common mistake.</b> Default 56-byte ping se tunnel test karke use healthy bol dena. Chhote packets hamesha fit hote hain. MTU problem pakadne ke liye bade DF pings se test karo. Ulti galti: firewall par saara ICMP block kar dena, jisse path MTU discovery toot jaati hai.</p></div>
+<div class="exam"><p><b>Exam trap.</b> Yaad karo: 1500-byte link par GRE 1476, IP-IP 1480. Aur ping size data bytes hai: MTU se compare karne ke liye 28 jodo.</p></div>
+
+<div class="scn"><h4>Web chalta hai, file shares atak-te hain</h4><p>GRE tunnel live hone ke baad users chhote pages browse kar paate the lekin bade downloads atak jaate the. 1472 data bytes ka DF ping "Message too long" se fail hua jabki 1448 pass hua. Team ne branch firewall par TCP MSS kam kiya aur atakna band ho gaya. Routing mein kuch badalna nahi pada.</p><p><b>Lesson:</b> sirf bade packets fail hon to pehle MTU socho.</p></div>
+
+<div class="iv"><p class="q">"GRE tunnel ka MTU 1476 kyun hota hai?"</p><p>Outer IP header 20 bytes aur GRE header 4 bytes hai, to 24 bytes overhead 1500-byte underlay MTU se kat-te hain, inner packet ke liye 1476 bachta hai. IP-IP mein sirf 20-byte IP header hai, isliye 1480. Saath mein kaho ki oversize packets fragment hote hain ya DF set ho to drop hote hain, aur MSS clamping aam upay hai.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Tunnel MTU = underlay MTU minus encapsulation overhead.</li>
+<li>1500-byte link par GRE 1476 aur IP-IP 1480 deta hai.</li>
+<li>Oversize packets fragment hote hain, ya DF set ho to drop.</li>
+<li><code>ping size N do-not-fragment</code> se test karo, jahan N + 28 packet size hai.</li>
+<li>MTU kam karke ya TCP MSS clamp karke theek karo, aur ICMP path-MTU messages chalne do.</li>
+</ul></div>
+`}};export{e as default};
