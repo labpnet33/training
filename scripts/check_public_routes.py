@@ -147,7 +147,7 @@ def main() -> int:
             assets.update(discover_asset_urls(page, text))
 
     # The application shell may load the core bundle; inspect it for all lazy chunks.
-    core = next((u for u in assets if "/assets/index-" in u and u.endswith(".js")), None)
+    core = next((u for u in assets if "/assets/index-" in urllib.parse.urlparse(u).path and urllib.parse.urlparse(u).path.endswith(".js")), None)
     if core:
         status, _, text = get(core, args.timeout)
         if status == 200:
