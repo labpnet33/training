@@ -107,6 +107,12 @@ def check_one(url: str, kind: str, timeout: float) -> Check:
     status, content_type, body = get(url, timeout)
     ok = 200 <= status < 400
     detail = content_type or body[:100].replace("\n", " ")
+    if ok and kind == "asset":
+        path = urllib.parse.urlparse(url).path.lower()
+        expected = (path.endswith((".js", ".mjs")) and "javascript") or (path.endswith(".css") and "css") or (path.endswith((".json",)) and "json") or (path.endswith((".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".avif")) and "image") or (path.endswith((".woff", ".woff2", ".ttf", ".otf")) and "font")
+        if expected and content_type and expected not in content_type:
+            ok = False
+            detail = f"expected {expected} content, received {content_type}"
     return Check(kind, url, status or None, ok, detail)
 
 
