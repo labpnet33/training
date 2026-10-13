@@ -5,6 +5,14 @@
       "title": "Home"
     },
     {
+      "path": "/contact",
+      "title": "Contact"
+    },
+    {
+      "path": "/about",
+      "title": "About"
+    },
+    {
       "path": "/ccie-dc-mock",
       "title": "CCIE DC mock"
     },

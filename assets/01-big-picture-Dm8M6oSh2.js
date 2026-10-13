@@ -1,0 +1,107 @@
+var e={id:`big-picture`,h:{en:`The big picture: Networking Concepts for Network+`,hi:`Big picture: Network+ ke liye Networking Concepts`},body:{en:`
+<p><b>What you will learn in this module.</b> This module covers the first and most heavily memorised domain of CompTIA Network+ N10-009: <b>1.0 Networking Concepts</b>. By the end you will be able to explain every OSI layer with its PDU, headers, devices and failure symptoms; follow one packet through encapsulation and prove it with ARP caches, TTL values and routing tables; choose the right appliance or function (firewall, IDS/IPS, load balancer, proxy, NAS/SAN, CDN, VPN, QoS) for a business problem; recite the full N10-009 port table with transport protocols; recognise IP protocol types such as ICMP, GRE, ESP and AH; pick the right cable, fibre, transceiver and connector for a link; and describe mesh, star, spine-leaf, three-tier and collapsed-core designs and the traffic flows they are built for.</p>
+
+<h3>Prerequisites</h3>
+<p>You have finished the beginner module <b>net-start</b>. That means you already know what a network is, the difference between a switch and a router, what MAC, IP and port addresses are, the idea of layers and encapsulation, TCP versus UDP at a high level, the basic cable types and the classic topologies, and how to use ping, tracert and nslookup. We will not repeat those basics. Here we go one level deeper: header fields, exact numbers, standards, distances and the exam traps built around them.</p>
+
+<h3>An analogy: an international courier company</h3>
+<p>Imagine a courier company that ships a parcel from Delhi to a customer in Chennai. The <b>sales desk</b> takes the order and does not care about trucks (application). The <b>packing team</b> decides the box format and seals it (presentation). A <b>booking clerk</b> opens a shipment record and closes it when delivery is confirmed (session). The <b>dispatch team</b> splits a large order into numbered boxes and asks for a signed receipt for each one (transport). The <b>routing office</b> writes the final city address and picks the next hub (network). Each <b>truck driver</b> only knows how to get from this hub to the next one (data link). And the <b>road</b> itself carries the truck (physical).</p>
+<p>No department does another department's job, and each one adds its own label to the box. That is exactly how the OSI model divides networking work, and it is why an engineer can say "the problem is at Layer 2" and every other engineer instantly knows where to look.</p>
+
+<div class="dia"><svg viewBox="0 0 640 300" role="img" aria-label="Domain 1.0 objectives and chapters">
+<rect x="10" y="10" width="620" height="36" rx="8" fill="#fde68a"/><text x="320" y="33" text-anchor="middle" class="svg-ink" font-size="14">N10-009 Domain 1.0 Networking Concepts (about 23% of the exam)</text>
+<rect x="10" y="60" width="196" height="100" rx="8" fill="#bae6fd"/><text x="108" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.1 OSI model</text><text x="108" y="104" text-anchor="middle" class="svg-muted" font-size="12">Layers 1-7, PDUs</text><text x="108" y="122" text-anchor="middle" class="svg-muted" font-size="12">Encapsulation</text><text x="108" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 2-4</text>
+<rect x="222" y="60" width="196" height="100" rx="8" fill="#bbf7d0"/><text x="320" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.2 Appliances</text><text x="320" y="104" text-anchor="middle" class="svg-muted" font-size="12">Firewall, IPS, LB, proxy</text><text x="320" y="122" text-anchor="middle" class="svg-muted" font-size="12">CDN, VPN, QoS, TTL</text><text x="320" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 5-6</text>
+<rect x="434" y="60" width="196" height="100" rx="8" fill="#ddd6fe"/><text x="532" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.4 Ports and protocols</text><text x="532" y="104" text-anchor="middle" class="svg-muted" font-size="12">20 ports, IP types</text><text x="532" y="122" text-anchor="middle" class="svg-muted" font-size="12">Unicast to anycast</text><text x="532" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 7-9</text>
+<rect x="116" y="176" width="196" height="100" rx="8" fill="#fed7aa"/><text x="214" y="200" text-anchor="middle" class="svg-ink" font-size="13">1.5 Media</text><text x="214" y="220" text-anchor="middle" class="svg-muted" font-size="12">Copper, fibre, wireless</text><text x="214" y="238" text-anchor="middle" class="svg-muted" font-size="12">SFP, QSFP, connectors</text><text x="214" y="256" text-anchor="middle" class="svg-accent" font-size="12">Chapter 10</text>
+<rect x="328" y="176" width="196" height="100" rx="8" fill="#e2e8f0"/><text x="426" y="200" text-anchor="middle" class="svg-ink" font-size="13">1.6 Topologies</text><text x="426" y="220" text-anchor="middle" class="svg-muted" font-size="12">Mesh, star, spine-leaf</text><text x="426" y="238" text-anchor="middle" class="svg-muted" font-size="12">North-south, east-west</text><text x="426" y="256" text-anchor="middle" class="svg-accent" font-size="12">Chapter 11</text>
+</svg><p class="cap">This module covers objectives 1.1, 1.2, 1.4, 1.5 and 1.6. Cloud (1.3), addressing (1.7) and IPv6 (1.8) have their own modules next.</p></div>
+
+<h3>Why this domain matters so much</h3>
+<p>Domain 1.0 is roughly a quarter of the exam, but its real weight is higher. The troubleshooting domain (5.0, the largest at about 24%) constantly asks "which layer is failing?", "which port is blocked?" or "which cable or transceiver is wrong for this distance?". If the facts in this module are automatic for you, those troubleshooting questions become easy. The exam has up to 90 questions in 90 minutes, including performance-based questions (PBQs) where you drag ports onto protocols or cables onto distances. There is no time to work these out from scratch.</p>
+<p>In real jobs the same knowledge is how you write firewall rules (you must know that DNS uses UDP 53 and that IPsec needs UDP 500 plus ESP), how you order optics (a 10GBASE-LR module will not work on multimode fibre), and how you read a packet capture.</p>
+
+<h3>How this module is organised</h3>
+<ul>
+<li><b>Chapters 2-4:</b> the OSI layers in depth, bottom-up and top-down, then encapsulation hop by hop.</li>
+<li><b>Chapters 5-6:</b> appliances (what each box decides and at which layer) and functions such as CDN, VPN, QoS and TTL.</li>
+<li><b>Chapters 7-9:</b> ports and protocols with memory aids, then IP protocol types and traffic types.</li>
+<li><b>Chapters 10-11:</b> transmission media, transceivers, connectors, then topologies and architectures.</li>
+<li><b>Chapter 12:</b> a layer-by-layer troubleshooting workflow using the two labs.</li>
+<li><b>Chapter 13:</b> summary, can-do checklist, glossary and the most tested facts.</li>
+</ul>
+
+<h3>The two labs</h3>
+<p>Both labs use the same small network: <b>PC1</b> (10.0.10.10/24, gateway 10.0.10.1) connects through switch <b>SW1</b> to router <b>R1</b>, which routes to the server <b>SRV</b> (10.0.20.10/24) on 10.0.20.0/24. In <b>Follow a ping through the layers</b> you will read PC1's ARP cache, watch the TTL drop from 64 to 63, and read R1's routing table. In <b>Ports and protocols in action</b> you will point PC1 at R1 as a DNS server, resolve <code>web.nwk.lab</code> and open it over HTTP and HTTPS while a capture shows the real transport and port numbers.</p>
+
+<div class="eg"><p><b>Worked example.</b> A user says "the intranet is down". Using layers, you turn that into five quick questions: Is the link light on (L1)? Does the PC have the gateway MAC in its ARP cache (L2)? Does ping to 10.0.20.10 get a reply (L3)? Does a TCP connection to port 443 open (L4)? Does the name resolve and does the page load (L7)? If ping works but <code>nslookup web.nwk.lab</code> fails, you have narrowed a vague complaint to one service in under a minute.</p></div>
+
+<div class="warn"><p><b>Common mistake.</b> Treating Network+ as a pure memorisation exam and learning port numbers as a list of digits. Questions are scenario-based: "users can browse by IP but not by name" or "the VPN tunnel will not form through the firewall". Learn each fact together with the symptom it causes when it is wrong.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> CompTIA uses the OSI model, not the TCP/IP model, when it asks "at which layer". A question about a router is Layer 3, not "Internet layer". A question about TLS encryption is usually answered with Layer 6 (presentation) in CompTIA's view, even though TLS runs as part of the application in practice.</p></div>
+
+<div class="scn"><h4>"The network is slow" at a branch office</h4><p>A new NOC engineer received a ticket saying a branch "network is slow". He rebooted the branch router, which did nothing except drop every call for five minutes. A senior engineer took over and worked by layers: interface counters showed no CRC errors (L1 fine), the switch had no MAC flapping (L2 fine), pings to head office were 18 ms with no loss (L3 fine). A capture showed the file-share traffic on TCP 445 was retransmitting heavily only to one server, whose NIC was set to 100 Mb/s half duplex. Fixing the duplex setting on that server solved it.</p><p><b>Lesson:</b> layered thinking turns a vague complaint into a short list of checks, and stops you from "fixing" things that are not broken.</p></div>
+
+<div class="iv"><p class="q">"Why do we still learn the OSI model when real networks run TCP/IP?"</p><p>Strong answer: the OSI model is a shared vocabulary for design and troubleshooting. Vendors, documentation and colleagues say "Layer 2 issue", "Layer 4 load balancer" or "Layer 7 firewall", and those phrases come from OSI. TCP/IP is the protocol suite that actually runs; OSI is the reference map we use to describe where each function sits. Mention that you troubleshoot bottom-up or top-down by layer.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>This module covers N10-009 objectives 1.1, 1.2, 1.4, 1.5 and 1.6; addressing, IPv6 and cloud come in the next modules.</li>
+<li>Each OSI layer is a department with one job and its own header, like a courier company.</li>
+<li>Domain 1.0 facts feed the troubleshooting domain; learn each fact with its failure symptom.</li>
+<li>CompTIA asks "which layer" in OSI terms.</li>
+<li>The two labs use PC1, SW1, R1 and SRV to make layers, TTL, ARP and ports visible.</li>
+</ul></div>
+`,hi:`
+<p><b>Is module mein aap kya seekhoge.</b> Yeh module CompTIA Network+ N10-009 ke pehle aur sabse zyada yaad kiye jaane wale domain ko cover karta hai: <b>1.0 Networking Concepts</b>. End tak aap har OSI layer ko uske PDU, headers, devices aur failure symptoms ke saath samjha paoge; encapsulation mein ek packet ko follow karke ARP cache, TTL values aur routing tables se prove kar paoge; business problem ke liye sahi appliance ya function (firewall, IDS/IPS, load balancer, proxy, NAS/SAN, CDN, VPN, QoS) chun paoge; transport protocols ke saath poori N10-009 port table bol paoge; ICMP, GRE, ESP aur AH jaise IP protocol types pehchaan paoge; kisi link ke liye sahi cable, fibre, transceiver aur connector chun paoge; aur mesh, star, spine-leaf, three-tier aur collapsed-core designs aur unke traffic flows samjha paoge.</p>
+
+<h3>Prerequisites</h3>
+<p>Aapne beginner module <b>net-start</b> khatam kar liya hai. Matlab aapko pehle se pata hai ki network kya hai, switch aur router mein farak, MAC, IP aur port addresses kya hote hain, layers aur encapsulation ka idea, high level par TCP vs UDP, basic cable types aur classic topologies, aur ping, tracert aur nslookup kaise chalate hain. Hum yeh basics repeat nahi karenge. Yahan hum ek level aur gehre jaayenge: header fields, exact numbers, standards, distances aur unke around bane exam traps.</p>
+
+<h3>Ek analogy: international courier company</h3>
+<p>Socho ek courier company Delhi se Chennai ke customer tak parcel bhejti hai. <b>Sales desk</b> order leta hai aur use trucks se matlab nahi (application). <b>Packing team</b> box ka format decide karti hai aur seal karti hai (presentation). Ek <b>booking clerk</b> shipment record kholta hai aur delivery confirm hone par band karta hai (session). <b>Dispatch team</b> bade order ko numbered boxes mein baantti hai aur har box ki signed receipt maangti hai (transport). <b>Routing office</b> final city ka address likhta hai aur agla hub chunta hai (network). Har <b>truck driver</b> ko sirf is hub se agle hub tak jaana aata hai (data link). Aur <b>sadak</b> khud truck ko le jaati hai (physical).</p>
+<p>Koi department doosre ka kaam nahi karta, aur har ek box par apna label lagata hai. OSI model networking ke kaam ko bilkul aise hi baantta hai, aur isiliye engineer keh sakta hai "problem Layer 2 par hai" aur har doosra engineer turant samajh jaata hai kahan dekhna hai.</p>
+
+<div class="dia"><svg viewBox="0 0 640 300" role="img" aria-label="Domain 1.0 objectives aur chapters">
+<rect x="10" y="10" width="620" height="36" rx="8" fill="#fde68a"/><text x="320" y="33" text-anchor="middle" class="svg-ink" font-size="14">N10-009 Domain 1.0 Networking Concepts (exam ka lagbhag 23%)</text>
+<rect x="10" y="60" width="196" height="100" rx="8" fill="#bae6fd"/><text x="108" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.1 OSI model</text><text x="108" y="104" text-anchor="middle" class="svg-muted" font-size="12">Layers 1-7, PDUs</text><text x="108" y="122" text-anchor="middle" class="svg-muted" font-size="12">Encapsulation</text><text x="108" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 2-4</text>
+<rect x="222" y="60" width="196" height="100" rx="8" fill="#bbf7d0"/><text x="320" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.2 Appliances</text><text x="320" y="104" text-anchor="middle" class="svg-muted" font-size="12">Firewall, IPS, LB, proxy</text><text x="320" y="122" text-anchor="middle" class="svg-muted" font-size="12">CDN, VPN, QoS, TTL</text><text x="320" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 5-6</text>
+<rect x="434" y="60" width="196" height="100" rx="8" fill="#ddd6fe"/><text x="532" y="84" text-anchor="middle" class="svg-ink" font-size="13">1.4 Ports aur protocols</text><text x="532" y="104" text-anchor="middle" class="svg-muted" font-size="12">20 ports, IP types</text><text x="532" y="122" text-anchor="middle" class="svg-muted" font-size="12">Unicast se anycast</text><text x="532" y="140" text-anchor="middle" class="svg-accent" font-size="12">Chapters 7-9</text>
+<rect x="116" y="176" width="196" height="100" rx="8" fill="#fed7aa"/><text x="214" y="200" text-anchor="middle" class="svg-ink" font-size="13">1.5 Media</text><text x="214" y="220" text-anchor="middle" class="svg-muted" font-size="12">Copper, fibre, wireless</text><text x="214" y="238" text-anchor="middle" class="svg-muted" font-size="12">SFP, QSFP, connectors</text><text x="214" y="256" text-anchor="middle" class="svg-accent" font-size="12">Chapter 10</text>
+<rect x="328" y="176" width="196" height="100" rx="8" fill="#e2e8f0"/><text x="426" y="200" text-anchor="middle" class="svg-ink" font-size="13">1.6 Topologies</text><text x="426" y="220" text-anchor="middle" class="svg-muted" font-size="12">Mesh, star, spine-leaf</text><text x="426" y="238" text-anchor="middle" class="svg-muted" font-size="12">North-south, east-west</text><text x="426" y="256" text-anchor="middle" class="svg-accent" font-size="12">Chapter 11</text>
+</svg><p class="cap">Yeh module objectives 1.1, 1.2, 1.4, 1.5 aur 1.6 cover karta hai. Cloud (1.3), addressing (1.7) aur IPv6 (1.8) ke apne modules aage hain.</p></div>
+
+<h3>Yeh domain itna important kyun hai</h3>
+<p>Domain 1.0 exam ka lagbhag ek chauthai hai, lekin iska asli weight usse zyada hai. Troubleshooting domain (5.0, sabse bada, lagbhag 24%) baar baar poochta hai "kaunsi layer fail ho rahi hai?", "kaunsa port block hai?" ya "is distance ke liye kaunsa cable ya transceiver galat hai?". Agar is module ke facts aapke liye automatic hain, to woh troubleshooting sawaal aasaan ho jaate hain. Exam mein 90 minute mein maximum 90 sawaal hote hain, performance-based questions (PBQs) ke saath jahan aap ports ko protocols par ya cables ko distances par drag karte ho. Wahan shuru se sochne ka time nahi hota.</p>
+<p>Real jobs mein yahi knowledge se aap firewall rules likhte ho (aapko pata hona chahiye ki DNS UDP 53 use karta hai aur IPsec ko UDP 500 plus ESP chahiye), optics order karte ho (10GBASE-LR module multimode fibre par kaam nahi karega), aur packet capture padhte ho.</p>
+
+<h3>Yeh module kaise organise hai</h3>
+<ul>
+<li><b>Chapters 2-4:</b> OSI layers gehraai mein, bottom-up aur top-down, phir hop by hop encapsulation.</li>
+<li><b>Chapters 5-6:</b> appliances (har box kya decide karta hai aur kis layer par) aur CDN, VPN, QoS aur TTL jaise functions.</li>
+<li><b>Chapters 7-9:</b> memory aids ke saath ports aur protocols, phir IP protocol types aur traffic types.</li>
+<li><b>Chapters 10-11:</b> transmission media, transceivers, connectors, phir topologies aur architectures.</li>
+<li><b>Chapter 12:</b> dono labs use karke layer-by-layer troubleshooting workflow.</li>
+<li><b>Chapter 13:</b> summary, can-do checklist, glossary aur sabse zyada pooche jaane wale facts.</li>
+</ul>
+
+<h3>Dono labs</h3>
+<p>Dono labs ek hi chhota network use karte hain: <b>PC1</b> (10.0.10.10/24, gateway 10.0.10.1) switch <b>SW1</b> ke through router <b>R1</b> se juda hai, jo 10.0.20.0/24 par server <b>SRV</b> (10.0.20.10/24) tak route karta hai. <b>Follow a ping through the layers</b> mein aap PC1 ka ARP cache padhoge, TTL ko 64 se 63 hote dekhoge, aur R1 ki routing table padhoge. <b>Ports and protocols in action</b> mein aap PC1 ko R1 par DNS server ke roop mein point karoge, <code>web.nwk.lab</code> resolve karoge aur use HTTP aur HTTPS par khologe jabki capture asli transport aur port numbers dikhata hai.</p>
+
+<div class="eg"><p><b>Worked example.</b> User kehta hai "intranet down hai". Layers use karke aap ise paanch jaldi sawaalon mein badal dete ho: Link light on hai (L1)? PC ke ARP cache mein gateway ka MAC hai (L2)? 10.0.20.10 ko ping ka reply aata hai (L3)? Port 443 par TCP connection khulta hai (L4)? Naam resolve hota hai aur page load hota hai (L7)? Agar ping chalta hai lekin <code>nslookup web.nwk.lab</code> fail hota hai, to aapne ek minute se kam mein vague complaint ko ek service tak narrow kar diya.</p></div>
+
+<div class="warn"><p><b>Common galti.</b> Network+ ko sirf ratta exam samajhna aur port numbers ko digits ki list ki tarah yaad karna. Sawaal scenario-based hote hain: "users IP se browse kar sakte hain lekin naam se nahi" ya "VPN tunnel firewall ke through nahi banta". Har fact ko us symptom ke saath seekho jo galat hone par aata hai.</p></div>
+
+<div class="exam"><p><b>Exam trap.</b> CompTIA "kis layer par" poochte waqt OSI model use karta hai, TCP/IP model nahi. Router ka sawaal Layer 3 hai, "Internet layer" nahi. TLS encryption ka sawaal CompTIA ki nazar mein aam taur par Layer 6 (presentation) hota hai, bhale hi practice mein TLS application ke hisse ki tarah chalta hai.</p></div>
+
+<div class="scn"><h4>Branch office mein "network slow hai"</h4><p>Ek naye NOC engineer ko ticket mila ki branch ka "network slow hai". Usne branch router reboot kar diya, jisse kuch nahi hua siwaye iske ki paanch minute tak saari calls drop ho gayi. Senior engineer ne ticket liya aur layers se kaam kiya: interface counters mein koi CRC errors nahi (L1 theek), switch par koi MAC flapping nahi (L2 theek), head office tak pings 18 ms bina loss ke (L3 theek). Capture se dikha ki TCP 445 par file-share traffic sirf ek server ke liye bahut retransmit ho raha tha, jiska NIC 100 Mb/s half duplex par set tha. Us server ka duplex setting theek karne se problem solve ho gayi.</p><p><b>Seekh:</b> layered thinking vague complaint ko checks ki chhoti list mein badal deti hai, aur aapko un cheezon ko "fix" karne se rokti hai jo tooti hi nahi hain.</p></div>
+
+<div class="iv"><p class="q">"Jab real networks TCP/IP chalate hain to hum abhi bhi OSI model kyun seekhte hain?"</p><p>Strong answer: OSI model design aur troubleshooting ke liye shared vocabulary hai. Vendors, documentation aur colleagues "Layer 2 issue", "Layer 4 load balancer" ya "Layer 7 firewall" bolte hain, aur yeh phrases OSI se aate hain. TCP/IP woh protocol suite hai jo asal mein chalta hai; OSI reference map hai jisse hum batate hain ki har function kahan baitha hai. Batao ki aap layer ke hisaab se bottom-up ya top-down troubleshoot karte ho.</p></div>
+
+<div class="kt"><p><b>Key takeaways</b></p><ul>
+<li>Yeh module N10-009 objectives 1.1, 1.2, 1.4, 1.5 aur 1.6 cover karta hai; addressing, IPv6 aur cloud agle modules mein aate hain.</li>
+<li>Har OSI layer ek department hai jiska ek kaam aur apna header hai, courier company ki tarah.</li>
+<li>Domain 1.0 ke facts troubleshooting domain ko feed karte hain; har fact ko uske failure symptom ke saath seekho.</li>
+<li>CompTIA "kaunsi layer" OSI terms mein poochta hai.</li>
+<li>Dono labs PC1, SW1, R1 aur SRV use karke layers, TTL, ARP aur ports ko visible banate hain.</li>
+</ul></div>
+`}};export{e as default};
