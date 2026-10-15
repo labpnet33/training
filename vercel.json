@@ -1,9 +1,12 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    }
-  ]
+  "rewrites": [
+    {"source":"/login","destination":"/login.html"},
+    {"source":"/register","destination":"/register.html"},
+    {"source":"/forgot-password","destination":"/forgot-password.html"},
+    {"source":"/reset-password","destination":"/reset-password.html"},
+    {"source":"/verify-email","destination":"/verify-email.html"},
+    {"source":"/account","destination":"/account.html"},
+    {"source":"/(.*)","destination":"/index.html"}
+  ],
+  "headers":[{"source":"/assets/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=31536000, immutable"}]}]
 }
