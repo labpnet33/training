@@ -1,0 +1,91 @@
+/* Public replica responsive layer.
+   Loaded after the mirrored app stylesheet so every route gets the same display-safe defaults. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { width: 100%; min-width: 0; overflow-x: hidden; }
+body { width: 100%; min-width: 0; max-width: 100%; overflow-x: hidden; }
+#root { width: 100%; min-width: 0; max-width: 100%; overflow-x: clip; }
+
+img, video, canvas, svg { max-width: 100%; }
+img, video { height: auto; }
+pre, code { max-width: 100%; }
+pre { overflow-x: auto; white-space: pre; }
+table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+
+/* Long lesson prose and generated content */
+.prose, [class*="prose"] { min-width: 0; overflow-wrap: anywhere; }
+.prose table, [class*="prose"] table { display: block; width: 100%; overflow-x: auto; }
+.prose img, [class*="prose"] img { max-width: 100%; height: auto; }
+
+/* Prevent flex/grid children from forcing the viewport wider than its parent. */
+.flex > *, .grid > *, [class*="flex"] > *, [class*="grid"] > * { min-width: 0; }
+
+/* Wide desktop navigation and content containers become fluid. */
+@media (max-width: 900px) {
+  [class*="max-w-"] { max-width: 100%; }
+  [class*="w-screen"], [class*="w-[100vw]"] { width: 100%; max-width: 100%; }
+  [class*="min-w-"] { min-width: 0; }
+  [class*="whitespace-nowrap"] { white-space: normal; }
+  [class*="overflow-x-auto"] { max-width: 100%; }
+}
+
+/* Tablet: keep two-column content usable, but let cards stack where needed. */
+@media (max-width: 768px) {
+  [class*="lg:grid-cols-"], [class*="md:grid-cols-"], [class*="sm:grid-cols-2"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  [class*="lg:flex-row"], [class*="md:flex-row"] { flex-direction: column !important; }
+  [class*="lg:w-"], [class*="md:w-"], [class*="sm:w-"] { width: 100% !important; }
+  [class*="lg:max-w-"], [class*="md:max-w-"] { max-width: 100% !important; }
+  [class*="p-8"], [class*="p-10"], [class*="p-12"] { padding: clamp(1rem, 4vw, 2rem); }
+}
+
+/* Phone: compact spacing, readable controls, and no clipped action rows. */
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  h1 { font-size: clamp(1.75rem, 8vw, 2.5rem); line-height: 1.12; }
+  h2 { font-size: clamp(1.35rem, 6vw, 2rem); line-height: 1.18; }
+  h3 { font-size: clamp(1.1rem, 5vw, 1.5rem); }
+  button, a[role="button"], input, select, textarea { max-width: 100%; }
+  button, a[role="button"] { min-height: 2.5rem; }
+  [class*="gap-8"], [class*="gap-10"], [class*="gap-12"] { gap: 1rem; }
+  [class*="px-8"], [class*="px-10"], [class*="px-12"] { padding-left: 1rem; padding-right: 1rem; }
+  [class*="py-8"], [class*="py-10"], [class*="py-12"] { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  [class*="fixed"] { max-width: 100vw; }
+
+  /* Dense toolbars and action groups wrap instead of overflowing. */
+  nav, nav > div, form, [role="toolbar"] { max-width: 100%; }
+  nav { overflow: visible !important; }
+  nav [class*="flex"], nav > div, [role="toolbar"], form [class*="flex"] {
+    flex-wrap: wrap !important;
+    max-width: 100%;
+  }
+  nav:has(> div[class*="lg:hidden"]) {
+    height: auto !important;
+    min-height: 3.5rem;
+    align-items: flex-start;
+  }
+  nav > div[class*="lg:hidden"] {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    flex-wrap: wrap !important;
+  }
+  nav > div[class*="lg:hidden"] > a,
+  nav > div[class*="lg:hidden"] > button {
+    flex-shrink: 1 !important;
+  }
+  nav a, nav button { max-width: 100%; }
+
+  /* Sandbox workspace: panels stack and the console stays inside the viewport. */
+  [class*="h-screen"], [class*="min-h-screen"] { min-height: 100svh; }
+  [class*="h-screen"] { height: auto; }
+}
+
+/* Very narrow devices: remove decorative side gutters that cause horizontal scroll. */
+@media (max-width: 380px) {
+  [class*="px-6"], [class*="px-7"] { padding-left: .75rem; padding-right: .75rem; }
+  [class*="rounded-3xl"] { border-radius: 1rem; }
+}
