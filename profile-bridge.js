@@ -2,6 +2,7 @@ import { supabase } from '/supabase-config.js';
 
 let currentUser = null;
 let scheduled = false;
+const REMOVED_MENU_ITEMS = new Set(['Exams', 'Leaderboard', 'Plans', 'My team', 'Log out', 'Logout', 'Sign out']);
 
 const displayName = (user) => {
   const metadata = user?.user_metadata || {};
@@ -31,6 +32,10 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
+    if (REMOVED_MENU_ITEMS.has(label)) {
+      button.remove();
+      return;
+    }
     if (label === 'Profile' && !button.dataset.supabaseProfileBound) {
       button.dataset.supabaseProfileBound = 'true';
       button.addEventListener('click', (event) => {
