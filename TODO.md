@@ -23,3 +23,7 @@
 ## Startup performance
 
 - [x] Avoid downloading the simulator app bundle for unauthenticated root visits; start it only when a cached or verified Supabase session exists, defer profile sync until after auth passes, and use a preloaded WebP auth wallpaper.
+
+## App navbar brand
+
+- [x] Replace the visible MyPnetLab wordmark in the app home link with the supplied logo image while preserving the home destination, responsive sizing, and accessible name.

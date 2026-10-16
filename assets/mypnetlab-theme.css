@@ -132,18 +132,10 @@ details[data-testid="footer-pricing-rules"] {
   display: none !important;
 }
 
-/* Text wordmark replaces the legacy CONFIG artwork while keeping the existing home link. */
-a.config-brand > img,
+/* Show the supplied MyPnetLab logo in the existing home link. */
+a.config-brand > img.config-brand-logo { display: block !important; }
 a.config-brand > .config-brand-fallback { display: none !important; }
-a.config-brand::after {
-  content: "MyPnetLab";
-  color: var(--mpl-ink);
-  font-size: 17px;
-  font-weight: 750;
-  line-height: 1;
-  letter-spacing: -.045em;
-  white-space: nowrap;
-}
+a.config-brand::after { content: none !important; display: none !important; }
 
 /* Router/simulator console: retain the familiar dark terminal surface in the light site theme. */
 .nk-scroll-managed:has(> pre.nk-term-out) {
