@@ -144,3 +144,28 @@ a.config-brand::after {
   letter-spacing: -.045em;
   white-space: nowrap;
 }
+
+/* Router/simulator console: retain the familiar dark terminal surface in the light site theme. */
+.nk-scroll-managed:has(> pre.nk-term-out) {
+  background: #05080d !important;
+  color: #dbe5f2 !important;
+}
+.nk-scroll-managed:has(> pre.nk-term-out) > pre.nk-term-out {
+  background: #05080d !important;
+  color: #dbe5f2 !important;
+  border-color: #1f2937 !important;
+}
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-row {
+  background: #05080d !important;
+  color: #e5edf7 !important;
+  border-color: #1f2937 !important;
+}
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-in {
+  background: transparent !important;
+  color: #f8fafc !important;
+  caret-color: #7db3ff !important;
+}
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .dm { color: #94a3b8 !important; }
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .lg { color: #86efac !important; }
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .pr { color: #93c5fd !important; }
+.nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .er { color: #fca5a5 !important; }
