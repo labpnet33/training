@@ -4,7 +4,7 @@
 /* Login-only supplied illustration; the solid card keeps form controls readable. */
 body[data-page="login"] {
   background-color: #fff;
-  background-image: url("/assets/login-network-background.png");
+  background-image: url("/assets/login-network-background.webp");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -51,7 +51,7 @@ body[data-page="login"] .brand-logo {
 body[data-page="register"],
 body[data-page="forgot-password"] {
   background-color: #fff;
-  background-image: url("/assets/login-network-background.png");
+  background-image: url("/assets/login-network-background.webp");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

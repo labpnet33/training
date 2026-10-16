@@ -19,3 +19,7 @@
 - [x] Replace the login page’s text brand link with the supplied logo image at a small responsive size, preserving its home link and accessible alt text.
 - [x] Use the same supplied logo and network-learning background on `/register` and `/forgot-password` as on `/login`, preserving their existing account-creation and password-reset form behavior.
 - [x] After successful login, show visible loading feedback instead of a blank screen while the session is verified and the React app mounts; keep protected content hidden until both are ready, and provide a safe sign-in/reload fallback if startup stalls.
+
+## Startup performance
+
+- [x] Avoid downloading the simulator app bundle for unauthenticated root visits; start it only when a cached or verified Supabase session exists, defer profile sync until after auth passes, and use a preloaded WebP auth wallpaper.
