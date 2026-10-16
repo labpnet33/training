@@ -1,27 +1,9 @@
 /* Site-wide visual brand refresh. Keeps app logic, routes, and checkout identifiers unchanged. */
 (() => {
-  const LOGO_SRC = "/assets/mypnetlab-login-logo.webp";
   const refreshText = (value) => value
     .replace(/\bCONFIG by MyPnetLab\b/g, "MyPnetLab")
     .replace(/\bCONFIG\b/g, "MyPnetLab")
     .replace(/\bConfig (?=Expert\b|Pro\b|Essential\b)/g, "MyPnetLab ");
-
-  const ensureBrandLogo = (anchor) => {
-    if (!anchor || !anchor.matches("a.config-brand")) return;
-    const current = anchor.querySelector(":scope > img.config-brand-logo");
-    if (current && current.getAttribute("src") === LOGO_SRC) return;
-
-    const image = document.createElement("img");
-    image.className = "config-brand-logo";
-    image.src = LOGO_SRC;
-    image.alt = "";
-    image.width = 720;
-    image.height = 229;
-    image.decoding = "async";
-    image.setAttribute("aria-hidden", "true");
-    anchor.replaceChildren(image);
-    if (!anchor.hasAttribute("aria-label")) anchor.setAttribute("aria-label", "MyPnetLab — Home");
-  };
 
   const refreshElement = (element) => {
     if (!(element instanceof Element)) return;
@@ -30,11 +12,7 @@
       if (value) element.setAttribute(attr, refreshText(value));
     }
     if (element.tagName === "IMG" && element.closest(".config-brand")) {
-      element.setAttribute("alt", element.classList.contains("config-brand-logo") ? "" : "MyPnetLab");
-    }
-    if (element.matches("a.config-brand")) ensureBrandLogo(element);
-    else if (element.matches(".config-brand-fallback, img.config-brand-logo")) {
-      ensureBrandLogo(element.closest("a.config-brand"));
+      element.setAttribute("alt", "MyPnetLab");
     }
   };
 

@@ -132,10 +132,17 @@ details[data-testid="footer-pricing-rules"] {
   display: none !important;
 }
 
-/* Show the supplied MyPnetLab logo in the existing home link. */
-a.config-brand > img.config-brand-logo { display: block !important; }
+/* Show the supplied MyPnetLab logo in the existing home link without changing app-owned markup. */
+a.config-brand > img,
 a.config-brand > .config-brand-fallback { display: none !important; }
-a.config-brand::after { content: none !important; display: none !important; }
+a.config-brand::after {
+  content: "";
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  background: url("/assets/mypnetlab-login-logo.webp") center / contain no-repeat;
+}
 
 /* Router/simulator console: retain the familiar dark terminal surface in the light site theme. */
 .nk-scroll-managed:has(> pre.nk-term-out) {
