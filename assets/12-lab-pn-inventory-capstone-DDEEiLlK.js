@@ -38,7 +38,7 @@ Group NK-SOUTH:
 <p>On Pune, <code>show running security-policy</code> now lists the rule, and on Chennai it is empty. Chennai is Out of Sync because it is in a different group, where nothing was pushed. That is correct behaviour, not an error.</p>
 
 <h3>Capstone scenario: a new site joins</h3>
-<p>Network Kings opens a fourth site, Kolkata. Plan the work with what you have learned in this module, and name the device for each step.</p>
+<p>MyPnetLab opens a fourth site, Kolkata. Plan the work with what you have learned in this module, and name the device for each step.</p>
 <ol>
 <li><b>Management network.</b> Give the firewall a management IP in 192.0.2.0/24 with gateway 192.0.2.1, or confirm both sides have gateways. (Firewall.)</li>
 <li><b>Point at Panorama.</b> Set panorama-server to Panorama's management IP and commit. (Firewall.)</li>
@@ -105,7 +105,7 @@ Group NK-SOUTH:
 <p>Pune par <code>show running security-policy</code> ab rule list karta hai, aur Chennai par khaali hai. Chennai Out of Sync hai kyunki wo alag group mein hai, jahan kuch push nahi hua. Ye sahi behaviour hai, error nahi.</p>
 
 <h3>Capstone scenario: naya site judta hai</h3>
-<p>Network Kings chauthi site, Kolkata, kholta hai. Is module mein jo seekha usse kaam plan karo, aur har step ke liye device batao.</p>
+<p>MyPnetLab chauthi site, Kolkata, kholta hai. Is module mein jo seekha usse kaam plan karo, aur har step ke liye device batao.</p>
 <ol>
 <li><b>Management network.</b> Firewall ko 192.0.2.0/24 mein gateway 192.0.2.1 ke saath management IP do, ya confirm karo ki dono taraf gateways hain. (Firewall.)</li>
 <li><b>Panorama par point karo.</b> panorama-server ko Panorama ke management IP par set karo aur commit. (Firewall.)</li>

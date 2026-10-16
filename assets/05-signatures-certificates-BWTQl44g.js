@@ -63,7 +63,7 @@ Certificate:
         Version: 3 (0x2)
 <span class="hl">        Serial Number: 1a:2b:3c</span>
         Signature Algorithm: sha256WithRSAEncryption
-<span class="hl">        Issuer: CN = NK-Issuing-CA, O = Network Kings Lab</span>
+<span class="hl">        Issuer: CN = NK-Issuing-CA, O = MyPnetLab Lab</span>
         Validity
             Not Before: Sep  1 09:15:02 2026 GMT
 <span class="hl">            Not After : Sep  1 09:15:02 2027 GMT</span>
@@ -165,7 +165,7 @@ Certificate:
         Version: 3 (0x2)
 <span class="hl">        Serial Number: 1a:2b:3c</span>
         Signature Algorithm: sha256WithRSAEncryption
-<span class="hl">        Issuer: CN = NK-Issuing-CA, O = Network Kings Lab</span>
+<span class="hl">        Issuer: CN = NK-Issuing-CA, O = MyPnetLab Lab</span>
         Validity
             Not Before: Sep  1 09:15:02 2026 GMT
 <span class="hl">            Not After : Sep  1 09:15:02 2027 GMT</span>

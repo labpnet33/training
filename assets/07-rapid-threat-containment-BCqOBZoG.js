@@ -48,7 +48,7 @@ Time      Rule         Event                                                    
 <pre class="out">PC1&gt; curl news.example
 <span class="hl">curl: (28) Failed to connect to news.example port 80 after 2001 ms: Timeout was reached</span>
 ADMIN&gt; curl news.example
-&lt;html&gt;&lt;body&gt;…Network Kings news…&lt;/body&gt;&lt;/html&gt;</pre>
+&lt;html&gt;&lt;body&gt;…MyPnetLab news…&lt;/body&gt;&lt;/html&gt;</pre>
 <p>PC1 can no longer browse even a clean site, while ADMIN (10.0.1.50) is unaffected. The quarantined host the lab asks for is <b>10.0.1.10</b>; Security Intelligence events show its traffic blocked by list <b>RTC Quarantine</b>.</p>
 <p><b>Task 4 — release after clean-up.</b> Analysis → Correlation → Release 10.0.1.10, then <code>curl news.example</code> on PC1 works again. In a real network the Management Center does <b>not</b> release automatically: an operator clears the ANC assignment in ISE (Operations → Adaptive Network Control → Endpoint Assignment), ISE sends another CoA and the port returns to its normal authorization.</p>
 
@@ -119,7 +119,7 @@ Time      Rule         Event                                                    
 <pre class="out">PC1&gt; curl news.example
 <span class="hl">curl: (28) Failed to connect to news.example port 80 after 2001 ms: Timeout was reached</span>
 ADMIN&gt; curl news.example
-&lt;html&gt;&lt;body&gt;…Network Kings news…&lt;/body&gt;&lt;/html&gt;</pre>
+&lt;html&gt;&lt;body&gt;…MyPnetLab news…&lt;/body&gt;&lt;/html&gt;</pre>
 <p>PC1 ab clean site bhi browse nahi kar sakta, jabki ADMIN (10.0.1.50) par koi asar nahi. Lab jo quarantined host poochti hai woh <b>10.0.1.10</b> hai; Security Intelligence events uska traffic list <b>RTC Quarantine</b> se blocked dikhate hain.</p>
 <p><b>Task 4 — clean-up ke baad release.</b> Analysis → Correlation → Release 10.0.1.10, phir PC1 par <code>curl news.example</code> phir chalta hai. Asli network mein Management Center apne aap release <b>nahi</b> karta: operator ISE mein ANC assignment clear karta hai (Operations → Adaptive Network Control → Endpoint Assignment), ISE ek aur CoA bhejta hai aur port apne normal authorization par laut aata hai.</p>
 

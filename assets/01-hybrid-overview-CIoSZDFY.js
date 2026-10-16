@@ -11,7 +11,7 @@ var e=`<svg viewBox="0 0 640 280" role="img" aria-label="Three ways to connect o
 <line x1="380" y1="125" x2="485" y2="148" stroke="#64748b" stroke-width="2" stroke-dasharray="5 4"/>
 <text x="320" y="268" text-anchor="middle" class="svg-muted" font-size="11">All three can terminate on the same GatewaySubnet in the hub</text>
 </svg>`,t={id:`hybrid-overview`,h:{en:`Hybrid connectivity: the options and how to choose`,hi:`Hybrid connectivity: options aur kaise chunein`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>What you will learn</h3>
 <ul>
@@ -70,7 +70,7 @@ var e=`<svg viewBox="0 0 640 280" role="img" aria-label="Three ways to connect o
 <li>VPN is also the natural backup for ExpressRoute.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Aap kya seekhoge</h3>
 <ul>

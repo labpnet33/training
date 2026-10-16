@@ -5,7 +5,7 @@ var e=`<svg viewBox="0 0 640 240" role="img" aria-label="Guided lab 1 layout: on
 <line x1="265" y1="127" x2="375" y2="127" stroke="#dc2626" stroke-width="3" stroke-dasharray="6 4"/><text x="320" y="118" text-anchor="middle" class="svg-ink" font-size="11">TCP 1433 DENIED (rule 200)</text>
 <text x="320" y="222" text-anchor="middle" class="svg-muted" font-size="11">Cheap lab: two small VMs, one storage account. Still delete the resource group the same day</text>
 </svg>`,t={id:`guided-lab-watcher`,h:{en:`Guided lab on your own Azure account: find a blocked port with Network Watcher`,hi:`Apne Azure account par guided lab: Network Watcher se blocked port dhundo`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Build a tiny network with a hidden fault, then find it the professional way: a failing test, next hop, IP flow verify, effective security rules, a fix, connection troubleshoot and a short packet capture. The fault is an NSG deny rule on the database subnet that blocks TCP 1433 from the app subnet. This lab is cheap (two small VMs and a storage account), but it still bills until you delete it.</p>
@@ -114,7 +114,7 @@ az group exists -n rg-nk-ops <span class="c"># repeat until it prints false</spa
 <li>Delete capture sessions and the resource group, then confirm.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Ek chhota network banao jisme chhupa hua fault ho, phir use professional tareeke se dhundo: failing test, next hop, IP flow verify, effective security rules, fix, connection troubleshoot aur chhota packet capture. Fault database subnet par ek NSG deny rule hai jo app subnet se TCP 1433 block karta hai. Yeh lab sasta hai (do chhoti VMs aur ek storage account), par delete karne tak bill karta hai.</p>

@@ -7,7 +7,7 @@ var e=`<svg viewBox="0 0 640 190" role="img" aria-label="Safe account controls">
 <rect x="150" y="125" width="340" height="50" rx="8" fill="#e2e8f0"/><text x="320" y="147" text-anchor="middle" class="svg-ink" font-size="13">az account show  /  az group list</text><text x="320" y="164" text-anchor="middle" class="svg-muted" font-size="12">proves who you are and where you work</text>
 <line x1="320" y1="90" x2="320" y2="125" stroke="#64748b" stroke-width="2"/>
 </svg>`,t={id:`guided-lab-safe-account`,h:{en:`Guided lab 1 on your own Azure account: budget alert, resource group and a working CLI`,hi:`Guided lab 1 apne Azure account par: budget alert, resource group aur chalta hua CLI`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Finish with an account that cannot surprise you: a budget that emails you, a tagged resource group in Central India, and a CLI (or Cloud Shell) that answers <code>az account show</code>. Then delete the group and prove it is gone.</p>
@@ -100,7 +100,7 @@ az group exists --name rg-nk-lab</pre>
 <li>Cloud Shell storage and forgotten resources are the real cost risks.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Aise account ke saath khatam karo jo aapko surprise na de sake: email bhejne wala budget, Central India mein tagged resource group, aur CLI (ya Cloud Shell) jo <code>az account show</code> ka jawab de. Phir group delete karo aur prove karo ki woh chala gaya.</p>

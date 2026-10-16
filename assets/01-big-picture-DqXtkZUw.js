@@ -10,7 +10,7 @@ var e={id:`big-picture`,h:{en:`Why private servers still need the internet`,hi:`
 </ul>
 <p><b>Prerequisites:</b> the previous modules in this track: VPC design (public and private subnets, route tables, the internet gateway) and security groups. If "a subnet is public because its route table points 0.0.0.0/0 at an internet gateway" is not yet obvious to you, revisit that module first.</p>
 
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>The hotel analogy</h3>
 <p>Imagine a hotel. Guests in the rooms (private servers) have no street-facing door of their own. If a guest wants to order a pizza, they phone the <b>front desk</b>. The front desk calls the pizzeria using the hotel's single public phone number, and when the pizzeria calls back, the front desk forwards the answer to the right room. The pizzeria never learns the room number. And a stranger on the street cannot phone the front desk and ask to be put through to room 204, because the front desk only forwards calls that a guest started.</p>
@@ -59,7 +59,7 @@ var e={id:`big-picture`,h:{en:`Why private servers still need the internet`,hi:`
 </ul>
 <p><b>Prerequisites:</b> is track ke pichle modules: VPC design (public aur private subnets, route tables, internet gateway) aur security groups. Agar "subnet tab public hota hai jab uski route table 0.0.0.0/0 ko internet gateway par point kare" abhi clear nahi hai, to pehle woh module dobara dekho.</p>
 
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Hotel ki analogy</h3>
 <p>Ek hotel socho. Rooms ke guests (private servers) ke paas street ki taraf apna darwaza nahi hai. Guest ko pizza mangwana ho to woh <b>front desk</b> ko phone karta hai. Front desk hotel ke ek public phone number se pizzeria ko call karta hai, aur pizzeria wapas call kare to front desk jawab sahi room tak pahuncha deta hai. Pizzeria ko room number kabhi pata nahi chalta. Aur street ka koi ajnabi front desk ko phone karke room 204 nahi maang sakta, kyunki front desk sirf wahi calls forward karta hai jo kisi guest ne shuru ki ho.</p>

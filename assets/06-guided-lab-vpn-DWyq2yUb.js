@@ -8,7 +8,7 @@ var e=`<svg viewBox="0 0 640 250" role="img" aria-label="Guided lab 1 layout: hu
 <line x1="245" y1="90" x2="395" y2="90" stroke="#2563eb" stroke-width="4"/><text x="320" y="82" text-anchor="middle" class="svg-accent" font-size="11">IPsec + BGP</text>
 <text x="320" y="232" text-anchor="middle" class="svg-ink" font-size="12">Two gateways bill hourly and take 30 to 45 minutes to deploy: delete the same day</text>
 </svg>`,t={id:`guided-lab-vpn`,h:{en:`Guided lab on your own Azure account: a VPN with BGP`,hi:`Apne Azure account par guided lab: BGP ke saath VPN`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>EXPENSIVE AND SLOW LAB. Read before you start.</b> VPN Gateways bill <b>every hour they exist</b> and each takes <b>30 to 45 minutes</b> to deploy. This lab uses two. Do it <b>only on a free-credit account</b> or one where you accept the cost, finish <b>the same day</b>, and <b>delete the resource group</b> at the end.</p></div>
 
@@ -109,7 +109,7 @@ az group exists -n rg-nk-vpn <span class="c"># repeat until it prints false</spa
 <li>Delete the resource group the same day and confirm it is gone.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>MEHENGA AUR SLOW LAB. Shuru karne se pehle padho.</b> VPN Gateways <b>jitni der exist karte hain har ghante</b> bill karte hain aur har ek deploy hone mein <b>30 se 45 minute</b> leta hai. Is lab mein do use hote hain. Yeh <b>sirf free-credit account</b> par karo ya aisa jahan aap cost accept karte ho, <b>usi din</b> khatam karo, aur aakhir mein <b>resource group delete</b> karo.</p></div>
 

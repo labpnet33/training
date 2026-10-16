@@ -17,7 +17,7 @@ var e=`<svg viewBox="0 0 640 270" role="img" aria-label="A VNet with subnets and
 
 <div class="dia">`+e+`<p class="cap">One VNet, two subnets, one public IP, and a built-in routing layer you do not configure by hand.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>What a VNet is and is not</h3>
 <ul>
@@ -69,7 +69,7 @@ var e=`<svg viewBox="0 0 640 270" role="img" aria-label="A VNet with subnets and
 
 <div class="dia">`+e+`<p class="cap">Ek VNet, do subnets, ek public IP, aur built-in routing layer jise aap haath se configure nahi karte.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>VNet kya hai aur kya nahi</h3>
 <ul>

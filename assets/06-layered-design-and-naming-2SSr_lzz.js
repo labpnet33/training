@@ -2,7 +2,7 @@ var e={id:`layered-design-and-naming`,h:{en:`Designing layered templates and con
 <p>A company dress code works in layers. The whole company wears an ID badge. A region may add a rule about formal wear. A single office may add a rule about its own security door. Nobody writes a separate dress code for every employee; each layer adds only what is true at that level. Template design for a growing network works the same way: <b>global, region, site, role</b>.</p>
 
 <h3>The four layers</h3>
-<table class="tbl"><thead><tr><th>Layer</th><th>Contains</th><th>Example in Network Kings</th></tr></thead><tbody>
+<table class="tbl"><thead><tr><th>Layer</th><th>Contains</th><th>Example in MyPnetLab</th></tr></thead><tbody>
 <tr><td>Global</td><td>Settings true everywhere</td><td>NK-GLOBAL: NTP, DNS, management profiles</td></tr>
 <tr><td>Region</td><td>Settings true for one area</td><td>NK-REGION: MTU for a tunnelled ISP, regional syslog</td></tr>
 <tr><td>Site or branch design</td><td>The shape of a branch</td><td>NK-BRANCH-NET: interfaces, zones, default route with variables</td></tr>
@@ -39,7 +39,7 @@ variable names: $wan-ip  $wan-gw  $lan-ip  (lowercase, hyphen, role first)</pre>
 <p>Company ka dress code layers mein chalta hai. Poori company ID badge pehenti hai. Ek region formal wear ka rule jod sakta hai. Ek office apne security door ka rule jod sakta hai. Har employee ke liye alag dress code nahi likha jaata; har layer sirf wahi jodti hai jo us level par sach hai. Badhte network ka template design bhi aise hi chalta hai: <b>global, region, site, role</b>.</p>
 
 <h3>Chaar layers</h3>
-<table class="tbl"><thead><tr><th>Layer</th><th>Kya rehta hai</th><th>Network Kings mein example</th></tr></thead><tbody>
+<table class="tbl"><thead><tr><th>Layer</th><th>Kya rehta hai</th><th>MyPnetLab mein example</th></tr></thead><tbody>
 <tr><td>Global</td><td>Jo settings har jagah sach hain</td><td>NK-GLOBAL: NTP, DNS, management profiles</td></tr>
 <tr><td>Region</td><td>Ek area ki settings</td><td>NK-REGION: tunnelled ISP ka MTU, regional syslog</td></tr>
 <tr><td>Site ya branch design</td><td>Branch ki shape</td><td>NK-BRANCH-NET: interfaces, zones, variables wala default route</td></tr>

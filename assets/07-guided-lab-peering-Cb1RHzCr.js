@@ -127,7 +127,7 @@ aws iam delete-role --role-name nk-pcx-lab-role
 aws ec2 describe-instances --filters Name=tag:Project,Values=nk-pcx-lab Name=instance-state-name,Values=pending,running,stopped --query 'Reservations[].Instances[].InstanceId'
 aws ec2 describe-vpcs --filters Name=tag:Project,Values=nk-pcx-lab --query 'Vpcs[].VpcId'
 aws ec2 describe-vpc-peering-connections --filters Name=tag:Project,Values=nk-pcx-lab --query 'VpcPeeringConnections[?Status.Code!=&#96;deleted&#96;].VpcPeeringConnectionId'`),l={id:`guided-lab-peering`,h:{en:`Guided lab on your own AWS account: peer two VPCs`,hi:`Apne AWS account par guided lab: do VPCs peer karo`},body:{en:`
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Goal</h3>
 <p>Peer two VPCs in one account and Region, and <b>watch the failure change</b> as you add each missing piece: no peering (no route), peering plus one route (reply lost), peering plus both routes (works). You will see why "active" is not enough. Then you delete everything.</p>
@@ -207,7 +207,7 @@ aws ec2 describe-vpc-peering-connections --filters Name=tag:Project,Values=nk-pc
 <li>Budget alert first, tags on everything, billing check the next day.</li>
 </ul></div>
 `,hi:`
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Goal</h3>
 <p>Ek account aur Region mein do VPCs peer karo, aur har missing piece jodte hi <b>failure ko badalte dekho</b>: peering nahi (no route), peering plus ek route (reply lost), peering plus dono routes (kaam karta hai). Aap dekhoge ki "active" kyun kaafi nahi. Phir sab delete karoge.</p>

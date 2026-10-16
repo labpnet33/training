@@ -41,7 +41,7 @@ ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
 ...Reason: <span class="hl">File Inspection: W32.Trojan.KeyStealer</span> (SHA-256 9f1c0d6e…a41b, Secure Endpoint disposition: Malicious)</pre>
 <p><b>Remote browser isolation (RBI)</b> is the <b>Isolate</b> action: the page runs in a disposable cloud browser and the user receives a safe rendering. Use it for uncategorised or newly seen sites that you do not want to block outright, and to make risky sites read-only (no uploads, no typing passwords).</p>
 
-<div class="eg"><p><b>Worked example.</b> App Discovery for Network Kings shows 41 cloud apps in a month: 9 sanctioned, 32 not. Three unsanctioned file-sharing apps moved 2.4 GB of uploads. Policy: allow Cloudbox with tenant control nwkings, block the Cloud Storage category for everyone else with a Warn exception for Marketing to one partner app, and put the three apps into a destination list referenced by a block rule.</p></div>
+<div class="eg"><p><b>Worked example.</b> App Discovery for MyPnetLab shows 41 cloud apps in a month: 9 sanctioned, 32 not. Three unsanctioned file-sharing apps moved 2.4 GB of uploads. Policy: allow Cloudbox with tenant control nwkings, block the Cloud Storage category for everyone else with a Warn exception for Marketing to one partner app, and put the three apps into a destination list referenced by a block rule.</p></div>
 
 <div class="warn"><p><b>Common mistakes.</b> Configuring tenant controls with decryption off, so the header is never inserted. Blocking a whole category that the business depends on instead of using tenant controls. Creating a new rule per incident instead of one rule plus a destination list.</p></div>
 
@@ -101,7 +101,7 @@ ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
 ...Reason: <span class="hl">File Inspection: W32.Trojan.KeyStealer</span> (SHA-256 9f1c0d6e…a41b, Secure Endpoint disposition: Malicious)</pre>
 <p><b>Remote browser isolation (RBI)</b> <b>Isolate</b> action hai: page ek disposable cloud browser mein chalta hai aur user ko safe rendering milti hai. Ise uncategorised ya newly seen sites ke liye use karo jinhe aap seedha block nahi karna chahte, aur risky sites ko read-only banane ke liye (koi upload nahi, password type karna nahi).</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings ka App Discovery ek mahine mein 41 cloud apps dikhata hai: 9 sanctioned, 32 nahi. Teen unsanctioned file-sharing apps ne 2.4 GB uploads kiye. Policy: Cloudbox ko tenant control nwkings ke saath allow karo, baaki sabke liye Cloud Storage category block karo aur Marketing ke liye ek partner app par Warn exception do, aur teen apps ko ek destination list mein daalo jo block rule se referenced ho.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab ka App Discovery ek mahine mein 41 cloud apps dikhata hai: 9 sanctioned, 32 nahi. Teen unsanctioned file-sharing apps ne 2.4 GB uploads kiye. Policy: Cloudbox ko tenant control nwkings ke saath allow karo, baaki sabke liye Cloud Storage category block karo aur Marketing ke liye ek partner app par Warn exception do, aur teen apps ko ek destination list mein daalo jo block rule se referenced ho.</p></div>
 
 <div class="warn"><p><b>Common galtiyan.</b> Decryption off rakh kar tenant controls configure karna, jisse header kabhi insert nahi hota. Tenant controls use karne ki jagah poori category block karna jis par business depend karta hai. Ek rule plus destination list ki jagah har incident ke liye naya rule banana.</p></div>
 

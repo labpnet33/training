@@ -7,7 +7,7 @@ var e=`<svg viewBox="0 0 640 250" role="img" aria-label="Guided lab 1 layout: hu
 <g stroke="#64748b" stroke-width="2"><line x1="175" y1="115" x2="240" y2="115"/><line x1="400" y1="115" x2="465" y2="115"/></g>
 <text x="320" y="225" text-anchor="middle" class="svg-ink" font-size="12">Test 1: spoke1 to spoke2 fails (no transit). Test 2: after UDRs it works via vm-hub.</text>
 </svg>`,t={id:`guided-lab-build`,h:{en:`Guided lab on your own Azure account: build a hub-and-spoke`,hi:`Apne Azure account par guided lab: hub-and-spoke banao`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Build a hub VNet and two spoke VNets, peer them, prove that spoke1 <i>cannot</i> reach spoke2 (peering is not transitive), then add user-defined routes and a small Linux VM in the hub acting as a router so the flow works. This is the same pattern Azure Firewall will replace in the next lab, with a lot less money.</p>
@@ -113,7 +113,7 @@ az group exists -n rg-nk-hub <span class="c"># repeat until it prints false</spa
 <li>Delete the resource group, then confirm it is gone.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Ek hub VNet aur do spoke VNets banao, unhe peer karo, saabit karo ki spoke1 spoke2 tak <i>nahi</i> pahunch sakta (peering transitive nahi), phir user-defined routes aur hub mein router ki tarah kaam karne wali ek chhoti Linux VM jodo taaki flow chal pade. Agle lab mein Azure Firewall isi pattern ki jagah lega, par bahut zyada paise ke saath.</p>

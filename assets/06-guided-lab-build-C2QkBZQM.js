@@ -6,7 +6,7 @@ var e=`<svg viewBox="0 0 640 240" role="img" aria-label="Guided lab 1 layout: th
 <g stroke="#64748b" stroke-width="2"><line x1="180" y1="65" x2="250" y2="105"/><line x1="180" y1="185" x2="250" y2="135"/><line x1="390" y1="120" x2="460" y2="120"/></g>
 <text x="320" y="225" text-anchor="middle" class="svg-ink" font-size="12">3 attachments bill by the hour from the moment they exist</text>
 </svg>`,t={id:`guided-lab-build`,h:{en:`Guided lab on your own AWS account: build a hub-and-spoke`,hi:`Apne AWS account par guided lab: hub-and-spoke banao`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "Build a hub-and-spoke with a Transit Gateway" is also free extra practice with the same commands.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "Build a hub-and-spoke with a Transit Gateway" is also free extra practice with the same commands.</p></div>
 
 <h3>Goal</h3>
 <p>Build three VPCs, connect them with one Transit Gateway, and prove any-to-any reachability <i>without launching any servers</i>, so the lab stays cheap. You will use unattached network interfaces (ENIs) as test endpoints and Reachability Analyzer as the tester.</p>
@@ -128,7 +128,7 @@ done</pre>
 <li>Delete in order: paths, VPC routes, attachments (wait), TGW, then VPC pieces.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "Build a hub-and-spoke with a Transit Gateway" bhi wahi commands ke saath free extra practice hai.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "Build a hub-and-spoke with a Transit Gateway" bhi wahi commands ke saath free extra practice hai.</p></div>
 
 <h3>Goal</h3>
 <p>Teen VPCs banao, ek Transit Gateway se jodo, aur <i>koi server launch kiye bina</i> any-to-any reachability saabit karo, taaki lab sasta rahe. Test endpoints ke taur par unattached network interfaces (ENIs) aur tester ke taur par Reachability Analyzer use karoge.</p>

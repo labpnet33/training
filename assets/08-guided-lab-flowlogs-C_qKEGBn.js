@@ -11,7 +11,7 @@ var e=`<svg viewBox="0 0 640 240" role="img" aria-label="Guided lab 2: app insta
 <text x="320" y="190" text-anchor="middle" class="svg-ink" font-size="12">Timeline: wait about 15 minutes, read the logs, fix the NACL, wait again, read again.</text>
 <text x="320" y="212" text-anchor="middle" class="svg-muted" font-size="12">This is the same fault as fault 2 of the NOC ticket in the emulator.</text>
 </svg>`,t={id:`guided-lab-flowlogs`,h:{en:`Guided lab on your own AWS account: flow logs and a stateless NACL fault`,hi:`Apne AWS account par guided lab: flow logs aur stateless NACL fault`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "NOC ticket: three problems in one VPC" contains this same fault (fault 2) as an extra exercise.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "NOC ticket: three problems in one VPC" contains this same fault (fault 2) as an extra exercise.</p></div>
 
 <h3>Goal</h3>
 <p>Reproduce, in your own account, the classic fault where an application connects to a database but the stateless NACL on the database subnet blocks the reply. You will generate real traffic, enable <b>VPC Flow Logs</b> to S3, find the "ACCEPT request, REJECT reply" pair, fix the NACL, and see the REJECT disappear.</p>
@@ -124,7 +124,7 @@ aws ec2 delete-vpc --vpc-id $VPC</pre>
 <li>Give every diagnostic you enable an owner and an end date.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "NOC ticket: three problems in one VPC" mein yahi fault (fault 2) extra exercise ke taur par hai.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "NOC ticket: three problems in one VPC" mein yahi fault (fault 2) extra exercise ke taur par hai.</p></div>
 
 <h3>Goal</h3>
 <p>Apne account mein woh classic fault reproduce karo jahan application database se connect hota hai par database subnet ka stateless NACL reply block karta hai. Asli traffic generate karoge, <b>VPC Flow Logs</b> S3 mein enable karoge, "ACCEPT request, REJECT reply" jodi dhundoge, NACL theek karoge, aur REJECT ko gaayab hote dekhoge.</p>

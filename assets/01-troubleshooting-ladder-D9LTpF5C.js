@@ -26,7 +26,7 @@ var e=`<svg viewBox="0 0 640 300" role="img" aria-label="Cloud troubleshooting l
 </ul>
 <p><b>Prerequisites.</b> VPCs, subnets, route tables, internet and NAT gateways, security groups and NACLs from the earlier modules of this track, and the idea of a Transit Gateway from the previous module.</p>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator labs of this module (Reachability Analyzer and the NOC ticket with three faults) are extra practice with the same ideas.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator labs of this module (Reachability Analyzer and the NOC ticket with three faults) are extra practice with the same ideas.</p></div>
 
 <h3>The doctor analogy</h3>
 <p>A good doctor does not order every test for every patient. They listen to the symptom, think of the usual suspects in a sensible order, test the cheapest one, and move on only when it is cleared. A cloud engineer does the same with a failing connection. The "symptom" is the error the client prints; the "tests" are looks at configuration and logs; the "order" is the ladder below.</p>
@@ -81,7 +81,7 @@ var e=`<svg viewBox="0 0 640 300" role="img" aria-label="Cloud troubleshooting l
 </ul>
 <p><b>Prerequisites.</b> Is track ke pichhle modules se VPCs, subnets, route tables, internet aur NAT gateways, security groups aur NACLs, aur pichhle module se Transit Gateway ka idea.</p>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. Is module ke in-app emulator labs (Reachability Analyzer aur teen faults wala NOC ticket) wahi ideas ki extra practice hain.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. Is module ke in-app emulator labs (Reachability Analyzer aur teen faults wala NOC ticket) wahi ideas ki extra practice hain.</p></div>
 
 <h3>Doctor ka analogy</h3>
 <p>Achha doctor har patient ke saare tests nahi karwata. Woh symptom sunta hai, sensible order mein usual suspects sochta hai, sabse sasta test karta hai, aur jab woh clear ho tabhi aage badhta hai. Cloud engineer bhi fail hote connection ke saath aisa hi karta hai. "Symptom" woh error hai jo client print karta hai; "tests" configuration aur logs ko dekhna hain; "order" neeche ki ladder hai.</p>

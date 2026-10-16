@@ -37,7 +37,7 @@ name         PUN-CORE-R1
 status       Active
 role         Core Router
 site         Pune
-tenant       Network Kings
+tenant       MyPnetLab
 platform     Cisco IOS XE
 device_type  CSR1000V
 rack         None
@@ -116,7 +116,7 @@ name         PUN-CORE-R1
 status       Active
 role         Core Router
 site         Pune
-tenant       Network Kings
+tenant       MyPnetLab
 platform     Cisco IOS XE
 device_type  CSR1000V
 rack         None

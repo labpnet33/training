@@ -5,7 +5,7 @@ var e=`<svg viewBox="0 0 640 230" role="img" aria-label="Lab 1 design">
 <rect x="430" y="50" width="180" height="70" rx="6" fill="#fde68a"/><text x="520" y="80" text-anchor="middle" class="svg-ink" font-size="12">snet-data 10.10.3.0/24</text><text x="520" y="100" text-anchor="middle" class="svg-muted" font-size="11">service endpoint Storage</text>
 <rect x="30" y="140" width="580" height="60" rx="6" fill="#e2e8f0"/><text x="320" y="165" text-anchor="middle" class="svg-ink" font-size="13">Free resources only: VNet, subnets, route table, service endpoint</text><text x="320" y="185" text-anchor="middle" class="svg-muted" font-size="12">Nothing runs, so nothing is billed by the hour</text>
 </svg>`,t={id:`guided-lab-vnet-subnets`,h:{en:`Guided lab 1 on your own Azure account: build a VNet with three subnets and a route table`,hi:`Guided lab 1 apne Azure account par: teen subnets aur route table wala VNet`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Build the address plan from this module with real resources: a VNet 10.10.0.0/16, three /24 subnets, a service endpoint, and a route table associated with one subnet. You will confirm the numbers, prove the reserved addresses, and delete everything.</p>
@@ -92,7 +92,7 @@ az group exists --name rg-nk-lab</pre>
 <li>Always delete the resource group at the end.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Is module ka address plan asli resources ke saath banao: VNet 10.10.0.0/16, teen /24 subnets, ek service endpoint, aur ek subnet se associated route table. Aap numbers confirm karoge, reserved addresses prove karoge, aur sab delete karoge.</p>

@@ -2,7 +2,7 @@ var e={id:`templates`,h:{en:`Policy templates and inheritance`,hi:`Policy templa
 <p>One branch is easy. Ten branches are not: if every branch has its own hand-written copy of "allow DNS, block Telnet, allow the SMC", the copies drift apart. A <b>policy template</b> solves this. It holds rules every branch must have, and each branch policy is built on top of it.</p>
 
 <h3>Analogy: the company rule book and the site notice board</h3>
-<p>Network Kings has one company rule book printed by head office: badges must be worn, visitors sign in. Each branch then adds its own notice board: Pune has a canteen timing, Delhi has a parking note. The branch cannot tear out a page of the company book. In policy terms, the company book is the template and the notice board is the branch policy.</p>
+<p>MyPnetLab has one company rule book printed by head office: badges must be worn, visitors sign in. Each branch then adds its own notice board: Pune has a canteen timing, Delhi has a parking note. The branch cannot tear out a page of the company book. In policy terms, the company book is the template and the notice board is the branch policy.</p>
 
 <h3>What a template is</h3>
 <p>A policy has a type. A <b>template</b> is a policy that other policies are based on. A normal <b>policy</b> picks one template and inherits its rules. The template's rules appear <b>on top</b> of the branch policy, and the engine evaluates them first. They are numbered <code>T1</code>, <code>T2</code> and so on, so you can tell them apart from the branch's own rules, which are numbered <code>1</code>, <code>2</code> and so on.</p>
@@ -55,7 +55,7 @@ var e={id:`templates`,h:{en:`Policy templates and inheritance`,hi:`Policy templa
 <p>Ek branch aasan hai. Das branches aasan nahi: agar har branch ki apni hand-written copy hai "DNS allow karo, Telnet block karo, SMC allow karo" ki, to copies alag hone lagti hain. <b>Policy template</b> yeh solve karta hai. Isme woh rules hote hain jo har branch ko chahiye, aur har branch policy uske upar bani hoti hai.</p>
 
 <h3>Analogy: company rule book aur site notice board</h3>
-<p>Network Kings ki ek company rule book head office chhapta hai: badge pehenna hai, visitors sign in karenge. Phir har branch apna notice board lagata hai: Pune mein canteen timing, Delhi mein parking note. Branch company book ka ek page nahi faad sakta. Policy ke terms mein, company book template hai aur notice board branch policy.</p>
+<p>MyPnetLab ki ek company rule book head office chhapta hai: badge pehenna hai, visitors sign in karenge. Phir har branch apna notice board lagata hai: Pune mein canteen timing, Delhi mein parking note. Branch company book ka ek page nahi faad sakta. Policy ke terms mein, company book template hai aur notice board branch policy.</p>
 
 <h3>Template kya hai</h3>
 <p>Policy ka ek type hota hai. <b>Template</b> woh policy hai jis par dusri policies based hoti hain. Normal <b>policy</b> ek template chunti hai aur uske rules inherit karti hai. Template ke rules branch policy ke <b>upar</b> dikhte hain, aur engine unhe pehle evaluate karta hai. Unka number <code>T1</code>, <code>T2</code> aise hota hai, taaki branch ke apne rules (<code>1</code>, <code>2</code>) se alag pehchane jaayein.</p>

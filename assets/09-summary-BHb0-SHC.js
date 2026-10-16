@@ -21,7 +21,7 @@ var e={id:`summary`,h:{en:`Summary and exam checklist`,hi:`Summary aur exam chec
 <li>I can diagnose "NAT exists, no internet" in five steps, and repair a blackhole with replace-route.</li>
 <li>I can build the lab on my own account and delete it in dependency order.</li>
 </ul>
-<p>You can practise every step with no AWS account and no bill using the hands-on labs at aws.nwkings.com, and with the in-app emulator labs of this module.</p>
+<p>You can practise every step with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app, and with the in-app emulator labs of this module.</p>
 
 <h3>Mini glossary</h3>
 <dl class="terms">
@@ -97,7 +97,7 @@ aws ec2 create-egress-only-internet-gateway --vpc-id $VPC</pre>
 <li>Main "NAT hai, internet nahi" ko paanch step mein diagnose kar sakta hoon aur replace-route se blackhole theek kar sakta hoon.</li>
 <li>Main lab apne account par bana sakta hoon aur dependency order mein delete kar sakta hoon.</li>
 </ul>
-<p>Har step aap bina AWS account aur bill ke aws.nwkings.com ke hands-on labs par, aur is module ke in-app emulator labs par practise kar sakte ho.</p>
+<p>Har step aap bina AWS account aur bill ke aws.mypnetlab.vercel.app ke hands-on labs par, aur is module ke in-app emulator labs par practise kar sakte ho.</p>
 
 <h3>Mini glossary</h3>
 <dl class="terms">

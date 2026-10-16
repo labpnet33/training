@@ -105,7 +105,7 @@ aws iam delete-role --role-name nk-nat-lab-role
 aws ec2 describe-nat-gateways --filter Name=tag:Project,Values=nk-nat-lab --query 'NatGateways[?State!=&#96;deleted&#96;]'
 aws ec2 describe-addresses --query 'Addresses[?Tags[?Value==&#96;nk-nat-lab&#96;]]'
 `),s={id:`guided-lab-nat`,h:{en:`Guided lab on your own AWS account: build a NAT gateway`,hi:`Apne AWS account par guided lab: NAT gateway banao`},body:{en:`
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Goal</h3>
 <p>Build the architecture from chapter 3 for real: a VPC with a public and a private subnet, an internet gateway, a NAT gateway with an Elastic IP, and a private instance that reaches the internet only through the NAT. You will prove it by checking that the instance's public IP, as seen from the internet, is the NAT gateway's Elastic IP. Then you will <b>delete everything</b>.</p>
@@ -188,7 +188,7 @@ aws ec2 describe-addresses --query 'Addresses[?Tags[?Value==&#96;nk-nat-lab&#96;
 <li>Budget alert first, tags on everything, cleanup in the same sitting.</li>
 </ul></div>
 `,hi:`
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Goal</h3>
 <p>Chapter 3 ka architecture asli mein banao: public aur private subnet wala VPC, internet gateway, Elastic IP ke saath NAT gateway, aur private instance jo sirf NAT ke through internet tak pahunche. Aap sabit karoge ki internet se dikhne wala instance ka public IP wahi hai jo NAT gateway ka Elastic IP hai. Phir aap <b>sab kuch delete</b> karoge.</p>

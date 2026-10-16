@@ -26,7 +26,7 @@ var e={id:`sessions`,h:{en:`Per-vendor session behaviour: prompts, paging and en
 <h3>Seeing it with your own eyes: session_log</h3>
 <p>The <code>session_log</code> argument writes everything netmiko sent and received into a file. Lab 1 task 3 asks you to read the log of J1 that <code>probe.py</code> already created:</p>
 <pre class="out">AUTO01$ cat logs/J1.log
---- NK-OS 2.0-nk built 2026-09-01 by Network Kings
+--- NK-OS 2.0-nk built 2026-09-01 by MyPnetLab
 netops@J1&gt;
 netops@J1&gt;
 netops@J1&gt; set cli screen-width 511
@@ -109,7 +109,7 @@ E1# True</pre>
 <h3>Apni aankhon se dekho: session_log</h3>
 <p><code>session_log</code> argument netmiko ne jo bheja aur paaya sab ek file mein likhta hai. Lab 1 task 3 kehta hai J1 ka woh log padho jo <code>probe.py</code> pehle hi bana chuki hai:</p>
 <pre class="out">AUTO01$ cat logs/J1.log
---- NK-OS 2.0-nk built 2026-09-01 by Network Kings
+--- NK-OS 2.0-nk built 2026-09-01 by MyPnetLab
 netops@J1&gt;
 netops@J1&gt;
 netops@J1&gt; set cli screen-width 511

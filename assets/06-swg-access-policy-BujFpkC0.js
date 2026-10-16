@@ -39,7 +39,7 @@ var e={id:`swg-policy`,h:{en:`Secure web gateway and the access policy: internet
 </ol>
 <pre class="out">PC-BR1&gt; curl royal-casino.example
 &lt;h1&gt;This site is blocked&lt;/h1&gt;&lt;p&gt;&lt;b&gt;royal-casino.example&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;Access to this site is blocked by the Network Kings acceptable use policy.&lt;/p&gt;
+&lt;p&gt;Access to this site is blocked by the MyPnetLab acceptable use policy.&lt;/p&gt;
 &lt;p&gt;Reason: Content Category: Gambling · <span class="hl">Rule: Block Gambling</span>&lt;/p&gt;
 &lt;p&gt;Identity: BRANCH-DEL · Request ID 5c1e09a2&lt;/p&gt;
 
@@ -109,7 +109,7 @@ ROAM1&gt; curl crm.salesflow.example
 </ol>
 <pre class="out">PC-BR1&gt; curl royal-casino.example
 &lt;h1&gt;This site is blocked&lt;/h1&gt;&lt;p&gt;&lt;b&gt;royal-casino.example&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;Access to this site is blocked by the Network Kings acceptable use policy.&lt;/p&gt;
+&lt;p&gt;Access to this site is blocked by the MyPnetLab acceptable use policy.&lt;/p&gt;
 &lt;p&gt;Reason: Content Category: Gambling · <span class="hl">Rule: Block Gambling</span>&lt;/p&gt;
 &lt;p&gt;Identity: BRANCH-DEL · Request ID 5c1e09a2&lt;/p&gt;
 

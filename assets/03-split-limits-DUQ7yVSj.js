@@ -44,7 +44,7 @@ flash:nkos-router-universal.2.0.bin</pre>
 <p>Three useful moves are shown: cut at a phrase, take the last word, and take the text between quotes (<code>split('"')[1]</code> is the second piece, the one inside the quotes). Anchoring on a label survives column changes better than counting positions.</p>
 <h3>Choosing the right line first</h3>
 <p>Most of the output is not data you want. Select the line <b>before</b> splitting it, using <code>in</code>, <code>startswith</code> or a loop with <code>if</code>.</p>
-<pre class="code">show_version = """Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+<pre class="code">show_version = """MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 ROM: NK-OS Bootstrap, Version 2.0, RELEASE SOFTWARE
 
 BLR-CORE uptime is 0 minutes
@@ -120,7 +120,7 @@ flash:nkos-router-universal.2.0.bin</pre>
 <p>Teen kaam ke moves dikhaye: phrase par kaatna, aakhri shabd lena, aur quotes ke beech ka text lena (<code>split('"')[1]</code> doosra tukda hai, jo quotes ke andar hai). Label par anchor karna positions ginne se columns ke badlav ko behtar jhelta hai.</p>
 <h3>Pehle sahi line chuno</h3>
 <p>Output ka zyadatar hissa woh data nahi jo aapko chahiye. Line ko split karne se <b>pehle</b> <code>in</code>, <code>startswith</code> ya <code>if</code> wale loop se chuno.</p>
-<pre class="code">show_version = """Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+<pre class="code">show_version = """MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 ROM: NK-OS Bootstrap, Version 2.0, RELEASE SOFTWARE
 
 BLR-CORE uptime is 0 minutes

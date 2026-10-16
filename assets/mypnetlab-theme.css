@@ -1,0 +1,121 @@
+/* MyPnetLab visual system: dark editorial learning platform */
+:root {
+  color-scheme: dark;
+  --mpl-bg: #11100f;
+  --mpl-surface: #1b1918;
+  --mpl-surface-2: #24201e;
+  --mpl-surface-3: #2c2623;
+  --mpl-ink: #f4efe9;
+  --mpl-muted: #a79d95;
+  --mpl-dim: #766d67;
+  --mpl-line: rgba(244, 239, 233, .13);
+  --mpl-line-strong: rgba(244, 239, 233, .22);
+  --mpl-accent: #f05235;
+  --mpl-accent-strong: #ff7048;
+  --mpl-accent-soft: rgba(240, 82, 53, .16);
+  --mpl-shadow: 0 22px 60px rgba(0, 0, 0, .34);
+}
+
+html, html.dark, body {
+  background: var(--mpl-bg) !important;
+  color: var(--mpl-ink) !important;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  letter-spacing: -.005em;
+}
+
+#root { background: var(--mpl-bg); }
+
+/* Navigation and app chrome */
+nav, header, [role="navigation"] {
+  background-color: rgba(17, 16, 15, .94) !important;
+  border-color: var(--mpl-line) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.025), 0 16px 40px rgba(0,0,0,.16) !important;
+  backdrop-filter: blur(18px);
+}
+
+nav a, nav button, header a, header button { color: var(--mpl-muted) !important; }
+nav a:hover, nav button:hover, header a:hover, header button:hover,
+nav a[aria-current="page"], nav a.active { color: var(--mpl-ink) !important; }
+
+/* Editorial headings and copy */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--mpl-ink) !important;
+  letter-spacing: -.035em;
+}
+p, li, label, dt, dd { color: inherit; }
+.text-slate-400, .text-slate-500, .text-gray-500, .text-gray-600 { color: var(--mpl-muted) !important; }
+.text-slate-700, .text-slate-800, .text-slate-900, .text-gray-700, .text-gray-800, .text-gray-900 { color: var(--mpl-ink) !important; }
+
+/* Panels, cards, menus and inputs */
+.bg-white, .bg-slate-50, .bg-slate-100, .bg-gray-50, .bg-gray-100 {
+  background-color: var(--mpl-surface) !important;
+}
+.bg-slate-200, .bg-gray-200 { background-color: var(--mpl-surface-3) !important; }
+.bg-slate-800, .bg-slate-900, .bg-gray-800, .bg-gray-900 { background-color: #0b0a09 !important; }
+.border-slate-100, .border-slate-200, .border-slate-300, .border-gray-100, .border-gray-200, .border-gray-300 {
+  border-color: var(--mpl-line) !important;
+}
+.ring-slate-100, .ring-slate-200, .ring-slate-300 { --tw-ring-color: var(--mpl-line) !important; }
+.rounded-2xl, .rounded-3xl { box-shadow: 0 14px 36px rgba(0,0,0,.16); }
+
+input, select, textarea {
+  background: #0e0d0c !important;
+  color: var(--mpl-ink) !important;
+  border-color: var(--mpl-line-strong) !important;
+}
+input::placeholder, textarea::placeholder { color: var(--mpl-dim) !important; }
+input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--mpl-accent) !important;
+  outline-offset: 2px;
+}
+
+/* Warm brand accent replaces cool teal/blue primary actions */
+.bg-teal-500, .bg-teal-600, .bg-sky-500, .bg-sky-600, .bg-blue-600, .bg-cyan-600,
+.bg-emerald-600, .bg-indigo-600 {
+  background-color: var(--mpl-accent) !important;
+}
+.text-teal-500, .text-teal-600, .text-teal-700, .text-sky-500, .text-sky-600, .text-blue-600,
+.text-cyan-600 { color: var(--mpl-accent-strong) !important; }
+.border-teal-500, .border-teal-600, .border-sky-500, .border-blue-600 { border-color: var(--mpl-accent) !important; }
+.hover\:bg-teal-600:hover, .hover\:bg-teal-700:hover, .hover\:bg-sky-600:hover,
+.hover\:bg-blue-700:hover { background-color: var(--mpl-accent-strong) !important; }
+.hover\:text-teal-700:hover, .hover\:text-sky-700:hover { color: #ff9a79 !important; }
+
+.from-teal-500, .from-teal-600, .from-sky-500, .from-sky-600 { --tw-gradient-from: var(--mpl-accent) !important; }
+.to-teal-500, .to-teal-600, .to-sky-500, .to-sky-600 { --tw-gradient-to: #a72f21 var(--tw-gradient-to-position) !important; }
+
+button.bg-white, a.bg-white, button.bg-slate-50, a.bg-slate-50 {
+  background-color: var(--mpl-surface-2) !important;
+  color: var(--mpl-ink) !important;
+}
+button:hover, a[role="button"]:hover { border-color: var(--mpl-line-strong); }
+
+/* Menus and popovers */
+[role="menu"], [data-radix-menu-content], [data-radix-popper-content-wrapper] > div {
+  background: #171413 !important;
+  border: 1px solid var(--mpl-line-strong) !important;
+  color: var(--mpl-ink) !important;
+  box-shadow: var(--mpl-shadow) !important;
+}
+
+/* Learning cards: clear editorial rhythm */
+[class*="shadow-"], .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl {
+  --tw-shadow: var(--mpl-shadow) !important;
+}
+[class*="hover\:shadow"]:hover { --tw-shadow: 0 28px 70px rgba(0,0,0,.42) !important; }
+
+/* Tables, code and lesson surfaces remain readable */
+pre, code, .font-mono { background-color: #0b0a09 !important; color: #f4c8a8 !important; }
+table th { background: var(--mpl-surface-3) !important; color: var(--mpl-ink) !important; }
+table td { border-color: var(--mpl-line) !important; }
+
+/* Brand wordmark treatment when rendered as text */
+[data-brand], .brand { color: var(--mpl-ink) !important; }
+
+@media (max-width: 640px) {
+  nav, header { backdrop-filter: none; }
+  .rounded-3xl { border-radius: 1.15rem; }
+}

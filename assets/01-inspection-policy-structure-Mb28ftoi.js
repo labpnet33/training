@@ -33,7 +33,7 @@ var e={id:`policy-structure`,h:{en:`Inspection policy structure and templates`,h
 <tr><td>URL logging</td><td>On</td><td>Whether web requests are logged with their category</td></tr>
 </table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings in Pune runs NK-PUNE-FW. The Inspection policy is the default one: Medium, deep on, nothing else. The DMZ rule allows HTTP from the Internet to srv-web (172.16.20.20) but its deep flag is off. A request to /vuln-test on WEB1 is allowed with no complaint, because the policy exists but the rule never asks the scanner to look. The policy was fine; the rule was the gap.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab in Pune runs NK-PUNE-FW. The Inspection policy is the default one: Medium, deep on, nothing else. The DMZ rule allows HTTP from the Internet to srv-web (172.16.20.20) but its deep flag is off. A request to /vuln-test on WEB1 is allowed with no complaint, because the policy exists but the rule never asks the scanner to look. The policy was fine; the rule was the gap.</p></div>
 
 <h3>Where you find it in the console</h3>
 <p>The console has pages for Engines, Elements, Policies, Inspection, VPN, Logs, Monitoring and alerts, and Tools. The Inspection page holds the policy settings (HTTPS inspection, exclusions, exceptions). The per-rule flags live on the Policies page, in the rule options. The Install policy bar at the top is how changes go to the engine. Remember rule 1 of the track: the SMC database is only a draft; the engine uses the installed snapshot.</p>
@@ -90,7 +90,7 @@ var e={id:`policy-structure`,h:{en:`Inspection policy structure and templates`,h
 <tr><td>URL logging</td><td>On</td><td>Web requests category ke saath log hoti hain ya nahi</td></tr>
 </table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings Pune mein NK-PUNE-FW chalata hai. Inspection policy default hai: Medium, deep on, aur kuch nahi. DMZ rule Internet se srv-web (172.16.20.20) tak HTTP allow karta hai lekin uska deep flag off hai. WEB1 par /vuln-test ki request bina kisi shikayat ke allow ho jaati hai, kyunki policy hai lekin rule scanner se dekhne ko kabhi kehta hi nahi. Policy theek thi; rule mein gap tha.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab Pune mein NK-PUNE-FW chalata hai. Inspection policy default hai: Medium, deep on, aur kuch nahi. DMZ rule Internet se srv-web (172.16.20.20) tak HTTP allow karta hai lekin uska deep flag off hai. WEB1 par /vuln-test ki request bina kisi shikayat ke allow ho jaati hai, kyunki policy hai lekin rule scanner se dekhne ko kabhi kehta hi nahi. Policy theek thi; rule mein gap tha.</p></div>
 
 <h3>Console mein yeh kahan milta hai</h3>
 <p>Console ke pages hain Engines, Elements, Policies, Inspection, VPN, Logs, Monitoring and alerts aur Tools. Inspection page par policy settings hain (HTTPS inspection, exclusions, exceptions). Har rule ke flags Policies page par, rule options mein hote hain. Upar wala Install policy bar changes ko engine tak bhejne ka tarika hai. Track ka rule 1 yaad rakho: SMC database sirf draft hai; engine installed snapshot use karta hai.</p>

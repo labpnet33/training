@@ -57,7 +57,7 @@ Deploy</pre>
 <pre class="out">PARTNER&gt; curl web.nwk.example/products?nk-sim=sqli
 <span class="hl">curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received</span>
 PARTNER&gt; curl web.nwk.example/products
-&lt;html&gt;&lt;body&gt;&lt;h1&gt;Network Kings web portal&lt;/h1&gt;...
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;MyPnetLab web portal&lt;/h1&gt;...
 
 Analysis &gt; Intrusions &gt; Events
 Priority  Impact  Inline Result  Source          Destination  Port  GID:SID   Message
@@ -140,7 +140,7 @@ Deploy</pre>
 <pre class="out">PARTNER&gt; curl web.nwk.example/products?nk-sim=sqli
 <span class="hl">curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received</span>
 PARTNER&gt; curl web.nwk.example/products
-&lt;html&gt;&lt;body&gt;&lt;h1&gt;Network Kings web portal&lt;/h1&gt;...
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;MyPnetLab web portal&lt;/h1&gt;...
 
 Analysis &gt; Intrusions &gt; Events
 Priority  Impact  Inline Result  Source          Destination  Port  GID:SID   Message

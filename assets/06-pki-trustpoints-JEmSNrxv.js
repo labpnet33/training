@@ -48,7 +48,7 @@ R1(config)# ntp server 192.0.2.123
 R1(config)# crypto key generate rsa modulus 2048 label R1-KEY
 R1(config)# crypto pki trustpoint NK-CA
 R1(ca-trustpoint)#  enrollment url h&#116;tp://192.0.2.50:80
-R1(ca-trustpoint)#  subject-name CN=R1.nk.example,O=Network Kings Lab
+R1(ca-trustpoint)#  subject-name CN=R1.nk.example,O=MyPnetLab Lab
 R1(ca-trustpoint)#  subject-alt-name R1.nk.example
 R1(ca-trustpoint)#  rsakeypair R1-KEY
 R1(ca-trustpoint)#  revocation-check crl
@@ -71,7 +71,7 @@ Certificate
   Certificate Usage: General Purpose
   Issuer:
     cn=NK-Issuing-CA
-    o=Network Kings Lab
+    o=MyPnetLab Lab
   Subject:
     Name: R1.nk.example
     cn=R1.nk.example
@@ -85,7 +85,7 @@ Certificate
 <pre class="code">ASA1(config)# crypto key generate rsa label ASA-KEY modulus 2048
 ASA1(config)# crypto ca trustpoint NK-CA
 ASA1(config-ca-trustpoint)# enrollment terminal
-ASA1(config-ca-trustpoint)# subject-name CN=vpn.nk.example,O=Network Kings Lab
+ASA1(config-ca-trustpoint)# subject-name CN=vpn.nk.example,O=MyPnetLab Lab
 ASA1(config-ca-trustpoint)# keypair ASA-KEY
 ASA1(config-ca-trustpoint)# revocation-check ocsp
 ASA1(config)# crypto ca authenticate NK-CA
@@ -160,7 +160,7 @@ R1(config)# ntp server 192.0.2.123
 R1(config)# crypto key generate rsa modulus 2048 label R1-KEY
 R1(config)# crypto pki trustpoint NK-CA
 R1(ca-trustpoint)#  enrollment url h&#116;tp://192.0.2.50:80
-R1(ca-trustpoint)#  subject-name CN=R1.nk.example,O=Network Kings Lab
+R1(ca-trustpoint)#  subject-name CN=R1.nk.example,O=MyPnetLab Lab
 R1(ca-trustpoint)#  subject-alt-name R1.nk.example
 R1(ca-trustpoint)#  rsakeypair R1-KEY
 R1(ca-trustpoint)#  revocation-check crl
@@ -183,7 +183,7 @@ Certificate
   Certificate Usage: General Purpose
   Issuer:
     cn=NK-Issuing-CA
-    o=Network Kings Lab
+    o=MyPnetLab Lab
   Subject:
     Name: R1.nk.example
     cn=R1.nk.example
@@ -197,7 +197,7 @@ Certificate
 <pre class="code">ASA1(config)# crypto key generate rsa label ASA-KEY modulus 2048
 ASA1(config)# crypto ca trustpoint NK-CA
 ASA1(config-ca-trustpoint)# enrollment terminal
-ASA1(config-ca-trustpoint)# subject-name CN=vpn.nk.example,O=Network Kings Lab
+ASA1(config-ca-trustpoint)# subject-name CN=vpn.nk.example,O=MyPnetLab Lab
 ASA1(config-ca-trustpoint)# keypair ASA-KEY
 ASA1(config-ca-trustpoint)# revocation-check ocsp
 ASA1(config)# crypto ca authenticate NK-CA

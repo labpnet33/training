@@ -18,7 +18,7 @@ var e={id:`welcome-safe-setup`,h:{en:`Welcome to AWS networking: the big picture
 <text x="487" y="175" text-anchor="middle" class="svg-muted" font-size="12">instances, load balancers, databases live in subnets</text>
 </svg><p class="cap">Everything you create is an API call, and everything lives in one Region, inside a VPC, inside a subnet.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
 
 <h3>Setting up a personal account safely</h3>
 <p>Nothing in this module needs a paid service, but a careless account can still cost money. Follow these rules before you create a single VPC.</p>
@@ -68,7 +68,7 @@ var e={id:`welcome-safe-setup`,h:{en:`Welcome to AWS networking: the big picture
 <text x="487" y="175" text-anchor="middle" class="svg-muted" font-size="12">instances, load balancers, databases subnets mein rehte hain</text>
 </svg><p class="cap">Jo bhi aap banate ho woh ek API call hai, aur sab kuch ek Region mein, ek VPC ke andar, ek subnet mein rehta hai.</p></div>
 
-<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.nwkings.com ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
+<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.mypnetlab.vercel.app ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
 
 <h3>Personal account ko safely set up karna</h3>
 <p>Is module mein koi paid service zaroori nahi hai, par laparwah account phir bhi paisa kha sakta hai. Pehla VPC banane se pehle yeh rules follow karo.</p>

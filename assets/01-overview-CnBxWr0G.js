@@ -33,7 +33,7 @@ var e={id:`overview`,h:{en:`Welcome to Ansible: what you will learn and the big 
 <dt>Idempotent</dt><dd>Running the same playbook twice gives the same end state, and the second run changes nothing.</dd>
 </dl>
 
-<div class="eg"><p><b>Worked example.</b> The Network Kings lab has R1 in Pune (10.99.0.1), R2 in Bengaluru (10.99.0.2) and the access switch SW1 (10.99.0.10). Adding <code>ntp server 10.99.0.60</code> by hand means three logins. With Ansible it is one command: <code>ansible-playbook ntp.yml</code>. With three devices the saving is small; with three hundred it is the difference between a night and a minute.</p></div>
+<div class="eg"><p><b>Worked example.</b> The MyPnetLab lab has R1 in Pune (10.99.0.1), R2 in Bengaluru (10.99.0.2) and the access switch SW1 (10.99.0.10). Adding <code>ntp server 10.99.0.60</code> by hand means three logins. With Ansible it is one command: <code>ansible-playbook ntp.yml</code>. With three devices the saving is small; with three hundred it is the difference between a night and a minute.</p></div>
 
 <h3>Why network engineers like Ansible</h3>
 <ul>
@@ -92,7 +92,7 @@ var e={id:`overview`,h:{en:`Welcome to Ansible: what you will learn and the big 
 <dt>Idempotent</dt><dd>Wahi playbook do baar chalane par end state wahi rehti hai, aur doosra run kuch nahi badalta.</dd>
 </dl>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings lab mein R1 Pune mein (10.99.0.1), R2 Bengaluru mein (10.99.0.2) aur access switch SW1 (10.99.0.10) hai. <code>ntp server 10.99.0.60</code> haath se add karna matlab teen logins. Ansible se ek command: <code>ansible-playbook ntp.yml</code>. Teen devices mein bachat chhoti hai; teen sau mein yeh ek raat aur ek minute ka farq hai.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab lab mein R1 Pune mein (10.99.0.1), R2 Bengaluru mein (10.99.0.2) aur access switch SW1 (10.99.0.10) hai. <code>ntp server 10.99.0.60</code> haath se add karna matlab teen logins. Ansible se ek command: <code>ansible-playbook ntp.yml</code>. Teen devices mein bachat chhoti hai; teen sau mein yeh ek raat aur ek minute ka farq hai.</p></div>
 
 <h3>Network engineers ko Ansible kyun pasand hai</h3>
 <ul>

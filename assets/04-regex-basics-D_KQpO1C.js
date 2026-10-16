@@ -6,7 +6,7 @@ var e={id:`regex-basics`,h:{en:`Regular expressions 1: search for a pattern with
 <p><code>re.search(pattern, text)</code> looks <b>anywhere</b> in the text for the first place where the pattern fits. It returns a <b>match object</b> if found, or <code>None</code> if not.</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version", line)
 print(m)
 print(m.group())
@@ -22,7 +22,7 @@ None</pre>
 <p>Combine them: <code>Version \\S+,</code> means "the word Version, a space, one or more non-space characters, and a comma". Try it on the line above.</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version \\S+,", line)
 print(m.group())
 print(re.search(r"\\d+\\.\\d+", line).group())
@@ -77,7 +77,7 @@ Version</pre>
 <p><code>re.search(pattern, text)</code> text mein <b>kahin bhi</b> pehli jagah dhoondhta hai jahan pattern fit ho. Mil jaaye to <b>match object</b> deta hai, na mile to <code>None</code>.</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version", line)
 print(m)
 print(m.group())
@@ -93,7 +93,7 @@ None</pre>
 <p>Jodo: <code>Version \\S+,</code> matlab "shabd Version, ek space, ek ya zyada non-space characters, aur ek comma". Upar ki line par try karo.</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version \\S+,", line)
 print(m.group())
 print(re.search(r"\\d+\\.\\d+", line).group())

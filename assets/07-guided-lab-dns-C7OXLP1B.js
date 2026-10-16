@@ -9,7 +9,7 @@ var e=`<svg viewBox="0 0 640 250" role="img" aria-label="Guided lab 2 layout: hu
 <line x1="375" y1="105" x2="435" y2="105" stroke="#2563eb" stroke-width="3"/><text x="405" y="97" text-anchor="middle" class="svg-accent" font-size="9">peering</text>
 <text x="320" y="238" text-anchor="middle" class="svg-ink" font-size="12">Peering stands in for the VPN. Resolver endpoints bill hourly: delete the same day</text>
 </svg>`,t={id:`guided-lab-dns`,h:{en:`Guided lab on your own Azure account: DNS Private Resolver`,hi:`Apne Azure account par guided lab: DNS Private Resolver`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>Billed lab.</b> Private Resolver endpoints bill <b>every hour they exist</b>. Use a <b>free-credit account</b> if you can, finish <b>the same day</b>, and <b>delete the resource group</b> at the end. This lab is much cheaper and quicker than the VPN lab, but it is not free.</p></div>
 
@@ -102,7 +102,7 @@ az group exists -n rg-nk-dns <span class="c"># repeat until it prints false</spa
 <li>Delete the resource group the same day and confirm.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>Billed lab.</b> Private Resolver endpoints <b>jitni der exist karte hain har ghante</b> bill karte hain. Ho sake to <b>free-credit account</b> use karo, <b>usi din</b> khatam karo, aur aakhir mein <b>resource group delete</b> karo. Yeh lab VPN lab se bahut sasta aur tez hai, par free nahi hai.</p></div>
 

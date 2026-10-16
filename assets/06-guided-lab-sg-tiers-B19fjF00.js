@@ -1,4 +1,4 @@
-var e=`<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>`,t=`<div class="dia"><svg viewBox="0 0 640 300" role="img" aria-label="Lab 1 three-tier design with analyses A B C">
+var e=`<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>`,t=`<div class="dia"><svg viewBox="0 0 640 300" role="img" aria-label="Lab 1 three-tier design with analyses A B C">
 <rect x="10" y="15" width="100" height="36" rx="18" fill="#e2e8f0"/><text x="60" y="38" text-anchor="middle" class="svg-ink" font-size="12">Internet</text>
 <rect x="10" y="62" width="100" height="26" rx="6" fill="#fde68a"/><text x="60" y="80" text-anchor="middle" class="svg-ink" font-size="12">nk-sg-igw</text>
 <line x1="60" y1="51" x2="60" y2="62" stroke="#64748b" stroke-width="2"/>

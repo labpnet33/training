@@ -47,7 +47,7 @@ var e={id:`privacy-legal-performance`,h:{en:`Privacy, legal and performance trad
 <tr><td>Compatibility</td><td>Pilot, exemptions for pinned apps</td></tr>
 <tr><td>Performance</td><td>Scope, hardware sizing, monitoring</td></tr></table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings Pune has 120 staff and 40 Mbit/s typical web traffic at peak, but a FortiGate rated for far more firewall throughput than SSL inspection throughput. The team decides: deep inspection for the staff policy only, certificate inspection for guests, exemption for streaming video and for banking and health, a documented policy approved by HR and legal, and a quarterly review. CPU is monitored for two weeks after go-live.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab Pune has 120 staff and 40 Mbit/s typical web traffic at peak, but a FortiGate rated for far more firewall throughput than SSL inspection throughput. The team decides: deep inspection for the staff policy only, certificate inspection for guests, exemption for streaming video and for banking and health, a documented policy approved by HR and legal, and a quarterly review. CPU is monitored for two weeks after go-live.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Treating deep inspection as a purely technical project and asking legal only after the first complaint. By then you may have inspected personal data with no documented basis.</p></div>
 <div class="exam"><p><b>Exam trap.</b> Datasheet SSL inspection throughput is lower than firewall throughput; size to the figure for the features you will actually enable. Exempt categories reduce privacy risk and CPU load together.</p></div>
@@ -112,7 +112,7 @@ var e={id:`privacy-legal-performance`,h:{en:`Privacy, legal and performance trad
 <tr><td>Compatibility</td><td>Pilot, pinned apps ke liye exemptions</td></tr>
 <tr><td>Performance</td><td>Scope, hardware sizing, monitoring</td></tr></table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings Pune ke 120 staff hain aur peak par 40 Mbit/s web traffic, lekin FortiGate ki firewall throughput SSL inspection throughput se kaafi zyada rated hai. Team tay karti hai: sirf staff policy par deep inspection, guests ke liye certificate inspection, streaming video aur banking tatha health ke liye exemption, HR aur legal se approved documented policy, aur quarterly review. Go-live ke baad do hafte CPU monitor hota hai.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab Pune ke 120 staff hain aur peak par 40 Mbit/s web traffic, lekin FortiGate ki firewall throughput SSL inspection throughput se kaafi zyada rated hai. Team tay karti hai: sirf staff policy par deep inspection, guests ke liye certificate inspection, streaming video aur banking tatha health ke liye exemption, HR aur legal se approved documented policy, aur quarterly review. Go-live ke baad do hafte CPU monitor hota hai.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Deep inspection ko sirf technical project maanna aur pehli complaint ke baad legal se poochna. Tab tak aap bina documented basis ke personal data inspect kar chuke ho sakte ho.</p></div>
 <div class="exam"><p><b>Exam trap.</b> Datasheet SSL inspection throughput firewall throughput se kam hoti hai; jo features asal mein enable karoge unki figure se size karo. Exempt categories privacy risk aur CPU load dono kam karti hain.</p></div>

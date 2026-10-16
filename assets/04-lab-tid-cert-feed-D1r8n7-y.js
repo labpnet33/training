@@ -49,7 +49,7 @@ curl news.example</pre>
 PC1&gt; curl cdn-stats.example
 <span class="hl">curl: (56) Recv failure: Connection reset by peer</span>
 PC1&gt; curl news.example
-&lt;html&gt;&lt;body&gt;…Network Kings news…&lt;/body&gt;&lt;/html&gt;</pre>
+&lt;html&gt;&lt;body&gt;…MyPnetLab news…&lt;/body&gt;&lt;/html&gt;</pre>
 <p>The two indicators fail; news.example still works. The second check matters as much as the first: a good engineer proves the change is <b>narrow</b>.</p>
 
 <h3>Step 4 — find the evidence in the events</h3>
@@ -127,7 +127,7 @@ curl news.example</pre>
 PC1&gt; curl cdn-stats.example
 <span class="hl">curl: (56) Recv failure: Connection reset by peer</span>
 PC1&gt; curl news.example
-&lt;html&gt;&lt;body&gt;…Network Kings news…&lt;/body&gt;&lt;/html&gt;</pre>
+&lt;html&gt;&lt;body&gt;…MyPnetLab news…&lt;/body&gt;&lt;/html&gt;</pre>
 <p>Dono indicators fail hote hain; news.example ab bhi chalta hai. Doosra check pehle jitna hi zaroori hai: achha engineer saabit karta hai ki change <b>narrow</b> hai.</p>
 
 <h3>Step 4 — events mein saboot dhoondo</h3>

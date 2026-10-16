@@ -36,10 +36,10 @@ var e={id:`firewall-recap-and-plan`,h:{en:`Firewall basics recap and what you wi
 <text x="120" y="208" text-anchor="middle" class="svg-muted" font-size="12">(not in the traffic path)</text>
 </svg><p class="cap">The SMC is the head office rule book. The engine is the guard at the door. User traffic goes through the engine only.</p></div>
 
-<h3>The lab company: Network Kings, Pune branch</h3>
-<p>All examples use an invented company, Network Kings, with a Pune branch. The SMC is <code>NK-SMC</code> at 10.0.0.10/24 on the management network. The engine element is <code>NK-PUNE-FW</code> with four interfaces: eth0 control 10.0.0.1/24, eth1 WAN 203.0.113.2/30 (the ISP gateway is .1), eth2 Staff LAN 10.1.1.1/24 and eth3 DMZ 172.16.20.1/24. A PC <code>STAFF-PC</code> (10.1.1.10) sits on the Staff LAN and a web server <code>WEB1</code> (172.16.20.20) sits in the DMZ.</p>
+<h3>The lab company: MyPnetLab, Pune branch</h3>
+<p>All examples use an invented company, MyPnetLab, with a Pune branch. The SMC is <code>NK-SMC</code> at 10.0.0.10/24 on the management network. The engine element is <code>NK-PUNE-FW</code> with four interfaces: eth0 control 10.0.0.1/24, eth1 WAN 203.0.113.2/30 (the ISP gateway is .1), eth2 Staff LAN 10.1.1.1/24 and eth3 DMZ 172.16.20.1/24. A PC <code>STAFF-PC</code> (10.1.1.10) sits on the Staff LAN and a web server <code>WEB1</code> (172.16.20.20) sits in the DMZ.</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings wants Staff to browse the web. In plain words: source Staff LAN (10.1.1.0/24), destination any, service HTTPS, action Allow. On a single firewall you type that rule on the box. With central management you create the network element <code>net-staff</code> once, write the rule in a policy in the SMC, and press Install policy. The engine receives a compiled copy. Tomorrow, when a second branch needs the same rule, you reuse the same elements.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab wants Staff to browse the web. In plain words: source Staff LAN (10.1.1.0/24), destination any, service HTTPS, action Allow. On a single firewall you type that rule on the box. With central management you create the network element <code>net-staff</code> once, write the rule in a policy in the SMC, and press Install policy. The engine receives a compiled copy. Tomorrow, when a second branch needs the same rule, you reuse the same elements.</p></div>
 
 <h3>A first look at the console</h3>
 <p>The CONFIG simulator console has these pages: <b>Engines</b> (the firewall devices you manage), <b>Elements</b> (hosts, networks, services), <b>Policies</b> (rules), <b>Inspection</b>, <b>VPN</b>, <b>Logs</b>, <b>Monitoring and alerts</b>, and <b>Tools</b>. A bar at the bottom or top, the <b>Install policy</b> bar, is where changes become real. In this module you use Engines, Elements, Policies and the Install policy bar.</p>
@@ -56,7 +56,7 @@ var e={id:`firewall-recap-and-plan`,h:{en:`Firewall basics recap and what you wi
 <li>Stateful firewalls allow reply traffic of an allowed connection automatically.</li>
 <li>Central management gives consistency, speed, visibility and audit.</li>
 <li>Rules live in the SMC; traffic is processed by the engine; Install policy connects the two.</li>
-<li>Lab company: Network Kings, SMC NK-SMC 10.0.0.10, engine NK-PUNE-FW.</li>
+<li>Lab company: MyPnetLab, SMC NK-SMC 10.0.0.10, engine NK-PUNE-FW.</li>
 </ul></div>
 `,hi:`
 <p><b>Is module mein aap kya seekhoge.</b> Aap seekhoge ki Forcepoint-style Next Generation Firewall (NGFW) kaise manage hota hai: Security Management Center (SMC) mein kya rehta hai, engine kya karta hai, elements aur policies kaise banti hain, engine pehli baar SMC se contact kaise karta hai, aur Install Policy step aapke edits ko asli protection mein kaise badalta hai. Is track ki tagline hai: <b>click-ops, but you understand what each click does.</b> Aap CONFIG simulator mein do hands-on labs bhi karoge: engine add karke first contact banana, aur element set banana.</p>
@@ -96,10 +96,10 @@ var e={id:`firewall-recap-and-plan`,h:{en:`Firewall basics recap and what you wi
 <text x="120" y="208" text-anchor="middle" class="svg-muted" font-size="12">(traffic path mein nahi)</text>
 </svg><p class="cap">SMC head office ki rule book hai. Engine darwaze ka guard hai. User traffic sirf engine se guzarta hai.</p></div>
 
-<h3>Lab company: Network Kings, Pune branch</h3>
-<p>Saare examples ek invented company Network Kings aur uski Pune branch use karte hain. SMC <code>NK-SMC</code> hai, 10.0.0.10/24, management network par. Engine element <code>NK-PUNE-FW</code> hai jiske chaar interfaces hain: eth0 control 10.0.0.1/24, eth1 WAN 203.0.113.2/30 (ISP gateway .1), eth2 Staff LAN 10.1.1.1/24 aur eth3 DMZ 172.16.20.1/24. Staff LAN par PC <code>STAFF-PC</code> (10.1.1.10) hai aur DMZ mein web server <code>WEB1</code> (172.16.20.20).</p>
+<h3>Lab company: MyPnetLab, Pune branch</h3>
+<p>Saare examples ek invented company MyPnetLab aur uski Pune branch use karte hain. SMC <code>NK-SMC</code> hai, 10.0.0.10/24, management network par. Engine element <code>NK-PUNE-FW</code> hai jiske chaar interfaces hain: eth0 control 10.0.0.1/24, eth1 WAN 203.0.113.2/30 (ISP gateway .1), eth2 Staff LAN 10.1.1.1/24 aur eth3 DMZ 172.16.20.1/24. Staff LAN par PC <code>STAFF-PC</code> (10.1.1.10) hai aur DMZ mein web server <code>WEB1</code> (172.16.20.20).</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings chahta hai ki Staff web browse kare. Seedhe shabdon mein: source Staff LAN (10.1.1.0/24), destination any, service HTTPS, action Allow. Ek akele firewall par yeh rule box par type karte ho. Central management mein network element <code>net-staff</code> ek baar banate ho, rule SMC ki policy mein likhte ho, aur Install policy dabate ho. Engine ko compiled copy milti hai. Kal doosri branch ko yahi rule chahiye to wahi elements reuse karte ho.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab chahta hai ki Staff web browse kare. Seedhe shabdon mein: source Staff LAN (10.1.1.0/24), destination any, service HTTPS, action Allow. Ek akele firewall par yeh rule box par type karte ho. Central management mein network element <code>net-staff</code> ek baar banate ho, rule SMC ki policy mein likhte ho, aur Install policy dabate ho. Engine ko compiled copy milti hai. Kal doosri branch ko yahi rule chahiye to wahi elements reuse karte ho.</p></div>
 
 <h3>Console ki pehli jhalak</h3>
 <p>CONFIG simulator console ke pages hain: <b>Engines</b> (jo firewall devices manage karte ho), <b>Elements</b> (hosts, networks, services), <b>Policies</b> (rules), <b>Inspection</b>, <b>VPN</b>, <b>Logs</b>, <b>Monitoring and alerts</b>, aur <b>Tools</b>. <b>Install policy</b> bar woh jagah hai jahan changes asli hote hain. Is module mein aap Engines, Elements, Policies aur Install policy bar use karoge.</p>
@@ -116,6 +116,6 @@ var e={id:`firewall-recap-and-plan`,h:{en:`Firewall basics recap and what you wi
 <li>Stateful firewall allowed connection ka reply traffic automatically allow karta hai.</li>
 <li>Central management consistency, speed, visibility aur audit deta hai.</li>
 <li>Rules SMC mein rehte hain; traffic engine process karta hai; Install policy dono ko jodta hai.</li>
-<li>Lab company: Network Kings, SMC NK-SMC 10.0.0.10, engine NK-PUNE-FW.</li>
+<li>Lab company: MyPnetLab, SMC NK-SMC 10.0.0.10, engine NK-PUNE-FW.</li>
 </ul></div>
 `}};export{e as default};

@@ -8,10 +8,10 @@ User Datagram Protocol, Src Port: 51514, Dst Port: 53
 Domain Name System (query)
     Transaction ID: 0x7c1c
     Flags: 0x0100 Standard query (QR=0, RD=1)
-    Query: www.nwkings.com: type A, class IN</pre>`,o=`<div class="tbl"><table class="cmp">
+    Query: www.mypnetlab.vercel.app: type A, class IN</pre>`,o=`<div class="tbl"><table class="cmp">
 <tr><th>Service</th><th>Packet (Packet Studio flow)</th><th>UDP ports</th><th>UDP length</th></tr>
 <tr><td>DHCP</td><td>Discover, 0.0.0.0 to 255.255.255.255</td><td>68 to 67</td><td>272</td></tr>
-<tr><td>DNS</td><td>query for www.nwkings.com, 192.168.10.10 to 8.8.8.8</td><td>51514 to 53</td><td>41</td></tr>
+<tr><td>DNS</td><td>query for www.mypnetlab.vercel.app, 192.168.10.10 to 8.8.8.8</td><td>51514 to 53</td><td>41</td></tr>
 <tr><td>NTP</td><td>client request, 10.0.0.1 to 10.0.0.123 (DSCP CS6, TTL 255)</td><td>123 to 123</td><td>56</td></tr>
 <tr><td>SNMP</td><td>get-request sysName, community nkRO in clear text</td><td>50311 to 161</td><td>47</td></tr>
 <tr><td>Syslog</td><td>LOCAL7.ERRORS %LINK-3-UPDOWN, 192.168.99.254 to 192.168.99.50</td><td>55123 to 514</td><td>110</td></tr>

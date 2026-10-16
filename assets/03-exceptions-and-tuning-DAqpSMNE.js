@@ -32,7 +32,7 @@ var e={id:`exceptions-tuning`,h:{en:`Exceptions and tuning`,hi:`Exceptions aur t
 <li>Document who asked, why, and a review date.</li>
 </ol>
 
-<div class="eg"><p><b>Worked example (lab fp-inspection-2).</b> The Network Kings ERP server runs in the DMZ at 172.16.20.20 (srv-web in the lab). Staff export reports through the path /erp/export. Deep inspection matches this path as SUSPICIOUS-QUERY and terminates the export. In the lab you add an exception: situation SUSPICIOUS-QUERY, destination 172.16.20.20, action permit, then Install policy. Afterwards /erp/export is permitted and logged with the exception, while /vuln-test to the same server is still terminated by EXPLOIT-TEST. That second check proves you tuned instead of disabling.</p></div>
+<div class="eg"><p><b>Worked example (lab fp-inspection-2).</b> The MyPnetLab ERP server runs in the DMZ at 172.16.20.20 (srv-web in the lab). Staff export reports through the path /erp/export. Deep inspection matches this path as SUSPICIOUS-QUERY and terminates the export. In the lab you add an exception: situation SUSPICIOUS-QUERY, destination 172.16.20.20, action permit, then Install policy. Afterwards /erp/export is permitted and logged with the exception, while /vuln-test to the same server is still terminated by EXPLOIT-TEST. That second check proves you tuned instead of disabling.</p></div>
 
 <h3>Reading the result</h3>
 <pre class="out">Before exception
@@ -99,7 +99,7 @@ After exception and install
 <li>Document karo kisne maanga, kyun, aur review date.</li>
 </ol>
 
-<div class="eg"><p><b>Worked example (lab fp-inspection-2).</b> Network Kings ERP server DMZ mein 172.16.20.20 par chalta hai (lab mein srv-web). Staff reports path /erp/export se export karte hain. Deep inspection is path ko SUSPICIOUS-QUERY ki tarah match karta hai aur export terminate kar deta hai. Lab mein aap exception add karte ho: situation SUSPICIOUS-QUERY, destination 172.16.20.20, action permit, phir Install policy. Baad mein /erp/export permit hota hai aur exception ke saath log hota hai, jabki usi server par /vuln-test ab bhi EXPLOIT-TEST se terminate hota hai. Yeh doosra check prove karta hai ki aapne tune kiya, disable nahi.</p></div>
+<div class="eg"><p><b>Worked example (lab fp-inspection-2).</b> MyPnetLab ERP server DMZ mein 172.16.20.20 par chalta hai (lab mein srv-web). Staff reports path /erp/export se export karte hain. Deep inspection is path ko SUSPICIOUS-QUERY ki tarah match karta hai aur export terminate kar deta hai. Lab mein aap exception add karte ho: situation SUSPICIOUS-QUERY, destination 172.16.20.20, action permit, phir Install policy. Baad mein /erp/export permit hota hai aur exception ke saath log hota hai, jabki usi server par /vuln-test ab bhi EXPLOIT-TEST se terminate hota hai. Yeh doosra check prove karta hai ki aapne tune kiya, disable nahi.</p></div>
 
 <h3>Result padhna</h3>
 <pre class="out">Before exception

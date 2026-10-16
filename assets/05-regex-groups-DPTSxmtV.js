@@ -4,7 +4,7 @@ var e={id:`regex-groups`,h:{en:`Regular expressions 2: groups, named groups and 
 <p><code>re.search(r"Version \\S+,", line)</code> matched <code>Version 2.0,</code>, but we only want <code>2.0</code>. Put the interesting part in brackets and ask for it with <code>.group(1)</code>:</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version (\\S+),", line)
 print(m.group())
 print(m.group(1))</pre><p><i>Real output, checked in the lab terminal.</i></p><pre class="out">Version 2.0,
@@ -15,7 +15,7 @@ print(m.group(1))</pre><p><i>Real output, checked in the lab terminal.</i></p><p
 <p>This is the output of <code>show version</code> of router BLR-CORE in lab 2 (shortened to the useful lines), and four patterns, one per fact. Each pattern anchors on a stable label.</p>
 <pre class="code">import re
 
-out = """Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+out = """MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 Technical Support: ns.example/support
 
 BLR-CORE uptime is 0 minutes
@@ -33,7 +33,7 @@ print(host, version, uptime, serial, sep=" | ")</pre><p><i>Real output, checked 
 <p>In the lab, the version pattern is written with a lowercase <code>v</code>: <code>r"version (\\S+),"</code>. The output spells it <code>Version</code>. Regex is case-sensitive, so <code>search</code> returns <code>None</code>, and <code>None.group(1)</code> crashes.</p>
 <pre class="code">import re
 
-out = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+out = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 version = re.search(r"version (\\S+),", out).group(1)
 print(version)</pre><p><i>Real output, checked in the lab terminal.</i></p><pre class="out">Traceback (most recent call last):
   File "casebug.py", line 4, in &lt;module&gt;
@@ -42,7 +42,7 @@ AttributeError: 'NoneType' object has no attribute 'group'</pre>
 <p>The last line, <code>AttributeError: 'NoneType' object has no attribute 'group'</code>, is the classic regex failure. It does not mean <code>group</code> is broken. It means <b>the pattern found nothing</b>, so there is no match object. The fix in the lab is one letter, <code>Version</code>, or the flag <code>re.I</code>. A defensive script checks first:</p>
 <pre class="code">import re
 
-out = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+out = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"version (\\S+),", out)
 if m:
     print("version:", m.group(1))
@@ -101,7 +101,7 @@ up/up: ['GigabitEthernet0/0', 'Loopback0']</pre>
 <p><code>re.search(r"Version \\S+,", line)</code> ne <code>Version 2.0,</code> match kiya, lekin hume sirf <code>2.0</code> chahiye. Kaam ke hisse ko brackets mein rakho aur <code>.group(1)</code> se maango:</p>
 <pre class="code">import re
 
-line = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+line = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"Version (\\S+),", line)
 print(m.group())
 print(m.group(1))</pre><p><i>Asli output, lab terminal mein check kiya hua.</i></p><pre class="out">Version 2.0,
@@ -112,7 +112,7 @@ print(m.group(1))</pre><p><i>Asli output, lab terminal mein check kiya hua.</i><
 <p>Yeh lab 2 mein router BLR-CORE ka <code>show version</code> output hai (kaam ki lines tak chhota kiya hua), aur chaar patterns, har fact ke liye ek. Har pattern ek stable label par anchor hai.</p>
 <pre class="code">import re
 
-out = """Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+out = """MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 Technical Support: ns.example/support
 
 BLR-CORE uptime is 0 minutes
@@ -130,7 +130,7 @@ print(host, version, uptime, serial, sep=" | ")</pre><p><i>Asli output, lab term
 <p>Lab mein version pattern lowercase <code>v</code> se likha hai: <code>r"version (\\S+),"</code>. Output mein spelling <code>Version</code> hai. Regex case-sensitive hai, isliye <code>search</code> <code>None</code> return karta hai, aur <code>None.group(1)</code> crash karta hai.</p>
 <pre class="code">import re
 
-out = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+out = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 version = re.search(r"version (\\S+),", out).group(1)
 print(version)</pre><p><i>Asli output, lab terminal mein check kiya hua.</i></p><pre class="out">Traceback (most recent call last):
   File "casebug.py", line 4, in &lt;module&gt;
@@ -139,7 +139,7 @@ AttributeError: 'NoneType' object has no attribute 'group'</pre>
 <p>Aakhri line, <code>AttributeError: 'NoneType' object has no attribute 'group'</code>, classic regex failure hai. Iska matlab yeh nahi ki <code>group</code> kharab hai. Iska matlab <b>pattern ko kuch nahi mila</b>, isliye match object nahi hai. Lab mein fix ek akshar hai, <code>Version</code>, ya flag <code>re.I</code>. Defensive script pehle check karti hai:</p>
 <pre class="code">import re
 
-out = "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+out = "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 m = re.search(r"version (\\S+),", out)
 if m:
     print("version:", m.group(1))

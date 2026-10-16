@@ -39,10 +39,10 @@ ok: [R2]
 
 TASK [Print the first line of the output] *************************************
 ok: [R1] =&gt; {
-    "ver.stdout_lines[0][0]": "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+    "ver.stdout_lines[0][0]": "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 }
 ok: [R2] =&gt; {
-    "ver.stdout_lines[0][0]": "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+    "ver.stdout_lines[0][0]": "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 }
 
 PLAY RECAP ********************************************************************
@@ -159,10 +159,10 @@ ok: [R2]
 
 TASK [Print the first line of the output] *************************************
 ok: [R1] =&gt; {
-    "ver.stdout_lines[0][0]": "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+    "ver.stdout_lines[0][0]": "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 }
 ok: [R2] =&gt; {
-    "ver.stdout_lines[0][0]": "Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
+    "ver.stdout_lines[0][0]": "MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE"
 }
 
 PLAY RECAP ********************************************************************

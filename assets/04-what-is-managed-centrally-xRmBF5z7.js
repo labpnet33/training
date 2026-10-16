@@ -23,7 +23,7 @@ var e={id:`what-is-managed-centrally`,h:{en:`What is managed centrally: device g
 <h3>What stays local</h3>
 <p>Some things are deliberately local. The firewall must be reachable <i>before</i> Panorama can send it anything, so its management IP, netmask, gateway and the address of Panorama are typed on the firewall itself (this is what you do in lab <b>pn-connect</b>). A later push can include a template that sets many other things, but a value typed locally can win over a template value, which is called an override. The commit workflow module explains how to see and remove overrides.</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings wants every branch to block outbound SSH. That is a security rule, so it goes in the device group (a rule named Block-SSH-Out in NK-BRANCHES). Each branch also needs its own WAN address, which is a network setting, so it goes in the template stack with a per-site value. Same project, two different containers.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab wants every branch to block outbound SSH. That is a security rule, so it goes in the device group (a rule named Block-SSH-Out in NK-BRANCHES). Each branch also needs its own WAN address, which is a network setting, so it goes in the template stack with a per-site value. Same project, two different containers.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Putting a network setting in a device group or a rule in a template. Ask the question "does this describe what traffic is allowed, or how the box is wired?" The first is a device group matter, the second a template matter.</p></div>
 
@@ -63,7 +63,7 @@ var e={id:`what-is-managed-centrally`,h:{en:`What is managed centrally: device g
 <h3>Kya local rehta hai</h3>
 <p>Kuch cheezein jaanbujhkar local hain. Panorama kuch bhejne se <i>pehle</i> firewall reachable hona chahiye, isliye uska management IP, netmask, gateway aur Panorama ka address firewall par hi type hote hain (lab <b>pn-connect</b> mein yahi karoge). Baad ka push ek template la sakta hai jo bahut kuch set kare, par local type ki hui value template value par jeet sakti hai, ise override kehte hain. Commit workflow module batata hai overrides kaise dekhein aur hataein.</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings chahta hai har branch outbound SSH block kare. Ye security rule hai, isliye device group mein jata hai (NK-BRANCHES mein Block-SSH-Out naam ka rule). Har branch ko apna WAN address bhi chahiye, jo network setting hai, isliye template stack mein per-site value ke saath jata hai. Ek project, do alag containers.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab chahta hai har branch outbound SSH block kare. Ye security rule hai, isliye device group mein jata hai (NK-BRANCHES mein Block-SSH-Out naam ka rule). Har branch ko apna WAN address bhi chahiye, jo network setting hai, isliye template stack mein per-site value ke saath jata hai. Ek project, do alag containers.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Network setting device group mein ya rule template mein rakhna. Sawal poocho: "ye batata hai kaun sa traffic allowed hai, ya box kaise wired hai?" Pehla device group ka matter hai, doosra template ka.</p></div>
 

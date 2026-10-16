@@ -28,7 +28,7 @@ var e={id:`what-is-panorama`,h:{en:`What Panorama is: modes and roles`,hi:`Panor
 <h3>What Panorama is not</h3>
 <p>Panorama is not a firewall: it does not inspect user traffic. It is also not magic: a firewall still needs a working management network path to it, and the firewall's own settings (such as its management IP) must be correct before Panorama can manage it. That is exactly what the first labs practise.</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings has 3 firewalls today and plans 40 branch sites in two years. At 3 sites a single Panorama in Panorama mode is fine. At 40 sites with long log retention, the team may decide on a management-only design with separate collectors. The decision comes from log volume, retention and resilience, not from the number of rules.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab has 3 firewalls today and plans 40 branch sites in two years. At 3 sites a single Panorama in Panorama mode is fine. At 40 sites with long log retention, the team may decide on a management-only design with separate collectors. The decision comes from log volume, retention and resilience, not from the number of rules.</p></div>
 
 <div class="exam"><p><b>Exam trap.</b> "Panorama manages firewalls" does not mean "Panorama forwards their traffic". If a question asks what happens to user traffic when Panorama is down, the answer is that firewalls continue enforcing the last configuration they received.</p></div>
 
@@ -73,7 +73,7 @@ var e={id:`what-is-panorama`,h:{en:`What Panorama is: modes and roles`,hi:`Panor
 <h3>Panorama kya nahi hai</h3>
 <p>Panorama firewall nahi hai: wo user traffic inspect nahi karta. Ye magic bhi nahi hai: firewall ko uske tak working management network path chahiye, aur firewall ki apni settings (jaise management IP) sahi honi chahiye tabhi Panorama use manage kar sakta hai. Pehle labs yahi practise karate hain.</p>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings ke aaj 3 firewalls hain aur do saal mein 40 branch sites ka plan hai. 3 sites par Panorama mode mein ek Panorama theek hai. 40 sites aur lambi log retention par team management-only design aur alag collectors choose kar sakti hai. Decision log volume, retention aur resilience se aata hai, rules ki sankhya se nahi.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab ke aaj 3 firewalls hain aur do saal mein 40 branch sites ka plan hai. 3 sites par Panorama mode mein ek Panorama theek hai. 40 sites aur lambi log retention par team management-only design aur alag collectors choose kar sakti hai. Decision log volume, retention aur resilience se aata hai, rules ki sankhya se nahi.</p></div>
 
 <div class="exam"><p><b>Exam trap.</b> "Panorama firewalls manage karta hai" ka matlab "Panorama unka traffic forward karta hai" nahi hai. Agar sawal puche ki Panorama down hone par user traffic ka kya hota hai, to answer hai ki firewalls last mili configuration enforce karte rehte hain.</p></div>
 

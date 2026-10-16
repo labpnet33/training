@@ -12,7 +12,7 @@ var e=`<svg viewBox="0 0 640 300" role="img" aria-label="Hub-and-spoke topology:
 <text x="190" y="136" text-anchor="middle" class="svg-muted" font-size="10">peering</text><text x="450" y="136" text-anchor="middle" class="svg-muted" font-size="10">peering</text>
 <text x="320" y="30" text-anchor="middle" class="svg-accent" font-size="12">Spokes do not peer with each other: the hub is the meeting point</text>
 </svg>`,t={id:`hub-and-spoke`,h:{en:`Hub-and-spoke: the shape of a real Azure network`,hi:`Hub-and-spoke: real Azure network ka shape`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>What you will learn</h3>
 <ul>
@@ -73,7 +73,7 @@ hub-to-spoke1   <span class="hl">Connected</span>      True                    T
 <li>Address spaces must not overlap, including with on-premises.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Aap kya seekhoge</h3>
 <ul>

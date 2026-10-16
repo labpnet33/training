@@ -2,7 +2,7 @@ var e={id:`capstone-scenario`,h:{en:`Capstone: a planned Panorama maintenance th
 <p>This capstone joins everything: planning, firewalls' two servers, suspend, failover, verification and troubleshooting. Read it like a case study and decide your next step before you read the engineer's.</p>
 
 <h3>The story</h3>
-<p>Network Kings has NK-PANORAMA (192.0.2.50, primary, preemptive) and NK-PANORAMA-2 (192.0.2.51, secondary) managing PA1 Pune, PA2 Delhi and PA3 Chennai. On Sunday the team plans to patch NK-PANORAMA. The ticket reads: "Patch primary Panorama with no loss of management. Confirm afterwards."</p>
+<p>MyPnetLab has NK-PANORAMA (192.0.2.50, primary, preemptive) and NK-PANORAMA-2 (192.0.2.51, secondary) managing PA1 Pune, PA2 Delhi and PA3 Chennai. On Sunday the team plans to patch NK-PANORAMA. The ticket reads: "Patch primary Panorama with no loss of management. Confirm afterwards."</p>
 
 <h3>Step 1: pre-checks</h3>
 <pre class="out">&gt; show high-availability state          (NK-PANORAMA, before)
@@ -58,7 +58,7 @@ Panorama Server 1 : 192.0.2.50
 <p>Yeh capstone sab kuch jodta hai: planning, firewalls ke do servers, suspend, failover, verification aur troubleshooting. Ise case study ki tarah padho aur engineer ka next step padhne se pehle apna decide karo.</p>
 
 <h3>Kahani</h3>
-<p>Network Kings ke paas NK-PANORAMA (192.0.2.50, primary, preemptive) aur NK-PANORAMA-2 (192.0.2.51, secondary) hain jo PA1 Pune, PA2 Delhi aur PA3 Chennai ko manage karte hain. Sunday ko team NK-PANORAMA patch karna chahti hai. Ticket kehta hai: "Primary Panorama ko management loss ke bina patch karo. Baad mein confirm karo."</p>
+<p>MyPnetLab ke paas NK-PANORAMA (192.0.2.50, primary, preemptive) aur NK-PANORAMA-2 (192.0.2.51, secondary) hain jo PA1 Pune, PA2 Delhi aur PA3 Chennai ko manage karte hain. Sunday ko team NK-PANORAMA patch karna chahti hai. Ticket kehta hai: "Primary Panorama ko management loss ke bina patch karo. Baad mein confirm karo."</p>
 
 <h3>Step 1: pre-checks</h3>
 <pre class="out">&gt; show high-availability state          (NK-PANORAMA, pehle)

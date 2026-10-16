@@ -19,7 +19,7 @@ var e={id:`big-picture`,h:{en:`The big picture: what makes a VPC design public o
 <text x="320" y="282" text-anchor="middle" class="svg-muted" font-size="12">Subnets talk to each other through the automatic local route</text>
 </svg><p class="cap">The standard design: public tier at the front, private tier behind, one pair of each per Availability Zone.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
 
 <h3>Four ideas that run through the module</h3>
 <ol>
@@ -70,7 +70,7 @@ var e={id:`big-picture`,h:{en:`The big picture: what makes a VPC design public o
 <text x="320" y="282" text-anchor="middle" class="svg-muted" font-size="12">Subnets automatic local route se aapas mein baat karte hain</text>
 </svg><p class="cap">Standard design: aage public tier, peeche private tier, har Availability Zone mein ek-ek jodi.</p></div>
 
-<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.nwkings.com ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
+<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.mypnetlab.vercel.app ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
 
 <h3>Chaar ideas jo poore module mein chalte hain</h3>
 <ol>

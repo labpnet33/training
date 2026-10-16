@@ -43,7 +43,7 @@ var e={id:`sase-vs-sse`,h:{en:`SASE vs SSE and the building blocks of a security
 <li><b>One log</b>: Activity Search shows DNS, web, firewall, private-app, DLP and AI events side by side, so an investigation follows one user across all of them.</li>
 </ul>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings has 3 branches, 120 roaming laptops and one data center. Before SSE: 3 branch proxies, a DNS filter, a VPN concentrator for 120 users, and a separate CASB in API mode. After: 3 IPsec tunnels (one per branch) to Secure Access, Secure Client on 120 laptops, one resource connector group in the data center, and a single access policy. The VPN concentrator and the branch proxies are retired.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab has 3 branches, 120 roaming laptops and one data center. Before SSE: 3 branch proxies, a DNS filter, a VPN concentrator for 120 users, and a separate CASB in API mode. After: 3 IPsec tunnels (one per branch) to Secure Access, Secure Client on 120 laptops, one resource connector group in the data center, and a single access policy. The VPN concentrator and the branch proxies are retired.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Calling SD-WAN a security product because it encrypts traffic. SD-WAN encryption protects the transport between your sites; it does not decide whether a user may upload payroll to a personal cloud drive. That decision belongs to SSE.</p></div>
 
@@ -105,7 +105,7 @@ var e={id:`sase-vs-sse`,h:{en:`SASE vs SSE and the building blocks of a security
 <li><b>Ek log</b>: Activity Search DNS, web, firewall, private-app, DLP aur AI events ek saath dikhata hai, isliye investigation ek user ko in sab mein follow kar sakti hai.</li>
 </ul>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings ke 3 branches, 120 roaming laptops aur ek data center hai. SSE se pehle: 3 branch proxies, ek DNS filter, 120 users ke liye VPN concentrator, aur API mode mein alag CASB. Baad mein: Secure Access tak 3 IPsec tunnels (har branch ka ek), 120 laptops par Secure Client, data center mein ek resource connector group, aur ek single access policy. VPN concentrator aur branch proxies retire ho jaate hain.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab ke 3 branches, 120 roaming laptops aur ek data center hai. SSE se pehle: 3 branch proxies, ek DNS filter, 120 users ke liye VPN concentrator, aur API mode mein alag CASB. Baad mein: Secure Access tak 3 IPsec tunnels (har branch ka ek), 120 laptops par Secure Client, data center mein ek resource connector group, aur ek single access policy. VPN concentrator aur branch proxies retire ho jaate hain.</p></div>
 
 <div class="warn"><p><b>Common galti.</b> SD-WAN ko security product kehna kyunki woh traffic encrypt karta hai. SD-WAN encryption aapki sites ke beech transport ko protect karta hai; yeh decide nahi karta ki user payroll ko personal cloud drive par upload kar sakta hai ya nahi. Woh decision SSE ka hai.</p></div>
 

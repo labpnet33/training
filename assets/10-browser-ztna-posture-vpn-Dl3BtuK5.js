@@ -49,7 +49,7 @@ Posture (reported to Secure Access)
 <tr><td>Branch PCs to the data center</td><td>Network tunnel + private resources</td><td>No client on each PC</td></tr>
 </table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings has 120 employees, 15 auditors twice a year and 6 support engineers who manage the softphone server. Plan: client-based ZTNA for all 120 (ERP, Git, wiki), browser-based for auditors to the ERP only, and a 6-user VPN group with split tunnel to 10.20.5.0/24 for the voice team. The old VPN pool of 500 addresses shrinks to 16.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab has 120 employees, 15 auditors twice a year and 6 support engineers who manage the softphone server. Plan: client-based ZTNA for all 120 (ERP, Git, wiki), browser-based for auditors to the ERP only, and a 6-user VPN group with split tunnel to 10.20.5.0/24 for the voice team. The old VPN pool of 500 addresses shrinks to 16.</p></div>
 
 <div class="warn"><p><b>Common mistakes.</b> Publishing browser-based access for an app but not adding the Browser-based method to the private rule. Expecting device posture checks on unmanaged browsers. Moving every user to ZTNA in one weekend without testing apps that use server-initiated connections.</p></div>
 
@@ -117,7 +117,7 @@ Posture (reported to Secure Access)
 <tr><td>Branch PCs se data center</td><td>Network tunnel + private resources</td><td>Har PC par client nahi</td></tr>
 </table>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings mein 120 employees, saal mein do baar 15 auditors aur 6 support engineers hain jo softphone server manage karte hain. Plan: saare 120 ke liye client-based ZTNA (ERP, Git, wiki), auditors ke liye sirf ERP tak browser-based, aur voice team ke liye 10.20.5.0/24 tak split tunnel wala 6-user VPN group. 500 addresses ka purana VPN pool 16 tak sikud jaata hai.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab mein 120 employees, saal mein do baar 15 auditors aur 6 support engineers hain jo softphone server manage karte hain. Plan: saare 120 ke liye client-based ZTNA (ERP, Git, wiki), auditors ke liye sirf ERP tak browser-based, aur voice team ke liye 10.20.5.0/24 tak split tunnel wala 6-user VPN group. 500 addresses ka purana VPN pool 16 tak sikud jaata hai.</p></div>
 
 <div class="warn"><p><b>Common galtiyan.</b> App ke liye browser-based access publish karna par private rule mein Browser-based method na jodna. Unmanaged browsers par device posture checks ki ummeed karna. Server-initiated connections use karne wale apps test kiye bina ek weekend mein har user ko ZTNA par shift karna.</p></div>
 

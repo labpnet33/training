@@ -32,7 +32,7 @@ var e={id:`url-categories`,h:{en:`URL filtering categories`,hi:`URL filtering ca
 <li>Keep a short process for a permitted site: an Allow rule above the Discard for that exact destination, or a documented exception.</li>
 </ul>
 
-<div class="eg"><p><b>Worked example (lab fp-inspection-4).</b> At Pune, HR asks to block Social Media for the Staff LAN. Place a Discard rule with Service URL: Social Media, source net-staff, destination any, above the web Allow rule. Install policy. In Tools, run a Web test from STAFF-PC against the Internet cloud: facebook.com is discarded, wikipedia.org (Technology) still loads, and nwkings.com (Business) loads. The log shows the Discard with the rule name and the category.</p></div>
+<div class="eg"><p><b>Worked example (lab fp-inspection-4).</b> At Pune, HR asks to block Social Media for the Staff LAN. Place a Discard rule with Service URL: Social Media, source net-staff, destination any, above the web Allow rule. Install policy. In Tools, run a Web test from STAFF-PC against the Internet cloud: facebook.com is discarded, wikipedia.org (Technology) still loads, and mypnetlab.vercel.app (Business) loads. The log shows the Discard with the rule name and the category.</p></div>
 
 <pre class="out">Web test from STAFF-PC (10.1.1.10)
 facebook.com     category: Social Media   <span class="hl">Discard by rule Block-social</span>
@@ -93,7 +93,7 @@ netbank.example  category: Banking        Allow by rule Staff-web</pre>
 <li>Permitted site ke liye chhota process rakho: us exact destination ke liye Discard ke upar Allow rule, ya documented exception.</li>
 </ul>
 
-<div class="eg"><p><b>Worked example (lab fp-inspection-4).</b> Pune mein HR Staff LAN ke liye Social Media block karne ko kehta hai. Service URL: Social Media, source net-staff, destination any wala Discard rule web Allow rule ke upar rakho. Install policy karo. Tools mein STAFF-PC se Internet cloud ke against Web test chalao: facebook.com discard hoti hai, wikipedia.org (Technology) ab bhi load hoti hai, aur nwkings.com (Business) load hoti hai. Log mein rule ke naam aur category ke saath Discard dikhta hai.</p></div>
+<div class="eg"><p><b>Worked example (lab fp-inspection-4).</b> Pune mein HR Staff LAN ke liye Social Media block karne ko kehta hai. Service URL: Social Media, source net-staff, destination any wala Discard rule web Allow rule ke upar rakho. Install policy karo. Tools mein STAFF-PC se Internet cloud ke against Web test chalao: facebook.com discard hoti hai, wikipedia.org (Technology) ab bhi load hoti hai, aur mypnetlab.vercel.app (Business) load hoti hai. Log mein rule ke naam aur category ke saath Discard dikhta hai.</p></div>
 
 <pre class="out">Web test from STAFF-PC (10.1.1.10)
 facebook.com     category: Social Media   <span class="hl">Discard by rule Block-social</span>

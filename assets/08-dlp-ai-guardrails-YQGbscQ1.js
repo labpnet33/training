@@ -21,7 +21,7 @@ ROAM1&gt; upload Q3-payroll.csv nwkings.cloudbox.example/upload
 <p>Create <b>Block PII to Cloud Storage</b>: identifiers Credit Card Number, India PAN and Aadhaar Number; destination category Cloud Storage; action Block; severity High. Upload again: it <b>still succeeds and no DLP event appears</b>. Activity Search shows <code>Allowed Web nwkings.cloudbox.example Rule: Default Internet Access</code>, and the Default Security Profile has <b>Decryption off</b>. The upload is HTTPS, so the gateway never saw the file. Turn on <b>Decryption</b> in <b>Security Profiles, Default Security Profile</b> (the profile of the matching rule) and retry:</p>
 <pre class="out">ROAM1&gt; upload Q3-payroll.csv nwkings.cloudbox.example/upload
 &lt;h1&gt;This site is blocked&lt;/h1&gt;&lt;p&gt;&lt;b&gt;nwkings.cloudbox.example&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;The upload contains sensitive data that Network Kings policy does not allow to leave the organisation.&lt;/p&gt;
+&lt;p&gt;The upload contains sensitive data that MyPnetLab policy does not allow to leave the organisation.&lt;/p&gt;
 &lt;p&gt;Reason: <span class="hl">DLP: Block PII to Cloud Storage (Credit Card Number, Aadhaar Number, India PAN)</span> · Rule: Default Internet Access&lt;/p&gt;
 
 ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
@@ -35,7 +35,7 @@ ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
 {"id":"chat-3f9a01c2","model":"chatai-4","reply":"<span class="hl">Sure — here is a draft based on your prompt.</span>","usage":{"prompt_tokens":50}}
 
 ROAM1&gt; ai-chat prompt-jailbreak.txt
-&lt;p&gt;Your prompt was stopped by the AI guardrails of Network Kings.&lt;/p&gt;
+&lt;p&gt;Your prompt was stopped by the AI guardrails of MyPnetLab.&lt;/p&gt;
 &lt;p&gt;Reason: <span class="hl">AI Guardrails: ChatAI Guardrails (Prompt Injection)</span> · Rule: Default Internet Access&lt;/p&gt;
 
 ROAM1&gt; ai-chat prompt-customers.txt
@@ -93,7 +93,7 @@ ROAM1&gt; upload Q3-payroll.csv nwkings.cloudbox.example/upload
 <p><b>Block PII to Cloud Storage</b> banao: identifiers Credit Card Number, India PAN aur Aadhaar Number; destination category Cloud Storage; action Block; severity High. Dobara upload karo: yeh <b>ab bhi chal jaata hai aur koi DLP event nahi aata</b>. Activity Search <code>Allowed Web nwkings.cloudbox.example Rule: Default Internet Access</code> dikhata hai, aur Default Security Profile mein <b>Decryption off</b> hai. Upload HTTPS hai, isliye gateway ne file kabhi dekhi hi nahi. <b>Security Profiles, Default Security Profile</b> (matching rule ka profile) mein <b>Decryption</b> on karo aur retry karo:</p>
 <pre class="out">ROAM1&gt; upload Q3-payroll.csv nwkings.cloudbox.example/upload
 &lt;h1&gt;This site is blocked&lt;/h1&gt;&lt;p&gt;&lt;b&gt;nwkings.cloudbox.example&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;The upload contains sensitive data that Network Kings policy does not allow to leave the organisation.&lt;/p&gt;
+&lt;p&gt;The upload contains sensitive data that MyPnetLab policy does not allow to leave the organisation.&lt;/p&gt;
 &lt;p&gt;Reason: <span class="hl">DLP: Block PII to Cloud Storage (Credit Card Number, Aadhaar Number, India PAN)</span> · Rule: Default Internet Access&lt;/p&gt;
 
 ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
@@ -107,7 +107,7 @@ ROAM1&gt; upload team-offsite.pdf nwkings.cloudbox.example/upload
 {"id":"chat-3f9a01c2","model":"chatai-4","reply":"<span class="hl">Sure — here is a draft based on your prompt.</span>","usage":{"prompt_tokens":50}}
 
 ROAM1&gt; ai-chat prompt-jailbreak.txt
-&lt;p&gt;Your prompt was stopped by the AI guardrails of Network Kings.&lt;/p&gt;
+&lt;p&gt;Your prompt was stopped by the AI guardrails of MyPnetLab.&lt;/p&gt;
 &lt;p&gt;Reason: <span class="hl">AI Guardrails: ChatAI Guardrails (Prompt Injection)</span> · Rule: Default Internet Access&lt;/p&gt;
 
 ROAM1&gt; ai-chat prompt-customers.txt

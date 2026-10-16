@@ -18,7 +18,7 @@ var e=`<svg viewBox="0 0 640 260" role="img" aria-label="Where NSGs apply">
 
 <div class="dia">`+e+`<p class="cap">An NSG can be attached to a subnet, to a NIC, or both. Inbound traffic meets the subnet NSG first, then the NIC NSG.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>What an NSG is</h3>
 <ul>
@@ -69,7 +69,7 @@ var e=`<svg viewBox="0 0 640 260" role="img" aria-label="Where NSGs apply">
 
 <div class="dia">`+e+`<p class="cap">NSG subnet par, NIC par, ya dono par lag sakta hai. Inbound traffic pehle subnet NSG se milta hai, phir NIC NSG se.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>NSG kya hai</h3>
 <ul>

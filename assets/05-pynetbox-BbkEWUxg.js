@@ -30,7 +30,7 @@ status: active / Active
 custom fields: {'monitored': True, 'owner_team': 'NOC'}
 ntp from config context: ['10.99.0.60']
 tags: ['critical', 'automation']
-device_type: CSR1000V | tenant: Network Kings
+device_type: CSR1000V | tenant: MyPnetLab
 get() for a missing name: None
 get() for a missing id: None
 count: 6 | pune: 4
@@ -106,7 +106,7 @@ status: active / Active
 custom fields: {'monitored': True, 'owner_team': 'NOC'}
 ntp from config context: ['10.99.0.60']
 tags: ['critical', 'automation']
-device_type: CSR1000V | tenant: Network Kings
+device_type: CSR1000V | tenant: MyPnetLab
 get() for a missing name: None
 get() for a missing id: None
 count: 6 | pune: 4

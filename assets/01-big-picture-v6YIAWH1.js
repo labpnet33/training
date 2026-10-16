@@ -47,10 +47,10 @@ for name, multi in result.items():
 nr.close_connections()</pre>
 <p><code>InitNornir</code> builds the inventory and the runner from the config file. <code>nr.run()</code> starts <code>netmiko_send_command</code> once per host. What comes back is a dictionary-like object: the key is the host name and the value holds that host's results. <code>multi.failed</code> tells you whether the host failed, and <code>multi[0].result</code> is the text the device returned. The last line closes the SSH sessions that Nornir kept open.</p>
 <pre class="out">AUTO01$ python3 first.py
-r1  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 j1  Hostname: J1
 e1  Arista vEOS-lab
-n1  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+n1  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 <span class="hl">r3  FAILED NetmikoTimeoutException</span>
 <span class="hl">failed hosts: ['r3']</span></pre>
 <p>Four hosts answer and <code>r3</code> does not. The inventory lists a router that is not switched on yet, which is a normal situation: inventories are always ahead of reality. Look at what did <b>not</b> happen: one dead host did not stop the run and did not print a traceback. This is the first thing to get used to.</p>
@@ -127,10 +127,10 @@ for name, multi in result.items():
 nr.close_connections()</pre>
 <p><code>InitNornir</code> config file se inventory aur runner banata hai. <code>nr.run()</code> har host par ek baar <code>netmiko_send_command</code> chalata hai. Wapas ek dictionary jaisa object aata hai: key host ka naam hai aur value us host ke results hain. <code>multi.failed</code> batata hai ki host fail hua ya nahi, aur <code>multi[0].result</code> device ka lautaya hua text hai. Aakhri line Nornir ke khule rakhe SSH sessions band karti hai.</p>
 <pre class="out">AUTO01$ python3 first.py
-r1  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 j1  Hostname: J1
 e1  Arista vEOS-lab
-n1  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+n1  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 <span class="hl">r3  FAILED NetmikoTimeoutException</span>
 <span class="hl">failed hosts: ['r3']</span></pre>
 <p>Chaar hosts jawab dete hain aur <code>r3</code> nahi deta. Inventory mein ek aisa router hai jo abhi on nahi hua, aur yeh aam baat hai: inventory hamesha haqeeqat se aage chalti hai. Yeh dekho ki kya <b>nahi</b> hua: ek dead host ne run ko nahi roka aur traceback print nahi hua. Isse sabse pehle aadat banao.</p>

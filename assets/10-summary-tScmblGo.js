@@ -24,7 +24,7 @@ var e={id:`summary`,h:{en:`Summary and exam checklist`,hi:`Summary aur exam chec
 <li>I can diagnose a two-fault ticket step by step.</li>
 <li>I can build the lab on my own account and clean it up in dependency order.</li>
 </ul>
-<p>You can practise every step with no AWS account and no bill using the hands-on labs at aws.nwkings.com, and with the in-app emulator labs of this module.</p>
+<p>You can practise every step with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app, and with the in-app emulator labs of this module.</p>
 
 <h3>Mini glossary</h3>
 <dl class="terms">
@@ -102,7 +102,7 @@ aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id $PCX</pre>
 <li>Main do-fault ticket ko step by step diagnose kar sakta hoon.</li>
 <li>Main lab apne account par bana sakta hoon aur dependency order mein clean up kar sakta hoon.</li>
 </ul>
-<p>Har step aap bina AWS account aur bill ke aws.nwkings.com ke hands-on labs par, aur is module ke in-app emulator labs par practise kar sakte ho.</p>
+<p>Har step aap bina AWS account aur bill ke aws.mypnetlab.vercel.app ke hands-on labs par, aur is module ke in-app emulator labs par practise kar sakte ho.</p>
 
 <h3>Mini glossary</h3>
 <dl class="terms">

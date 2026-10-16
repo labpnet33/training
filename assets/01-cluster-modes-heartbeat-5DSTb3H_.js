@@ -3,7 +3,7 @@ var e={id:`cluster-heartbeat`,h:{en:`Cluster modes and the heartbeat`,hi:`Cluste
 <p><b>Prerequisites.</b> You should have finished the earlier modules of this track: first contact between the Security Management Center (SMC) and an engine, interfaces and routes, access rules and install, NAT, inspection and VPN. If you know that nothing reaches the engine until you press Install policy, you are ready.</p>
 
 <h3>Start with an analogy: two guards on one gate</h3>
-<p>Imagine the Network Kings Pune branch has one gate. A single guard is a risk: if he falls ill, the gate is unmanned. So the company posts two guards, FW1A and FW1B. Both stand ready, but visitors always speak to the guard whose name is on the gate board. If that guard leaves, the other steps forward and takes the same board. Visitors do not need to learn a new name. That shared name is the idea behind a firewall <b>cluster</b>.</p>
+<p>Imagine the MyPnetLab Pune branch has one gate. A single guard is a risk: if he falls ill, the gate is unmanned. So the company posts two guards, FW1A and FW1B. Both stand ready, but visitors always speak to the guard whose name is on the gate board. If that guard leaves, the other steps forward and takes the same board. Visitors do not need to learn a new name. That shared name is the idea behind a firewall <b>cluster</b>.</p>
 
 <h3>The pieces of a cluster</h3>
 <ul>
@@ -65,7 +65,7 @@ Cluster NK-PUNE-FW (standby mode)
 <p><b>Prerequisites.</b> Is track ke pichle modules aap complete kar chuke hone chahiye: Security Management Center (SMC) aur engine ka first contact, interfaces aur routes, access rules aur install, NAT, inspection aur VPN. Agar aapko pata hai ki Install policy dabane tak engine tak kuch nahi pahunchta, to aap ready ho.</p>
 
 <h3>Analogy se shuru karo: ek gate par do guards</h3>
-<p>Socho Network Kings Pune branch ka ek hi gate hai. Ek hi guard risk hai: woh bimar pade to gate khaali. Isliye company do guards lagati hai, FW1A aur FW1B. Dono ready khade hain, lekin visitors hamesha us guard se baat karte hain jiska naam gate board par hai. Woh guard chala jaye to dusra aage aata hai aur wahi board le leta hai. Visitors ko naya naam seekhna nahi padta. Yeh shared naam hi firewall <b>cluster</b> ka idea hai.</p>
+<p>Socho MyPnetLab Pune branch ka ek hi gate hai. Ek hi guard risk hai: woh bimar pade to gate khaali. Isliye company do guards lagati hai, FW1A aur FW1B. Dono ready khade hain, lekin visitors hamesha us guard se baat karte hain jiska naam gate board par hai. Woh guard chala jaye to dusra aage aata hai aur wahi board le leta hai. Visitors ko naya naam seekhna nahi padta. Yeh shared naam hi firewall <b>cluster</b> ka idea hai.</p>
 
 <h3>Cluster ke hisse</h3>
 <ul>

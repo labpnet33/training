@@ -36,7 +36,7 @@ print("interface check on %d IOS hosts" % len(ios.inventory.hosts))</pre>
 
 <h3>Fault 1: the key that is nowhere</h3>
 <pre class="out">AUTO01$ python3 audit.py
-r1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 <span class="hl">j1  ValueError: Unsupported 'device_type' currently supported platforms are:</span>
 e1  ok  Arista vEOS-lab
 <span class="hl">n1  KeyError: 'version_cmd'</span>
@@ -57,7 +57,7 @@ nxos:
 <pre class="out">AUTO01$ sed -i 's/version_command:/version_cmd:/' inventory/groups.yaml
 AUTO01$ python3 audit.py
 ...
-<span class="hl">n1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span>
+<span class="hl">n1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span>
 ...</pre>
 
 <h3>Fault 2: a platform name</h3>
@@ -80,7 +80,7 @@ AUTO01$ ping -c 2 10.99.0.3
 <p>A timeout is the transport stage, not a credentials problem (that would be <code>NetmikoAuthenticationException</code>). The wrong address is a typo in <code>hosts.yaml</code>. Fix it and the router answers.</p>
 <pre class="out">AUTO01$ sed -i 's/10.99.0.33/10.99.0.3/' inventory/hosts.yaml
 AUTO01$ python3 audit.py
-<span class="hl">r3  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span></pre>
+<span class="hl">r3  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span></pre>
 
 <h3>Fault 4: the filter that selects nobody</h3>
 <p>All five hosts say <code>ok</code>, and the second part still prints <code>interface check on 0 IOS hosts</code>. No error, no exception: this is the quiet stage. The filter asks for <code>platform="ios"</code>, but the inventory calls the platform <code>cisco_ios</code>. An empty filter is valid, so Nornir runs nothing and says nothing. Only the count in the script's own message gives it away.</p>
@@ -92,11 +92,11 @@ r3  1 of 4 interfaces up</pre>
 
 <h3>The proof</h3>
 <pre class="out"><span class="hl">AUTO01$ python3 audit.py; echo "exit code: $?"</span>
-r1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 j1  ok  Hostname: J1
 e1  ok  Arista vEOS-lab
-n1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
-r3  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+n1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r3  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 interface check on 2 IOS hosts
 r1  1 of 4 interfaces up
 r3  1 of 4 interfaces up
@@ -155,7 +155,7 @@ print("interface check on %d IOS hosts" % len(ios.inventory.hosts))</pre>
 
 <h3>Fault 1: woh key jo kahin nahi hai</h3>
 <pre class="out">AUTO01$ python3 audit.py
-r1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 <span class="hl">j1  ValueError: Unsupported 'device_type' currently supported platforms are:</span>
 e1  ok  Arista vEOS-lab
 <span class="hl">n1  KeyError: 'version_cmd'</span>
@@ -176,7 +176,7 @@ nxos:
 <pre class="out">AUTO01$ sed -i 's/version_command:/version_cmd:/' inventory/groups.yaml
 AUTO01$ python3 audit.py
 ...
-<span class="hl">n1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span>
+<span class="hl">n1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span>
 ...</pre>
 
 <h3>Fault 2: platform ka naam</h3>
@@ -199,7 +199,7 @@ AUTO01$ ping -c 2 10.99.0.3
 <p>Timeout transport stage hai, credentials ki problem nahi (woh <code>NetmikoAuthenticationException</code> hoti). Galat address <code>hosts.yaml</code> ka typo hai. Theek karo to router jawab deta hai.</p>
 <pre class="out">AUTO01$ sed -i 's/10.99.0.33/10.99.0.3/' inventory/hosts.yaml
 AUTO01$ python3 audit.py
-<span class="hl">r3  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span></pre>
+<span class="hl">r3  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE</span></pre>
 
 <h3>Fault 4: filter jo kisi ko select nahi karta</h3>
 <p>Paanchon hosts <code>ok</code> kehte hain, aur doosra hissa phir bhi <code>interface check on 0 IOS hosts</code> print karta hai. Na error, na exception: yeh shant stage hai. Filter <code>platform="ios"</code> maangta hai, par inventory platform ko <code>cisco_ios</code> kehti hai. Khaali filter valid hai, isliye Nornir kuch nahi chalata aur kuch nahi kehta. Sirf script ke apne message ka count ise pakadta hai.</p>
@@ -211,11 +211,11 @@ r3  1 of 4 interfaces up</pre>
 
 <h3>Saboot</h3>
 <pre class="out"><span class="hl">AUTO01$ python3 audit.py; echo "exit code: $?"</span>
-r1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 j1  ok  Hostname: J1
 e1  ok  Arista vEOS-lab
-n1  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
-r3  ok  Network Kings Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+n1  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
+r3  ok  MyPnetLab Network OS Software, NK-OS Software, Version 2.0, RELEASE SOFTWARE
 interface check on 2 IOS hosts
 r1  1 of 4 interfaces up
 r3  1 of 4 interfaces up

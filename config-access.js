@@ -1,4 +1,4 @@
-/* Authentication policy for Config by Network Kings.
+/* Authentication policy for MyPnetLab.
  * Supabase email/password authentication is required before entering the site.
  */
 (function (window, document) {

@@ -40,7 +40,7 @@ var e={id:`nat-rule-anatomy`,h:{en:`NAT rule anatomy`,hi:`NAT rule ki anatomy`},
 <li><b>Install is the boundary.</b> A NAT rule saved in the SMC does nothing until you use the Install policy bar and the engine takes the new policy. Existing simulated connections are cleared on install.</li>
 </ol>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings Pune has these NAT rules. Rule 1: source net-staff, destination net-dmz, no NAT. Rule 2: source net-staff, destination any, dynamic source NAT to interface-ip. STAFF-PC 10.1.1.10 opens WEB1 172.16.20.20: rule 1 matches first, no translation, the DMZ server sees 10.1.1.10. STAFF-PC opens a website on the Internet: rule 1 does not match (destination is not net-dmz), rule 2 matches, source becomes the WAN address. Swap the order and rule 2 would catch the DMZ traffic first, which is a common surprise.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab Pune has these NAT rules. Rule 1: source net-staff, destination net-dmz, no NAT. Rule 2: source net-staff, destination any, dynamic source NAT to interface-ip. STAFF-PC 10.1.1.10 opens WEB1 172.16.20.20: rule 1 matches first, no translation, the DMZ server sees 10.1.1.10. STAFF-PC opens a website on the Internet: rule 1 does not match (destination is not net-dmz), rule 2 matches, source becomes the WAN address. Swap the order and rule 2 would catch the DMZ traffic first, which is a common surprise.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Expecting NAT to allow traffic. NAT only rewrites addresses. If the Access rules do not allow the connection, it is dropped before NAT is ever looked at. You always need both.</p></div>
 
@@ -100,7 +100,7 @@ var e={id:`nat-rule-anatomy`,h:{en:`NAT rule anatomy`,hi:`NAT rule ki anatomy`},
 <li><b>Install hi boundary hai.</b> SMC mein save kiya NAT rule tab tak engine par kuch nahi karta jab tak aap Install policy bar use karke nayi policy engine tak nahi pahunchate. Install par existing simulated connections clear ho jaate hain.</li>
 </ol>
 
-<div class="eg"><p><b>Worked example.</b> Network Kings Pune ke NAT rules: Rule 1: source net-staff, destination net-dmz, no NAT. Rule 2: source net-staff, destination any, dynamic source NAT to interface-ip. STAFF-PC 10.1.1.10 WEB1 172.16.20.20 kholta hai: rule 1 pehle match hota hai, translation nahi, DMZ server ko 10.1.1.10 dikhta hai. STAFF-PC Internet website kholta hai: rule 1 match nahi karta (destination net-dmz nahi hai), rule 2 match karta hai, source WAN address ban jaata hai. Order ulta kar do to rule 2 DMZ traffic ko pehle pakad lega, jo common surprise hai.</p></div>
+<div class="eg"><p><b>Worked example.</b> MyPnetLab Pune ke NAT rules: Rule 1: source net-staff, destination net-dmz, no NAT. Rule 2: source net-staff, destination any, dynamic source NAT to interface-ip. STAFF-PC 10.1.1.10 WEB1 172.16.20.20 kholta hai: rule 1 pehle match hota hai, translation nahi, DMZ server ko 10.1.1.10 dikhta hai. STAFF-PC Internet website kholta hai: rule 1 match nahi karta (destination net-dmz nahi hai), rule 2 match karta hai, source WAN address ban jaata hai. Order ulta kar do to rule 2 DMZ traffic ko pehle pakad lega, jo common surprise hai.</p></div>
 
 <div class="warn"><p><b>Common mistake.</b> Yeh sochna ki NAT traffic allow karta hai. NAT sirf addresses rewrite karta hai. Agar Access rules connection allow nahi karte to NAT dekhne se pehle hi drop ho jaata hai. Dono chahiye.</p></div>
 

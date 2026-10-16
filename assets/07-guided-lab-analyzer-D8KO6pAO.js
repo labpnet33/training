@@ -5,7 +5,7 @@ var e=`<svg viewBox="0 0 640 220" role="img" aria-label="Guided lab 1 layout: on
 <line x1="290" y1="120" x2="350" y2="120" stroke="#64748b" stroke-width="2" stroke-dasharray="5 4"/>
 <text x="320" y="156" text-anchor="middle" class="svg-accent" font-size="11">analysis</text>
 </svg>`,t={id:`guided-lab-analyzer`,h:{en:`Guided lab on your own AWS account: find and fix a block with Reachability Analyzer`,hi:`Apne AWS account par guided lab: Reachability Analyzer se block dhundo aur theek karo`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "Use Reachability Analyzer to find and fix a block" is the same exercise with the same codes.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator lab "Use Reachability Analyzer to find and fix a block" is the same exercise with the same codes.</p></div>
 
 <h3>Goal</h3>
 <p>Create a small VPC, ask Reachability Analyzer why <code>web</code> cannot reach <code>app</code> on TCP 8080, read the explanation code, fix the security group, and re-run until the path is found. Then deliberately break a network ACL to see a second code, and restore it.</p>
@@ -115,7 +115,7 @@ aws ec2 delete-vpc --vpc-id $VPC</pre>
 <li>Clean up in order: analyses, path, NACL, ENIs, security groups, subnets, VPC.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "Use Reachability Analyzer to find and fix a block" wahi exercise hai, wahi codes ke saath.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator lab "Use Reachability Analyzer to find and fix a block" wahi exercise hai, wahi codes ke saath.</p></div>
 
 <h3>Goal</h3>
 <p>Ek chhota VPC banao, Reachability Analyzer se poochho ki <code>web</code>, <code>app</code> tak TCP 8080 par kyun nahi pahunchta, explanation code padho, security group theek karo, aur path milne tak dobara chalao. Phir jaan-boojhkar ek network ACL tod kar doosra code dekho, aur use restore karo.</p>

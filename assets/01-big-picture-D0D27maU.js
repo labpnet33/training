@@ -10,7 +10,7 @@ var e={id:`big-picture`,h:{en:`Two VPCs, one private link`,hi:`Do VPCs, ek priva
 </ul>
 <p><b>Prerequisites:</b> the earlier modules of this track: VPC design (CIDR, subnets, route tables), security groups and network ACLs, and ideally the NAT gateway module. You should be able to read a route table and say what <code>local</code> means.</p>
 
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>The two offices analogy</h3>
 <p>Imagine two companies in two separate office buildings. Each building has its own internal phone system, and extension 204 in one building means nothing in the other. Now the companies agree to run a <b>private tie-line</b> between the buildings. Both sides must agree (one asks, the other accepts). Each building must then add a line to its switchboard: "calls to the other building's extensions go over the tie-line". If only one switchboard is updated, the call arrives but the answer cannot find its way back. And if building A is tied to B and B is tied to C, A still cannot dial C through B: a tie-line connects exactly two buildings.</p>
@@ -58,7 +58,7 @@ var e={id:`big-picture`,h:{en:`Two VPCs, one private link`,hi:`Do VPCs, ek priva
 </ul>
 <p><b>Prerequisites:</b> is track ke pichle modules: VPC design (CIDR, subnets, route tables), security groups aur network ACLs, aur behtar hoga NAT gateway module bhi. Aapko route table padhni aani chahiye aur <code>local</code> ka matlab pata hona chahiye.</p>
 
-<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</div>
+<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</div>
 
 <h3>Do offices ki analogy</h3>
 <p>Do companies ke do alag office buildings socho. Har building ka apna internal phone system hai, aur ek building ka extension 204 doosri building mein kuch matlab nahi rakhta. Ab dono companies buildings ke beech ek <b>private tie-line</b> bichhane par razi hoti hain. Dono ki sehmati chahiye (ek maangta hai, doosra accept karta hai). Phir har building apne switchboard mein ek line jodti hai: "doosri building ke extensions ki calls tie-line se jaayengi". Sirf ek switchboard update hua to call pahunchti hai par jawab ko wapas raasta nahi milta. Aur agar building A, B se aur B, C se tied hai, tab bhi A, B ke through C ko dial nahi kar sakta: tie-line sirf do buildings ko jodti hai.</p>

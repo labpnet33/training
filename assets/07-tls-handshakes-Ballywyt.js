@@ -68,7 +68,7 @@ ASA1(config)# ssl cipher tlsv1.2 high</pre>
 CONNECTION ESTABLISHED
 <span class="hl">Protocol version: TLSv1.3</span>
 <span class="hl">Ciphersuite: TLS_AES_256_GCM_SHA384</span>
-Peer certificate: CN = vpn.nk.example, O = Network Kings Lab
+Peer certificate: CN = vpn.nk.example, O = MyPnetLab Lab
 Hash used: SHA256
 Signature type: RSA-PSS
 <span class="hl">Verification: OK</span>
@@ -159,7 +159,7 @@ ASA1(config)# ssl cipher tlsv1.2 high</pre>
 CONNECTION ESTABLISHED
 <span class="hl">Protocol version: TLSv1.3</span>
 <span class="hl">Ciphersuite: TLS_AES_256_GCM_SHA384</span>
-Peer certificate: CN = vpn.nk.example, O = Network Kings Lab
+Peer certificate: CN = vpn.nk.example, O = MyPnetLab Lab
 Hash used: SHA256
 Signature type: RSA-PSS
 <span class="hl">Verification: OK</span>

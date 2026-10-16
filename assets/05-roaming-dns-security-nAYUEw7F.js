@@ -14,7 +14,7 @@ var e={id:`roaming-dns`,h:{en:`Roaming users with Secure Client, and DNS-layer s
 <p>In the onboarding lab, Internet Security starts <b>disabled</b>. If you install the client first, it registers but does not steer traffic:</p>
 <pre class="out">ROAM1&gt; secure-access status
 Cisco Secure Client 5.1.8.105 — Secure Access
-  Organization      : Network Kings (8195126)
+  Organization      : MyPnetLab (8195126)
   Internet security : <span class="hl">Unprotected — Internet Security is disabled for roaming devices</span></pre>
 <p>Turn on <b>Internet Security</b> in End User Connectivity, then:</p>
 <pre class="code">ROAM1&gt; secure-access install
@@ -23,11 +23,11 @@ ROAM1&gt; secure-access status</pre>
   + Core VPN / Secure Access module
   + Umbrella roaming security (DNS) and SWG agent
   + Zero Trust Access module
-Reading org profile orginfo.json (organization 8195126, Network Kings)
+Reading org profile orginfo.json (organization 8195126, MyPnetLab)
 Registered as roaming computer ROAM1.
 
 Cisco Secure Client 5.1.8.105 — Secure Access
-  Organization      : Network Kings (8195126)
+  Organization      : MyPnetLab (8195126)
   Internet security : <span class="hl">Protected — DNS and web through Secure Access (Asia Pacific (Mumbai), 146.112.0.10)</span>
   User              : not signed in</pre>
 <p>Because nobody has signed in, the identity in the logs is the <b>computer name ROAM1</b>. Later labs use laptops where a user is signed in, and the identity becomes the user, for example vikram.singh@nwkings.example.</p>
@@ -88,7 +88,7 @@ Address: <span class="hl">146.112.61.107</span></pre>
 <p>Onboarding lab mein Internet Security <b>disabled</b> se shuru hota hai. Agar aap pehle client install karo, to woh register to hota hai par traffic steer nahi karta:</p>
 <pre class="out">ROAM1&gt; secure-access status
 Cisco Secure Client 5.1.8.105 — Secure Access
-  Organization      : Network Kings (8195126)
+  Organization      : MyPnetLab (8195126)
   Internet security : <span class="hl">Unprotected — Internet Security is disabled for roaming devices</span></pre>
 <p>End User Connectivity mein <b>Internet Security</b> on karo, phir:</p>
 <pre class="code">ROAM1&gt; secure-access install
@@ -97,11 +97,11 @@ ROAM1&gt; secure-access status</pre>
   + Core VPN / Secure Access module
   + Umbrella roaming security (DNS) and SWG agent
   + Zero Trust Access module
-Reading org profile orginfo.json (organization 8195126, Network Kings)
+Reading org profile orginfo.json (organization 8195126, MyPnetLab)
 Registered as roaming computer ROAM1.
 
 Cisco Secure Client 5.1.8.105 — Secure Access
-  Organization      : Network Kings (8195126)
+  Organization      : MyPnetLab (8195126)
   Internet security : <span class="hl">Protected — DNS and web through Secure Access (Asia Pacific (Mumbai), 146.112.0.10)</span>
   User              : not signed in</pre>
 <p>Kyunki kisi ne sign in nahi kiya, logs mein identity <b>computer name ROAM1</b> hai. Baad ki labs mein aise laptops hain jahan user signed in hai, aur identity user ban jaati hai, jaise vikram.singh@nwkings.example.</p>

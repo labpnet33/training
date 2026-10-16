@@ -15,7 +15,7 @@ var e=`<svg viewBox="0 0 640 330" role="img" aria-label="Azure troubleshooting l
 </g>
 <text x="320" y="316" text-anchor="middle" class="svg-muted" font-size="11">Left: question to ask. Right: the tool that answers it. Move down only when the layer above is proven.</text>
 </svg>`,t={id:`troubleshooting-ladder`,h:{en:`The troubleshooting ladder and the Network Watcher toolbox`,hi:`Troubleshooting ladder aur Network Watcher toolbox`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>What you will learn</h3>
 <ul>
@@ -78,7 +78,7 @@ centralindia   NetworkWatcher_centralindia  <span class="hl">Succeeded</span>   
 <li>Tools see the Azure side only.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Aap kya seekhoge</h3>
 <ul>

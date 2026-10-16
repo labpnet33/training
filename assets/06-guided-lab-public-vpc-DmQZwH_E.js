@@ -1,5 +1,5 @@
 var e={id:`guided-lab-public-vpc`,h:{en:`Guided lab 1 on your own AWS account: build a public subnet and publish a web server`,hi:`Guided lab 1 apne AWS account par: public subnet banao aur web server publish karo`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Build the standard VPC <code>nk-prod</code> (10.20.0.0/16) with one public and one private subnet, an internet gateway, a public route table, a restrictive security group and a web server <code>web-1</code> that you (and only you) can open from the internet. This is the same design as the in-app emulator lab "Build a public/private VPC and publish a web server"; this time it is real.</p>
@@ -141,7 +141,7 @@ aws ec2 delete-vpc --vpc-id $VPC</pre>
 <li>Expect pennies if you finish in a session; a forgotten instance costs real money.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.nwkings.com ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
+<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.mypnetlab.vercel.app ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
 
 <h3>Goal</h3>
 <p>Standard VPC <code>nk-prod</code> (10.20.0.0/16) banao jisme ek public aur ek private subnet, internet gateway, public route table, restrictive security group aur web server <code>web-1</code> ho jise aap (aur sirf aap) internet se khol sako. Yeh wahi design hai jo in-app emulator lab "Build a public/private VPC and publish a web server" mein hai; is baar asli.</p>

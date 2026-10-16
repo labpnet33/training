@@ -1,5 +1,5 @@
 var e={id:`guided-lab-safe-account`,h:{en:`Guided lab 1 on your own AWS account: a safe account, a budget alert and a working CLI`,hi:`Guided lab 1 apne AWS account par: safe account, budget alert aur chalta hua CLI`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Finish with an account that cannot surprise you: root user locked with MFA, a monthly budget that emails you, a daily identity that is not root, the Mumbai Region as default, and a CLI (or CloudShell) that answers <code>aws sts get-caller-identity</code>.</p>
@@ -109,7 +109,7 @@ aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --out
 <li>This lab costs nothing and creates nothing to delete except an optional budget.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.nwkings.com ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
+<div class="note"><p><b>Jhanjhat nahi chahiye? (Prefer no hassle?)</b> Yeh exact steps aap bina AWS account aur bina bill ke aws.mypnetlab.vercel.app ke hands-on labs par practise kar sakte ho. Ya apna account use karo: pehle budget alert lagao aur kaam khatam hone par sab kuch delete kar do.</p></div>
 
 <h3>Goal</h3>
 <p>End mein aapke paas aisa account ho jo surprise na de: root user MFA se locked, ek monthly budget jo email kare, daily identity jo root nahi hai, Mumbai Region default, aur CLI (ya CloudShell) jo <code>aws sts get-caller-identity</code> ka jawab de.</p>

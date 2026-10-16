@@ -24,7 +24,7 @@ var e=`<svg viewBox="0 0 640 260" role="img" aria-label="Full mesh of peerings v
 </ul>
 <p><b>Prerequisites.</b> You should already know VPCs, subnets, route tables, security groups, NACLs, internet and NAT gateways, and VPC peering from the earlier modules of this track. If "longest prefix match" is hazy, revisit the routing chapter first.</p>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The two guided-lab chapters of this module walk you through the second path safely. The in-app emulator labs of this module (Build a hub-and-spoke, and the segmentation ticket) are extra practice on the same ideas.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The two guided-lab chapters of this module walk you through the second path safely. The in-app emulator labs of this module (Build a hub-and-spoke, and the segmentation ticket) are extra practice on the same ideas.</p></div>
 
 <h3>The airline hub analogy</h3>
 <p>Think of Indian domestic flights. Delhi, Mumbai, Bengaluru, Chennai and Kolkata could each run a direct flight to every other city, which is 10 routes for 5 cities. Airlines do not do this. They route passengers through a <b>hub</b>: every city has one flight to the hub, and the hub connects onward. Five cities, five routes. Add a sixth city and you add <b>one</b> route, not five. A Transit Gateway is the hub airport of your cloud network.</p>
@@ -87,7 +87,7 @@ var e=`<svg viewBox="0 0 640 260" role="img" aria-label="Full mesh of peerings v
 </ul>
 <p><b>Prerequisites.</b> Is track ke pichhle modules se aapko VPC, subnets, route tables, security groups, NACLs, internet aur NAT gateways, aur VPC peering aani chahiye. Agar "longest prefix match" dhundhla hai to pehle routing chapter dobara dekho.</p>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. Is module ke do guided-lab chapters doosre raaste par safely le jaate hain. Is module ke in-app emulator labs (hub-and-spoke build aur segmentation ticket) wahi ideas ki extra practice hain.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. Is module ke do guided-lab chapters doosre raaste par safely le jaate hain. Is module ke in-app emulator labs (hub-and-spoke build aur segmentation ticket) wahi ideas ki extra practice hain.</p></div>
 
 <h3>Airline hub ka analogy</h3>
 <p>Indian domestic flights socho. Delhi, Mumbai, Bengaluru, Chennai aur Kolkata har doosre shehar ke liye direct flight chala sakte hain, yani 5 shehron ke liye 10 routes. Airlines aisa nahi karti. Woh passengers ko <b>hub</b> se bhejti hain: har shehar ki hub tak ek flight, aur aage hub jodta hai. Paanch shehar, paanch routes. Chhatha shehar jodo to sirf <b>ek</b> route badhta hai, paanch nahi. Transit Gateway aapke cloud network ka hub airport hai.</p>

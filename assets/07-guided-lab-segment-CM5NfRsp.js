@@ -8,7 +8,7 @@ var e=`<svg viewBox="0 0 640 220" role="img" aria-label="Guided lab 2 results ma
 <rect x="40" y="162" width="560" height="34" fill="#f8fafc" stroke="#64748b"/><text x="140" y="184" text-anchor="middle">dev (b) → shared (c)</text><text x="330" y="184" text-anchor="middle">found</text><rect x="440" y="164" width="160" height="30" fill="#bbf7d0"/><text x="520" y="184" text-anchor="middle">found</text>
 </g>
 </svg>`,t={id:`guided-lab-segment`,h:{en:`Guided lab on your own AWS account: segment prod from dev`,hi:`Apne AWS account par guided lab: prod ko dev se segment karo`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator ticket "segment dev away from prod on the Transit Gateway" is the same exercise with probes instead of the analyzer.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. The in-app emulator ticket "segment dev away from prod on the Transit Gateway" is the same exercise with probes instead of the analyzer.</p></div>
 
 <h3>Goal</h3>
 <p>Start from the flat hub of the previous chapter and turn it into a segmented one: <b>a = prod</b>, <b>b = dev</b>, <b>c = shared services</b>. Prod and dev must both reach shared and must not reach each other. You will prove it with Reachability Analyzer before and after the change.</p>
@@ -108,7 +108,7 @@ aws ec2 delete-transit-gateway --transit-gateway-id $TGW</pre>
 <li>Same-day cleanup keeps this lab at roughly the price of a coffee, not a month of hourly fees.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.nwkings.com. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator ticket "segment dev away from prod on the Transit Gateway" wahi exercise hai, analyzer ki jagah probes ke saath.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no AWS account and no bill using the hands-on labs at aws.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete everything when you finish. In-app emulator ticket "segment dev away from prod on the Transit Gateway" wahi exercise hai, analyzer ki jagah probes ke saath.</p></div>
 
 <h3>Goal</h3>
 <p>Pichhle chapter ke flat hub se shuru karo aur use segmented banao: <b>a = prod</b>, <b>b = dev</b>, <b>c = shared services</b>. Prod aur dev dono shared tak pahunchein aur ek doosre tak nahi. Reachability Analyzer se before aur after saabit karoge.</p>

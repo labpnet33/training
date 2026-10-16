@@ -5,7 +5,7 @@ var e={id:`destination-nat`,h:{en:`Destination NAT: publishing a DMZ server`,hi:
 <p>A customer knows only the shop address on the main road. The shopkeeper at the front counter takes the request and sends a helper to the back room where the goods really are. The customer never learns the back room location. Destination NAT is the counter: the Internet sees the public address, the engine quietly forwards to the private server.</p>
 
 <h3>The Pune case</h3>
-<p>Network Kings Pune has a web server <b>WEB1</b> in the DMZ at 172.16.20.20 (element <code>srv-web</code>). It has a private address, so the Internet cannot reach it directly. We choose a public address for it. In the lab the address is given in the task; in this text we write it as the <b>published address</b> and use 203.0.113.10 only as an example from the documentation range. The ISP must route that address to the engine WAN link.</p>
+<p>MyPnetLab Pune has a web server <b>WEB1</b> in the DMZ at 172.16.20.20 (element <code>srv-web</code>). It has a private address, so the Internet cannot reach it directly. We choose a public address for it. In the lab the address is given in the task; in this text we write it as the <b>published address</b> and use 203.0.113.10 only as an example from the documentation range. The ISP must route that address to the engine WAN link.</p>
 
 <div class="dia"><svg viewBox="0 0 640 190" role="img" aria-label="Destination NAT flow">
 <rect x="10" y="60" width="130" height="60" rx="8" fill="#e2e8f0"/><text x="75" y="86" text-anchor="middle" class="svg-ink" font-size="13">Internet client</text><text x="75" y="106" text-anchor="middle" class="svg-muted" font-size="12">198.51.100.77</text>
@@ -52,7 +52,7 @@ var e={id:`destination-nat`,h:{en:`Destination NAT: publishing a DMZ server`,hi:
 <p>Customer sirf main road par dukaan ka address jaanta hai. Front counter par dukaandaar request leta hai aur helper ko peeche godown bhejta hai jahan saaman asli mein rakha hai. Customer ko godown ki jagah kabhi pata nahi chalti. Destination NAT wahi counter hai: Internet ko public address dikhta hai, engine chupchaap private server ko forward kar deta hai.</p>
 
 <h3>Pune ka case</h3>
-<p>Network Kings Pune ka web server <b>WEB1</b> DMZ mein 172.16.20.20 par hai (element <code>srv-web</code>). Uska private address hai, isliye Internet seedha pahunch nahi sakta. Hum uske liye public address chunte hain. Lab mein address task mein diya hota hai; is text mein hum use <b>published address</b> likhte hain aur documentation range ka 203.0.113.10 sirf example ke roop mein use karte hain. ISP ko woh address engine ke WAN link par route karna hoga.</p>
+<p>MyPnetLab Pune ka web server <b>WEB1</b> DMZ mein 172.16.20.20 par hai (element <code>srv-web</code>). Uska private address hai, isliye Internet seedha pahunch nahi sakta. Hum uske liye public address chunte hain. Lab mein address task mein diya hota hai; is text mein hum use <b>published address</b> likhte hain aur documentation range ka 203.0.113.10 sirf example ke roop mein use karte hain. ISP ko woh address engine ke WAN link par route karna hoga.</p>
 
 <div class="dia"><svg viewBox="0 0 640 190" role="img" aria-label="Destination NAT flow">
 <rect x="10" y="60" width="130" height="60" rx="8" fill="#e2e8f0"/><text x="75" y="86" text-anchor="middle" class="svg-ink" font-size="13">Internet client</text><text x="75" y="106" text-anchor="middle" class="svg-muted" font-size="12">198.51.100.77</text>

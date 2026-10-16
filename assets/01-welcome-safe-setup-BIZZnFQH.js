@@ -20,7 +20,7 @@ var e=`<svg viewBox="0 0 640 250" role="img" aria-label="From laptop to a virtua
 
 <div class="dia">`+e+`<p class="cap">Every request goes through Azure Resource Manager. Resources live in a resource group, inside a subscription, inside a tenant.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Setting up a personal account safely</h3>
 <p>Nothing in this module needs an expensive service, but a careless account can still cost money. Follow these rules before you create anything.</p>
@@ -69,7 +69,7 @@ var e=`<svg viewBox="0 0 640 250" role="img" aria-label="From laptop to a virtua
 
 <div class="dia">`+e+`<p class="cap">Har request Azure Resource Manager se guzarti hai. Resources resource group mein rehte hain, resource group subscription mein, aur subscription tenant mein.</p></div>
 
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Personal account ko safely set up karna</h3>
 <p>Is module mein koi mehengi service nahi chahiye, lekin laparwah account se bhi paise kat sakte hain. Kuch bhi banane se pehle in rules ko follow karo.</p>

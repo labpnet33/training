@@ -1,4 +1,4 @@
-var e=e=>`<pre class="code">`+e+(e.endsWith(`</pre>`)?``:`</pre>`),t=`<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</div>`,n=e(`<span class="c"># Variables (change the region to one close to you that has VM capacity)</span>
+var e=e=>`<pre class="code">`+e+(e.endsWith(`</pre>`)?``:`</pre>`),t=`<div class="note"><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</div>`,n=e(`<span class="c"># Variables (change the region to one close to you that has VM capacity)</span>
 RG=nk-nat-rg
 LOC=centralindia
 

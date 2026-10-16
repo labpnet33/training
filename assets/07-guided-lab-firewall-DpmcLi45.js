@@ -7,7 +7,7 @@ var e=`<svg viewBox="0 0 640 240" role="img" aria-label="Guided lab 2 layout: Az
 <g stroke="#2563eb" stroke-width="2.5"><line x1="165" y1="105" x2="250" y2="100"/><line x1="390" y1="100" x2="475" y2="105"/></g>
 <text x="320" y="215" text-anchor="middle" class="svg-ink" font-size="12">The firewall meter runs every hour it exists: delete the same day</text>
 </svg>`,t={id:`guided-lab-firewall`,h:{en:`Guided lab on your own Azure account: Azure Firewall in the hub`,hi:`Apne Azure account par guided lab: hub mein Azure Firewall`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>EXPENSIVE LAB. Read before you start.</b> Azure Firewall bills <b>every hour it exists</b>, even with no traffic, and takes several minutes to deploy. Do this lab <b>only on a free-credit account</b> or a subscription where you accept the cost, finish <b>the same day</b>, and <b>delete the resource group</b> at the end. Do not leave it overnight.</p></div>
 
@@ -96,7 +96,7 @@ az group exists -n rg-nk-hub <span class="c"># repeat until it prints false</spa
 <li>Delete the resource group the same day and confirm.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <div class="warn"><p><b>MEHENGA LAB. Shuru karne se pehle padho.</b> Azure Firewall <b>jitni der exist karta hai har ghante</b> bill karta hai, traffic na ho tab bhi, aur deploy hone mein kai minute lagte hain. Yeh lab <b>sirf free-credit account</b> par karo ya aisi subscription par jahan aap cost accept karte ho, <b>usi din</b> khatam karo, aur aakhir mein <b>resource group delete</b> karo. Raat bhar mat chhodo.</p></div>
 

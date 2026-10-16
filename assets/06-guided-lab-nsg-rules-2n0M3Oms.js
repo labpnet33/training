@@ -4,7 +4,7 @@ var e=`<svg viewBox="0 0 640 220" role="img" aria-label="Lab 1 design">
 <rect x="50" y="85" width="240" height="90" rx="6" fill="#fde68a"/><text x="170" y="108" text-anchor="middle" class="svg-ink" font-size="12">nsg-web (associated)</text><text x="170" y="128" text-anchor="middle" class="svg-muted" font-size="11">100 Allow TCP 443 from Internet</text><text x="170" y="146" text-anchor="middle" class="svg-muted" font-size="11">110 Allow TCP 22 from your IP /32</text><text x="170" y="164" text-anchor="middle" class="svg-muted" font-size="11">200 Deny everything else from Internet</text>
 <rect x="340" y="50" width="270" height="140" rx="8" fill="#ddd6fe"/><text x="475" y="72" text-anchor="middle" class="svg-ink" font-size="13">ASGs (empty groups)</text><text x="475" y="110" text-anchor="middle" class="svg-ink" font-size="12">asg-web   asg-app</text><text x="475" y="135" text-anchor="middle" class="svg-muted" font-size="11">no VM yet, so nothing runs</text><text x="475" y="160" text-anchor="middle" class="svg-muted" font-size="11">NSG, ASG, VNet: all free objects</text>
 </svg>`,t={id:`guided-lab-nsg-rules`,h:{en:`Guided lab 1 on your own Azure account: build an NSG, write rules and attach it to a subnet`,hi:`Guided lab 1 apne Azure account par: NSG banao, rules likho aur subnet se attach karo`},body:{en:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Create an NSG with three custom rules, create two ASGs, attach the NSG to a subnet, list the rules including the defaults, and test what the priority numbers do. No VM is created, so there is almost nothing to pay.</p>
@@ -115,7 +115,7 @@ az group exists --name rg-nk-lab</pre>
 <li>Delete the group at the end and confirm.</li>
 </ul></div>
 `,hi:`
-<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.nwkings.com. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
+<div class="note"><p><b>Prefer no hassle?</b> You can practise these exact steps with no Azure subscription and no bill using the hands-on labs at azure.mypnetlab.vercel.app. Or use your own account: set a budget alert first and delete the resource group when you finish.</p></div>
 
 <h3>Goal</h3>
 <p>Teen custom rules wala NSG banao, do ASGs banao, NSG ko subnet se attach karo, defaults ke saath rules list karo, aur test karo ki priority numbers kya karte hain. Koi VM nahi banta, isliye pay karne ko lagbhag kuch nahi.</p>
