@@ -36,3 +36,12 @@ body[data-page="login"] .auth-card {
     width: min(100% - 24px, 460px);
   }
 }
+
+
+body[data-page="login"] .brand-logo {
+  display: block;
+  width: min(176px, 64vw);
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}

@@ -22,3 +22,4 @@
 - Unauthenticated visits to `/` open `/login` first; an existing valid session continues to the application without an unnecessary second sign-in.
 - Keep the existing `/register` account-creation flow and expose it directly below the login form for visitors who do not have an account.
 - Use the supplied network-learning illustration as a responsive login-only background, keeping the form readable and preserving the existing Supabase auth handlers.
+- Replace the login text wordmark with the supplied MyPnetLab logo image at a compact responsive size, retaining the root link and accessible alternative text.
