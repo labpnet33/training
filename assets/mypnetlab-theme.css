@@ -119,3 +119,9 @@ table td { border-color: var(--mpl-line) !important; }
   nav, header { backdrop-filter: none; }
   .rounded-3xl { border-radius: 1rem; }
 }
+
+/* Requested de-cluttering: keep pricing/checkout routes functional, hide only these two UI entries. */
+a.nk-nav-item[href="/pricing"],
+[data-testid="offer-bar"][aria-label="Offer"] {
+  display: none !important;
+}
