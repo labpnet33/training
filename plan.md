@@ -17,3 +17,8 @@
 - `auth.css` receives the matching auth-page treatment.
 - `profile-bridge.js` remains behavior-only and continues to support the existing Supabase profile integration.
 - Branding replacements are limited to tracked text/metadata assets and do not change application data or route identifiers.
+
+## Authentication entry and login presentation
+- Unauthenticated visits to `/` open `/login` first; an existing valid session continues to the application without an unnecessary second sign-in.
+- Keep the existing `/register` account-creation flow and expose it directly below the login form for visitors who do not have an account.
+- Use the supplied network-learning illustration as a responsive login-only background, keeping the form readable and preserving the existing Supabase auth handlers.

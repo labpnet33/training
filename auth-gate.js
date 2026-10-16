@@ -32,9 +32,8 @@ async function enforceSession() {
     if (error) throw error;
 
     if (!data.session) {
-      // The home route is the registration entry point for new visitors.
-      // Existing users can choose Sign in from that page.
-      window.location.replace(path === '/' ? '/register' : `/login?next=${encodeURIComponent(safeNextPath())}`);
+      // Ask unauthenticated visitors to sign in first; account creation remains linked from login.
+      window.location.replace(path === '/' ? '/login' : `/login?next=${encodeURIComponent(safeNextPath())}`);
       return;
     }
     document.documentElement.style.visibility = '';

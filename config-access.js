@@ -24,7 +24,7 @@
   document.documentElement.style.visibility = 'hidden';
   var gate = document.createElement('script');
   gate.type = 'module';
-  gate.src = '/auth-gate.js';
+  gate.src = '/auth-gate.js?login=20261017';
   document.head.appendChild(gate);
   var profile = document.createElement('script');
   profile.type = 'module';

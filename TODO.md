@@ -11,3 +11,8 @@
 - [x] Add a per-interface DHCP server toggle and basic scope fields.
 - [x] Integrate FortiGate scopes with the shared DHCP lease service for directly connected and same-VLAN clients.
 - [x] Validate direct-link and VLAN client leases, sequential pool allocation, and service cleanup when disabled.
+
+## Login-first entry
+
+- [x] Unauthenticated visits to `/` show login first; the login page offers a signup option below the form for account creation, while existing sessions and auth flows continue to work.
+- [x] Use the supplied `PlayfulNetworkLearningDoodleWallpaper.png` as a responsive login-page background and keep the login form legible on desktop and mobile.
