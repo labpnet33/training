@@ -36,7 +36,9 @@ async function enforceSession() {
       window.location.replace(path === '/' ? '/login' : `/login?next=${encodeURIComponent(safeNextPath())}`);
       return;
     }
-    document.documentElement.style.visibility = '';
+    if (typeof window.__MYPNET_AUTH_SESSION_READY__ === 'function') {
+      window.__MYPNET_AUTH_SESSION_READY__();
+    }
   } catch (error) {
     console.error('Authentication check failed:', error);
     redirectToLogin();

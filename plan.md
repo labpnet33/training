@@ -23,3 +23,4 @@
 - Keep the existing `/register` account-creation flow and expose it directly below the login form for visitors who do not have an account.
 - Use the supplied network-learning illustration as a responsive background on `/login`, `/register`, and `/forgot-password`, keeping auth forms readable and preserving their existing Supabase handlers.
 - Use the supplied MyPnetLab logo image at a compact responsive size on `/login`, `/register`, and `/forgot-password`, retaining each root link and accessible alt text.
+- On authenticated root startup, show visible progress while session verification and React mounting run; keep protected content hidden until both succeed, and show a safe sign-in/reload fallback rather than a blank page if startup stalls.

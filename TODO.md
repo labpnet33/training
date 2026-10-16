@@ -18,3 +18,4 @@
 - [x] Use the supplied `PlayfulNetworkLearningDoodleWallpaper.png` as a responsive login-page background and keep the login form legible on desktop and mobile.
 - [x] Replace the login page’s text brand link with the supplied logo image at a small responsive size, preserving its home link and accessible alt text.
 - [x] Use the same supplied logo and network-learning background on `/register` and `/forgot-password` as on `/login`, preserving their existing account-creation and password-reset form behavior.
+- [x] After successful login, show visible loading feedback instead of a blank screen while the session is verified and the React app mounts; keep protected content hidden until both are ready, and provide a safe sign-in/reload fallback if startup stalls.

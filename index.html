@@ -12,7 +12,21 @@
   <script>
    try{if(localStorage.getItem('nk-theme')==='dark'){document.documentElement.classList.add('dark');document.querySelector('meta[name="theme-color"]').setAttribute('content','#000000')}}catch(e){}
   </script>
-<script src="/config-access.js?login=20261017"></script>
+  <style id="auth-loading-styles">
+   html.auth-checking #root{visibility:hidden!important}
+   #auth-loading{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;box-sizing:border-box;padding:24px;background:#f5f7fb;color:#172338;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+   html:not(.auth-checking) #auth-loading{display:none}
+   .auth-loading-card{width:min(100%,360px);box-sizing:border-box;padding:26px 24px;border:1px solid #dbe3ed;border-radius:16px;background:#fff;box-shadow:0 16px 48px rgba(15,23,42,.12);text-align:center}
+   .auth-loading-logo{display:block;width:min(176px,70vw);height:auto;margin:0 auto 18px}
+   .auth-loading-spinner{display:block;width:24px;height:24px;margin:0 auto 12px;border:3px solid #dfe7f1;border-top-color:#1278ba;border-radius:50%;animation:auth-loading-spin .8s linear infinite}
+   #auth-loading-status{margin:0;color:#4b5d73;font-size:14px;line-height:1.45}
+   #auth-loading-slow{margin:14px 0 0;color:#66758a;font-size:13px;line-height:1.5}
+   #auth-loading-slow[hidden]{display:none}
+   #auth-loading-slow a{color:#1267a5;font-weight:600}
+   @keyframes auth-loading-spin{to{transform:rotate(360deg)}}
+   @media(prefers-reduced-motion:reduce){.auth-loading-spinner{animation:none}}
+  </style>
+<script src="/config-access.js?login=20261017-root-loading"></script>
   <script defer src="/brand-refresh.js?rebrand=20261016"></script>
   <script crossorigin="" src="/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261016-brand-refresh" type="module">
   </script>
@@ -101,8 +115,16 @@
   </script>
  <link rel="stylesheet" href="/assets/public-responsive.css?responsive=20261015">
  <link rel="stylesheet" href="/assets/mypnetlab-theme.css?theme=20261016-terminal-dark">
-</head>
+ </head>
  <body>
+  <div id="auth-loading" role="status" aria-live="polite">
+   <div class="auth-loading-card">
+    <img class="auth-loading-logo" src="/assets/mypnetlab-login-logo.webp" alt="MyPnetLab" width="720" height="229"/>
+    <span class="auth-loading-spinner" aria-hidden="true"></span>
+    <p id="auth-loading-status">Checking your sign-in…</p>
+    <p id="auth-loading-slow" hidden>This is taking longer than expected. <a href="/login">Return to sign in</a> or <a href="/">retry</a>.</p>
+   </div>
+  </div>
   <div id="root">
    <div data-seo-source="builder" id="seo-snapshot" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
     <main>
