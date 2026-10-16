@@ -17,3 +17,4 @@
 - [x] Unauthenticated visits to `/` show login first; the login page offers a signup option below the form for account creation, while existing sessions and auth flows continue to work.
 - [x] Use the supplied `PlayfulNetworkLearningDoodleWallpaper.png` as a responsive login-page background and keep the login form legible on desktop and mobile.
 - [x] Replace the login page’s text brand link with the supplied logo image at a small responsive size, preserving its home link and accessible alt text.
+- [x] Use the same supplied logo and network-learning background on `/register` and `/forgot-password` as on `/login`, preserving their existing account-creation and password-reset form behavior.

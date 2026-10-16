@@ -45,3 +45,54 @@ body[data-page="login"] .brand-logo {
   margin: 0 auto;
   object-fit: contain;
 }
+
+
+/* Match the login presentation on registration and password recovery. */
+body[data-page="register"],
+body[data-page="forgot-password"] {
+  background-color: #fff;
+  background-image: url("/assets/login-network-background.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+body[data-page="register"] .auth-shell,
+body[data-page="forgot-password"] .auth-shell {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 5vh, 48px) 0;
+}
+
+body[data-page="register"] .auth-card,
+body[data-page="forgot-password"] .auth-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(15, 32, 50, 0.18);
+  box-shadow: 0 20px 60px rgba(16, 36, 56, 0.18);
+  backdrop-filter: blur(3px);
+}
+
+@media (max-width: 600px) {
+  body[data-page="register"],
+  body[data-page="forgot-password"] {
+    background-attachment: scroll;
+  }
+
+  body[data-page="register"] .auth-shell,
+  body[data-page="forgot-password"] .auth-shell {
+    width: min(100% - 24px, 460px);
+  }
+}
+
+body[data-page="register"] .brand-logo,
+body[data-page="forgot-password"] .brand-logo {
+  display: block;
+  width: min(176px, 64vw);
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
