@@ -26,4 +26,8 @@
   gate.type = 'module';
   gate.src = '/auth-gate.js';
   document.head.appendChild(gate);
+  var profile = document.createElement('script');
+  profile.type = 'module';
+  profile.src = '/profile-bridge.js';
+  document.head.appendChild(profile);
 })(window, document);
