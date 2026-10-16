@@ -125,3 +125,22 @@ a.nk-nav-item[href="/pricing"],
 [data-testid="offer-bar"][aria-label="Offer"] {
   display: none !important;
 }
+
+/* Requested navigation and footer cleanup */
+[aria-label="Main"] button.nk-nav-item:has(> svg.lucide-gauge),
+details[data-testid="footer-pricing-rules"] {
+  display: none !important;
+}
+
+/* Text wordmark replaces the legacy CONFIG artwork while keeping the existing home link. */
+a.config-brand > img,
+a.config-brand > .config-brand-fallback { display: none !important; }
+a.config-brand::after {
+  content: "MyPnetLab";
+  color: var(--mpl-ink);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
