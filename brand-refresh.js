@@ -32,10 +32,14 @@
       if (record.type === "characterData") refreshSubtree(record.target);
       else for (const node of record.addedNodes) refreshSubtree(node);
     }
-    if (document.title) document.title = refreshText(document.title);
+    const currentTitle = document.title;
+    const nextTitle = refreshText(currentTitle);
+    if (nextTitle !== currentTitle) document.title = nextTitle;
   });
 
   refreshSubtree(document.documentElement);
   observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
-  if (document.title) document.title = refreshText(document.title);
+  const initialTitle = document.title;
+  const brandedTitle = refreshText(initialTitle);
+  if (brandedTitle !== initialTitle) document.title = brandedTitle;
 })();
