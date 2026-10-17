@@ -85,6 +85,10 @@
       "title": "Labs"
     },
     {
+      "path": "/ise",
+      "title": "ISE Virtual Device"
+    },
+    {
       "path": "/leaderboard",
       "title": "Leaderboard"
     },
