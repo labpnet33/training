@@ -259,3 +259,34 @@ html.dark .nk-app-shell {
 .nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .lg { color: #86efac !important; }
 .nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .pr { color: #93c5fd !important; }
 .nk-scroll-managed:has(> pre.nk-term-out) .nk-term-out .er { color: #fca5a5 !important; }
+
+
+/* Sandbox-only color palette: match the login screen without changing layout or artwork. */
+.sb-workbench {
+  --surface: #ffffff;
+  --sunk: #f5f7fb;
+  --ink: #172338;
+  --line: #dce4ee;
+  --accent-hex: #2563eb;
+  --accent-ink: #ffffff;
+  --accent-soft: #eaf1ff;
+  --sb-on-accent: #ffffff;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 218 42% 15%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 214.5 19.42% 40.39%;
+  --accent: 220 100% 95.88%;
+  --accent-foreground: 224.28 76.33% 48.04%;
+  --border: 213.33 34.62% 89.8%;
+  --input: 213.33 34.62% 89.8%;
+  --ring: 221 83% 53%;
+  color: var(--ink) !important;
+  background-color: var(--surface) !important;
+  border-color: var(--line) !important;
+}
+
+.sb-workbench .sb-button.sb-primary {
+  color: #ffffff !important;
+}
