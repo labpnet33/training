@@ -26,7 +26,7 @@
   var appStarted = false;
   var profileStarted = false;
   var rootObserver;
-  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-compact-sandbox-ui-v13';
+  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261018-auth-bootstrap-v16';
 
   function hasCachedSupabaseSession() {
     try {
@@ -44,8 +44,18 @@
     appStarted = true;
     var app = document.createElement('script');
     app.type = 'module';
-    app.crossOrigin = 'anonymous';
     app.src = appSrc;
+    app.onload = function () {
+      // React may mount on the next task after the module load event.
+      window.setTimeout(revealWhenReady, 0);
+    };
+    app.onerror = function () {
+      var status = document.getElementById('auth-loading-status');
+      var fallback = document.getElementById('auth-loading-slow');
+      if (status) status.textContent = 'The learning app could not be loaded. Please refresh.';
+      if (fallback) fallback.hidden = false;
+      console.error('Learning app module failed to load:', app.src);
+    };
     document.head.appendChild(app);
   }
 
