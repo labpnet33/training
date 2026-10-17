@@ -44,6 +44,12 @@
       if (slow) slow.hidden = false;
      };
      document.head.appendChild(retry);
+     window.setTimeout(function () {
+      if (typeof window.__MYPNET_AUTH_SESSION_READY__ === 'function') return;
+      var next = window.location.pathname + window.location.search + window.location.hash;
+      if (!next.startsWith('/') || next.startsWith('//')) next = '/';
+      window.location.replace('/login?next=' + encodeURIComponent(next));
+     }, 6000);
     }, 1200);
    })();
   </script>
