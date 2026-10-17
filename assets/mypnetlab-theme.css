@@ -396,12 +396,13 @@ html.dark .nk-app-shell {
 /* Match Packets' wider content shell on Labs, Projects, and Experience pages. */
 html.mpl-wide-route .nk-app-shell .max-w-6xl,
 .nk-app-shell main.nk-shell-main.max-w-6xl {
-  max-width: 1600px !important;
+  width: 100% !important;
+  max-width: none !important;
 }
 
 .nk-app-shell main.nk-shell-main.max-w-6xl {
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
