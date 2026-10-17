@@ -61,11 +61,10 @@
   function revealWhenReady() {
     if (!sessionReady) return;
     var root = document.getElementById('root');
-    // The initial HTML contains a hidden SEO snapshot inside #root. It is
-    // replaced by the app when React mounts, so it must not block revealing
-    // the authenticated application.
-    if (!root || !root.childElementCount) return;
-    if (root.querySelector('#seo-snapshot') && root.childElementCount === 1) return;
+    // Supabase has already confirmed the session. Do not wait for a React
+    // mutation here: a slow bundle, cached SEO snapshot, or a delayed mount
+    // must never trap an authenticated user behind the full-screen loader.
+    if (!root) return;
     document.documentElement.classList.remove('auth-checking');
     if (rootObserver) rootObserver.disconnect();
   }
