@@ -61,11 +61,7 @@
   function revealWhenReady() {
     if (!sessionReady) return;
     var root = document.getElementById('root');
-    // The initial HTML contains a hidden SEO snapshot inside #root. It is
-    // replaced by the app when React mounts, so it must not block revealing
-    // the authenticated application.
-    if (!root || !root.childElementCount) return;
-    if (root.querySelector('#seo-snapshot') && root.childElementCount === 1) return;
+    if (!root || root.querySelector('#seo-snapshot') || !root.childElementCount) return;
     document.documentElement.classList.remove('auth-checking');
     if (rootObserver) rootObserver.disconnect();
   }
