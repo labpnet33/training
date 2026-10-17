@@ -26,7 +26,7 @@
   var appStarted = false;
   var profileStarted = false;
   var rootObserver;
-  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-sandbox-large-topology-v4';
+  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-sandbox-large-topology-v5';
 
   function hasCachedSupabaseSession() {
     try {
