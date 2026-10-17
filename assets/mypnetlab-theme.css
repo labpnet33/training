@@ -290,3 +290,19 @@ html.dark .nk-app-shell {
 .sb-workbench .sb-button.sb-primary {
   color: #ffffff !important;
 }
+
+.sb-workbench .sb-console-view-select {
+  min-width: 156px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: var(--surface);
+  color: var(--ink);
+  font: 500 12px/1.2 var(--font-body);
+  cursor: pointer;
+}
+.sb-workbench .sb-console-view-select:focus-visible {
+  outline: 2px solid var(--accent-hex);
+  outline-offset: 2px;
+}

@@ -26,7 +26,7 @@
   var appStarted = false;
   var profileStarted = false;
   var rootObserver;
-  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-sandbox-editing-v11';
+  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-console-view-dropdown-v12';
 
   function hasCachedSupabaseSession() {
     try {
