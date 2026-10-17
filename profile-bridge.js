@@ -89,16 +89,6 @@ function refreshMenu() {
   });
 }
 
-async function syncProfile() {
-  const { data, error } = await supabase.auth.getUser();
-  if (!error && data.user) {
-    currentUser = data.user;
-    updateUserLabels(currentUser);
-  }
-  wireMenuActions();
-}
-
-syncProfile();
 const observer = new MutationObserver(refreshMenu);
 observer.observe(document.documentElement, { childList: true, subtree: true });
 supabase.auth.onAuthStateChange((_event, session) => {
