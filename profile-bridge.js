@@ -9,6 +9,13 @@ const displayName = (user) => {
   return metadata.full_name?.trim() || metadata.name?.trim() || user?.email?.split('@')[0] || 'Learner';
 };
 
+function isTopUserButton(button) {
+  if (!button.classList.contains('h-9') || !button.classList.contains('rounded-xl')) return false;
+  const spans = [...button.querySelectorAll(':scope > span')];
+  return spans.some((span) => span.className.includes('w-6') && span.className.includes('h-6'))
+    && spans.some((span) => /^(?:CONFIG|MyPnetLab) PRO Learner$/.test(span.textContent.trim()));
+}
+
 function updateUserLabels(user) {
   const name = displayName(user);
   document.querySelectorAll('button, span, p').forEach((element) => {
@@ -33,21 +40,25 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
-    if (label === 'Fit' && button.classList.contains('sb-button')) {
+
+    if (label === 'Profile') {
       button.remove();
       return;
     }
-    if (REMOVED_MENU_ITEMS.has(label)) {
-      button.remove();
-      return;
-    }
-    if (label === 'Profile' && !button.dataset.supabaseProfileBound) {
-      button.dataset.supabaseProfileBound = 'true';
+
+    if (isTopUserButton(button) && !button.dataset.supabaseTopProfileBound) {
+      button.dataset.supabaseTopProfileBound = 'true';
       button.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
         window.location.assign('/account');
       }, true);
+      return;
+    }
+
+    if (REMOVED_MENU_ITEMS.has(label)) {
+      button.remove();
+      return;
     }
 
     if (/^(sign out|logout)$/i.test(label) && !button.dataset.supabaseLogoutBound) {
