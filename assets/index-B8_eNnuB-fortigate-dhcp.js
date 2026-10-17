@@ -229,9 +229,12 @@ function IseGui({ net: e, dev: t, tick: n, onChange: r }) {
       }),
     I = [
       [`dashboard`, `Dashboard`],
+      [`system`, `ISE Network Configuration`],
       [`network`, `Network Devices`],
+      [`services`, `Service Configuration`],
       [`identity`, `Identity Management`],
       [`policies`, `Access Policies`],
+      [`diagnostics`, `Connectivity Testing`],
       [`tracker`, `RADIUS Live Logs`],
     ],
     R = (e, t) =>
@@ -243,6 +246,12 @@ function IseGui({ net: e, dev: t, tick: n, onChange: r }) {
         ],
       }),
     L = (() => {
+      if (o === `system`)
+        return (0, B.jsxs)(`div`, { className: `space-y-4`, children: [(0, B.jsxs)(`div`, { className: `rounded-xl bg-white ring-1 ring-slate-200 p-4`, children: [(0, B.jsx)(`h2`, { className: `text-lg font-bold`, children: `ISE Network Configuration` }), (0, B.jsx)(`p`, { className: `mt-1 text-[12.5px] text-slate-500`, children: `Configure the virtual ISE hostname, IP address, subnet mask, gateway, and DNS.` }), (0, B.jsxs)(`div`, { className: `mt-4 grid gap-2 sm:grid-cols-2`, children: [(0, B.jsx)(`input`, { className: N, placeholder: `Hostname`, defaultValue: a.hostname || a.name }), (0, B.jsx)(`input`, { className: N, placeholder: `IP address`, defaultValue: `10.0.10.10` }), (0, B.jsx)(`input`, { className: N, placeholder: `Subnet mask`, defaultValue: `255.255.255.0` }), (0, B.jsx)(`input`, { className: N, placeholder: `Default gateway`, defaultValue: `10.0.10.1` }), (0, B.jsx)(`input`, { className: N, placeholder: `DNS server`, defaultValue: `8.8.8.8` })] }), F(`Apply network settings`, () => j(`ise system show`, `ISE network settings are available through the simulator CLI. Use the Cisco ISE console command set to apply them.`))] }), (0, B.jsx)(`div`, { className: `rounded-xl bg-cyan-950 p-4 text-cyan-50`, children: `The configured ISE address is the virtual RADIUS/TACACS+ server address used by connected lab devices.` })] });
+      if (o === `services`)
+        return (0, B.jsxs)(`div`, { className: `space-y-4`, children: [(0, B.jsxs)(`div`, { className: `grid gap-4 sm:grid-cols-2`, children: [(0, B.jsxs)(`div`, { className: `rounded-xl bg-white ring-1 ring-slate-200 p-4`, children: [(0, B.jsx)(`h2`, { className: `text-lg font-bold`, children: `RADIUS` }), (0, B.jsx)(`p`, { className: `mt-1 text-[12.5px] text-slate-500`, children: `UDP authentication 1812 and accounting 1813.` }), F(`Show RADIUS status`, () => j(`ise service show`))] }), (0, B.jsxs)(`div`, { className: `rounded-xl bg-white ring-1 ring-slate-200 p-4`, children: [(0, B.jsx)(`h2`, { className: `text-lg font-bold`, children: `TACACS+` }), (0, B.jsx)(`p`, { className: `mt-1 text-[12.5px] text-slate-500`, children: `TCP authentication and command authorization on port 49.` }), F(`Show TACACS+ status`, () => j(`ise service show`))] })] }), (0, B.jsx)(`div`, { className: `rounded-xl bg-white ring-1 ring-slate-200 p-4`, children: [(0, B.jsx)(`h3`, { className: `font-semibold`, children: `Service status and accounting` }), (0, B.jsx)(`p`, { className: `mt-2 text-[12.5px] text-slate-600`, children: `Enable or disable protocols and inspect shared secrets, accounting records, and service logs from the ISE CLI.` })] })] });
+      if (o === `diagnostics`)
+        return (0, B.jsxs)(`div`, { className: `space-y-4`, children: [(0, B.jsxs)(`div`, { className: `rounded-xl bg-white ring-1 ring-slate-200 p-4`, children: [(0, B.jsx)(`h2`, { className: `text-lg font-bold`, children: `Connectivity Testing` }), (0, B.jsx)(`p`, { className: `mt-1 text-[12.5px] text-slate-500`, children: `Test the ISE address and the FortiGate-to-ISE RADIUS authentication path.` }), F(`Show ISE diagnostics`, () => j(`ise diagnostic ping 10.0.10.10`)), F(`Test FortiGate RADIUS`, () => { let result = g.iseRadiusTest && g.iseRadiusTest(e, t, `10.0.10.10`, `CiscoISEKey`, `labuser`, `CiscoISE!2026`); l({ ok: result && result.status === `pass`, text: result ? result.lines.join(` `) : `RADIUS test unavailable.` }); r && r(); })] })] });
       if (o === `network`)
         return (0, B.jsxs)(`div`, {
           className: `space-y-4`,
