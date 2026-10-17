@@ -8,6 +8,11 @@ const displayName = (user) => {
   const metadata = user?.user_metadata || {};
   return metadata.full_name?.trim() || metadata.name?.trim() || user?.email?.split('@')[0] || 'Learner';
 };
+const WIDE_ROUTES = new Set(['/labs', '/projects', '/experience']);
+
+function syncRouteClass() {
+  document.documentElement.classList.toggle('mpl-wide-route', WIDE_ROUTES.has(window.location.pathname));
+}
 
 function isTopProfileButton(button) {
   if (!button.classList.contains('h-9') || !button.classList.contains('rounded-xl')) return false;
@@ -39,7 +44,12 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
+    if (label === 'Fit' && button.classList.contains('sb-button')) {
+      button.remove();
+      return;
+    }
     if (isTopProfileButton(button) && !button.dataset.supabaseTopProfileBound) {
+      button.querySelectorAll('svg.lucide-chevron-down').forEach((icon) => icon.remove());
       button.dataset.supabaseTopProfileBound = 'true';
       button.addEventListener('click', (event) => {
         event.preventDefault();
@@ -80,6 +90,7 @@ function wireMenuActions() {
 }
 
 function refreshMenu() {
+  syncRouteClass();
   if (scheduled) return;
   scheduled = true;
   queueMicrotask(() => {
@@ -88,7 +99,7 @@ function refreshMenu() {
     wireMenuActions();
   });
 }
-
+syncRouteClass();
 async function syncProfile() {
   const { data, error } = await supabase.auth.getUser();
   if (!error && data.user) {

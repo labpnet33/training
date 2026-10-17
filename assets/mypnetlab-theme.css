@@ -392,3 +392,8 @@ html.dark .nk-app-shell {
     padding-left: 0;
   }
 }
+
+/* Match Home's full-width shell on the main discovery pages. */
+html.mpl-wide-route .nk-app-shell .max-w-6xl {
+  max-width: none !important;
+}
