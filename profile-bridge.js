@@ -9,18 +9,10 @@ const displayName = (user) => {
   return metadata.full_name?.trim() || metadata.name?.trim() || user?.email?.split('@')[0] || 'Learner';
 };
 
-function isTopUserButton(button) {
-  if (!button.classList.contains('h-9') || !button.classList.contains('rounded-xl')) return false;
-  const spans = [...button.querySelectorAll(':scope > span')];
-  return spans.some((span) => span.className.includes('w-6') && span.className.includes('h-6'))
-    && spans.some((span) => /^(?:CONFIG|MyPnetLab) PRO Learner$/.test(span.textContent.trim()));
-}
-
 function updateUserLabels(user) {
   const name = displayName(user);
   document.querySelectorAll('button, span, p').forEach((element) => {
-    const label = element.textContent.trim();
-    if (/^(?:CONFIG|MyPnetLab) PRO Learner$/.test(label)) element.textContent = name;
+    if (/^(?:CONFIG|MyPnetLab) PRO Learner$/.test(element.textContent.trim())) element.textContent = name;
   });
 
   const initials = name
@@ -31,7 +23,7 @@ function updateUserLabels(user) {
     .join('')
     .toUpperCase();
   document.querySelectorAll('span').forEach((element) => {
-    if (/^(?:C|V|VK)$/.test(element.textContent.trim()) && element.className.includes('rounded-lg')) {
+    if (element.textContent.trim() === 'C' && element.className.includes('rounded-lg')) {
       element.textContent = initials || 'L';
     }
   });
@@ -40,25 +32,17 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
-
-    if (label === 'Profile') {
+    if (REMOVED_MENU_ITEMS.has(label)) {
       button.remove();
       return;
     }
-
-    if (isTopUserButton(button) && !button.dataset.supabaseTopProfileBound) {
-      button.dataset.supabaseTopProfileBound = 'true';
+    if (label === 'Profile' && !button.dataset.supabaseProfileBound) {
+      button.dataset.supabaseProfileBound = 'true';
       button.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
         window.location.assign('/account');
       }, true);
-      return;
-    }
-
-    if (REMOVED_MENU_ITEMS.has(label)) {
-      button.remove();
-      return;
     }
 
     if (/^(sign out|logout)$/i.test(label) && !button.dataset.supabaseLogoutBound) {
@@ -89,6 +73,16 @@ function refreshMenu() {
   });
 }
 
+async function syncProfile() {
+  const { data, error } = await supabase.auth.getUser();
+  if (!error && data.user) {
+    currentUser = data.user;
+    updateUserLabels(currentUser);
+  }
+  wireMenuActions();
+}
+
+syncProfile();
 const observer = new MutationObserver(refreshMenu);
 observer.observe(document.documentElement, { childList: true, subtree: true });
 supabase.auth.onAuthStateChange((_event, session) => {
