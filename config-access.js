@@ -26,7 +26,7 @@
   var appStarted = false;
   var profileStarted = false;
   var rootObserver;
-  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-vendor-track-filters-v9';
+  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-vendor-track-filters-v10';
 
   function hasCachedSupabaseSession() {
     try {
@@ -93,6 +93,13 @@
 
   var gate = document.createElement('script');
   gate.type = 'module';
-  gate.src = '/auth-gate.js?login=20261017-auth-perf';
+  gate.src = '/auth-gate.js?login=20261017-auth-gate-v2';
+  gate.onerror = function () {
+    console.error('Authentication gate failed to load.');
+    var next = window.location.pathname + window.location.search + window.location.hash;
+    if (!next.startsWith('/') || next.startsWith('//')) next = '/';
+    var query = next === '/' ? '' : '?next=' + encodeURIComponent(next);
+    window.location.replace('/login' + query);
+  };
   document.head.appendChild(gate);
 })(window, document);

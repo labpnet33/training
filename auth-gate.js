@@ -1,5 +1,3 @@
-import { supabase } from '/supabase-config.js';
-
 const AUTH_PAGES = new Set([
   '/login',
   '/register',
@@ -28,6 +26,7 @@ async function enforceSession() {
   }
 
   try {
+    const { supabase } = await import('/supabase-config.js');
     const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
 
