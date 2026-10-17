@@ -26,7 +26,7 @@
   var appStarted = false;
   var profileStarted = false;
   var rootObserver;
-  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-remove-catalog-cover-v8';
+  var appSrc = '/assets/index-B8_eNnuB-fortigate-dhcp.js?public-access=20261017-vendor-track-filters-v9';
 
   function hasCachedSupabaseSession() {
     try {
