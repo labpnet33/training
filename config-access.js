@@ -71,7 +71,7 @@
   function revealWhenReady() {
     if (!sessionReady) return;
     var root = document.getElementById('root');
-    if (!root || root.querySelector('#seo-snapshot') || !root.childElementCount) return;
+    if (!root) return;
     document.documentElement.classList.remove('auth-checking');
     if (rootObserver) rootObserver.disconnect();
   }
