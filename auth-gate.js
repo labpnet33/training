@@ -27,7 +27,10 @@ async function enforceSession() {
 
   try {
     const { supabase } = await import('/supabase-config.js');
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await Promise.race([
+      supabase.auth.getSession(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication check timed out.')), 10000))
+    ]);
     if (error) throw error;
 
     if (!data.session) {

@@ -103,7 +103,7 @@
 
   var gate = document.createElement('script');
   gate.type = 'module';
-  gate.src = '/auth-gate.js?login=20261017-auth-gate-v2';
+  gate.src = '/auth-gate.js?login=20261018-auth-gate-v3';
   gate.onerror = function () {
     console.error('Authentication gate failed to load.');
     var next = window.location.pathname + window.location.search + window.location.hash;
