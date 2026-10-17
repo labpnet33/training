@@ -9,6 +9,13 @@ const displayName = (user) => {
   return metadata.full_name?.trim() || metadata.name?.trim() || user?.email?.split('@')[0] || 'Learner';
 };
 
+function isTopProfileButton(button) {
+  if (!button.classList.contains('h-9') || !button.classList.contains('rounded-xl')) return false;
+  const spans = [...button.querySelectorAll(':scope > span')];
+  return spans.some((span) => span.className.includes('w-6') && span.className.includes('h-6') && span.className.includes('rounded-lg'))
+    && spans.some((span) => span.className.includes('text-sm'));
+}
+
 function updateUserLabels(user) {
   const name = displayName(user);
   document.querySelectorAll('button, span, p').forEach((element) => {
@@ -32,6 +39,15 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
+    if (isTopProfileButton(button) && !button.dataset.supabaseTopProfileBound) {
+      button.dataset.supabaseTopProfileBound = 'true';
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        window.location.assign('/account');
+      }, true);
+      return;
+    }
     if (REMOVED_MENU_ITEMS.has(label)) {
       button.remove();
       return;
