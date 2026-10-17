@@ -306,3 +306,89 @@ html.dark .nk-app-shell {
   outline: 2px solid var(--accent-hex);
   outline-offset: 2px;
 }
+
+
+/* Compact Sandbox chrome while keeping every tool visible and responsive. */
+.sb-workbench .sb-header {
+  gap: 12px;
+  padding: 9px 14px;
+}
+.sb-workbench .sb-heading {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 1px;
+}
+.sb-workbench .sb-heading .sb-kicker {
+  grid-column: 1 / -1;
+}
+.sb-workbench .sb-heading h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.15;
+}
+.sb-workbench .sb-heading .sb-muted {
+  font-size: 11px;
+  line-height: 1.25;
+}
+.sb-workbench .sb-lab-name {
+  gap: 3px;
+}
+.sb-workbench .sb-lab-name input {
+  height: 30px;
+  padding: 0 9px;
+  font-size: 12px;
+}
+.sb-workbench .sb-file-actions {
+  gap: 4px;
+}
+.sb-workbench .sb-file-actions .sb-button {
+  height: 29px;
+  min-height: 29px;
+  padding: 4px 7px;
+  font-size: 11px;
+}
+.sb-workbench .sb-toolbar {
+  gap: 5px 8px;
+  padding: 5px 8px;
+  align-items: center;
+}
+.sb-workbench .sb-toolbar .sb-tools,
+.sb-workbench .sb-toolbar .sb-views {
+  gap: 4px;
+}
+.sb-workbench .sb-toolbar .sb-button {
+  height: 28px;
+  min-height: 28px;
+  gap: 4px;
+  padding: 3px 7px;
+  font-size: 11px;
+}
+.sb-workbench .sb-toolbar .sb-build-tools {
+  padding-left: 8px;
+}
+.sb-workbench .sb-toolbar .sb-views {
+  width: auto;
+}
+.sb-workbench .sb-toolbar .sb-console-view-select {
+  min-width: 132px;
+  height: 28px;
+  font-size: 11px;
+}
+@media (max-width: 1023px) {
+  .sb-workbench .sb-header {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .sb-workbench .sb-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sb-workbench .sb-heading .sb-kicker {
+    grid-column: 1;
+  }
+  .sb-workbench .sb-toolbar .sb-build-tools {
+    border: 0;
+    padding-left: 0;
+  }
+}
