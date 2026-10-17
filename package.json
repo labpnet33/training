@@ -1,0 +1,25 @@
+{
+  "name": "mypnetlab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build && node scripts/copy-legacy-to-dist.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "node scripts/check-source.mjs",
+    "smoke:build": "node scripts/smoke-build.mjs",
+    "test": "npm run check && npm run build && npm run smoke:build"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4"
+  }
+}
