@@ -146,20 +146,28 @@ a.config-brand::after {
 
 /* Site-wide visual system follows the login screen: pale network art, navy type, and blue actions. */
 html:not(.dark) .nk-app-shell {
-  background-color: var(--mpl-bg) !important;
-  background-image: url("/assets/login-network-background.webp") !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-  background-attachment: fixed !important;
+  position: relative;
+  isolation: isolate;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+html:not(.dark) .nk-app-shell::before {
+  content: "";
+  position: fixed;
+  inset: -10px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("/assets/login-network-background.webp");
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  filter: blur(4px);
+  transform: scale(1.025);
 }
 html.dark .nk-app-shell {
   background-color: var(--mpl-bg) !important;
   background-image: radial-gradient(ellipse at 50% 0%, #243754 0, transparent 42%), linear-gradient(180deg, #111827 0%, #141d2b 100%) !important;
   background-attachment: scroll !important;
-}
-@media (max-width: 640px) {
-  html:not(.dark) .nk-app-shell { background-attachment: scroll !important; }
 }
 
 .nk-app-shell .nk-nav-cta {

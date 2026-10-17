@@ -103,6 +103,46 @@ body[data-page="account"] .auth-card {
   }
 }
 
+/* Darken and soften only the decorative artwork, leaving the account UI crisp. */
+body[data-page="login"],
+body[data-page="register"],
+body[data-page="forgot-password"],
+body[data-page="reset-password"],
+body[data-page="verify-email"],
+body[data-page="account"] {
+  position: relative;
+  isolation: isolate;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+body[data-page="login"]::before,
+body[data-page="register"]::before,
+body[data-page="forgot-password"]::before,
+body[data-page="reset-password"]::before,
+body[data-page="verify-email"]::before,
+body[data-page="account"]::before {
+  content: "";
+  position: fixed;
+  inset: -10px;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("/assets/login-network-background.webp");
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  filter: blur(4px);
+  transform: scale(1.025);
+}
+body[data-page="login"] .auth-shell,
+body[data-page="register"] .auth-shell,
+body[data-page="forgot-password"] .auth-shell,
+body[data-page="reset-password"] .auth-shell,
+body[data-page="verify-email"] .auth-shell,
+body[data-page="account"] .auth-shell {
+  position: relative;
+  z-index: 1;
+}
+
 body[data-page="register"] .brand-logo,
 body[data-page="forgot-password"] .brand-logo,
 body[data-page="reset-password"] .brand-logo,
