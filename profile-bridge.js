@@ -12,7 +12,8 @@ const displayName = (user) => {
 function updateUserLabels(user) {
   const name = displayName(user);
   document.querySelectorAll('button, span, p').forEach((element) => {
-    if (element.textContent.trim() === 'CONFIG PRO Learner') element.textContent = name;
+    const label = element.textContent.trim();
+    if (/^(?:CONFIG|MyPnetLab) PRO Learner$/.test(label)) element.textContent = name;
   });
 
   const initials = name
@@ -23,7 +24,7 @@ function updateUserLabels(user) {
     .join('')
     .toUpperCase();
   document.querySelectorAll('span').forEach((element) => {
-    if (element.textContent.trim() === 'C' && element.className.includes('rounded-lg')) {
+    if (/^(?:C|V|VK)$/.test(element.textContent.trim()) && element.className.includes('rounded-lg')) {
       element.textContent = initials || 'L';
     }
   });
@@ -32,6 +33,10 @@ function updateUserLabels(user) {
 function wireMenuActions() {
   document.querySelectorAll('button').forEach((button) => {
     const label = button.textContent.trim();
+    if (label === 'Fit' && button.classList.contains('sb-button')) {
+      button.remove();
+      return;
+    }
     if (REMOVED_MENU_ITEMS.has(label)) {
       button.remove();
       return;
