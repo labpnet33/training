@@ -49,7 +49,10 @@ body[data-page="login"] .brand-logo {
 
 /* Match the login presentation on registration and password recovery. */
 body[data-page="register"],
-body[data-page="forgot-password"] {
+body[data-page="forgot-password"],
+body[data-page="reset-password"],
+body[data-page="verify-email"],
+body[data-page="account"] {
   background-color: #fff;
   background-image: url("/assets/login-network-background.webp");
   background-position: center;
@@ -59,7 +62,10 @@ body[data-page="forgot-password"] {
 }
 
 body[data-page="register"] .auth-shell,
-body[data-page="forgot-password"] .auth-shell {
+body[data-page="forgot-password"] .auth-shell,
+body[data-page="reset-password"] .auth-shell,
+body[data-page="verify-email"] .auth-shell,
+body[data-page="account"] .auth-shell {
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
@@ -69,7 +75,10 @@ body[data-page="forgot-password"] .auth-shell {
 }
 
 body[data-page="register"] .auth-card,
-body[data-page="forgot-password"] .auth-card {
+body[data-page="forgot-password"] .auth-card,
+body[data-page="reset-password"] .auth-card,
+body[data-page="verify-email"] .auth-card,
+body[data-page="account"] .auth-card {
   background: rgba(255, 255, 255, 0.97);
   border-color: rgba(15, 32, 50, 0.18);
   box-shadow: 0 20px 60px rgba(16, 36, 56, 0.18);
@@ -78,18 +87,27 @@ body[data-page="forgot-password"] .auth-card {
 
 @media (max-width: 600px) {
   body[data-page="register"],
-  body[data-page="forgot-password"] {
+  body[data-page="forgot-password"],
+  body[data-page="reset-password"],
+  body[data-page="verify-email"],
+  body[data-page="account"] {
     background-attachment: scroll;
   }
 
   body[data-page="register"] .auth-shell,
-  body[data-page="forgot-password"] .auth-shell {
+  body[data-page="forgot-password"] .auth-shell,
+  body[data-page="reset-password"] .auth-shell,
+  body[data-page="verify-email"] .auth-shell,
+  body[data-page="account"] .auth-shell {
     width: min(100% - 24px, 460px);
   }
 }
 
 body[data-page="register"] .brand-logo,
-body[data-page="forgot-password"] .brand-logo {
+body[data-page="forgot-password"] .brand-logo,
+body[data-page="reset-password"] .brand-logo,
+body[data-page="verify-email"] .brand-logo,
+body[data-page="account"] .brand-logo {
   display: block;
   width: min(176px, 64vw);
   height: auto;

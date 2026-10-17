@@ -144,6 +144,89 @@ a.config-brand::after {
   background: url("/assets/mypnetlab-login-logo.webp") center / contain no-repeat;
 }
 
+/* Site-wide visual system follows the login screen: pale network art, navy type, and blue actions. */
+html:not(.dark) .nk-app-shell {
+  background-color: var(--mpl-bg) !important;
+  background-image: url("/assets/login-network-background.webp") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+html.dark .nk-app-shell {
+  background-color: var(--mpl-bg) !important;
+  background-image: radial-gradient(ellipse at 50% 0%, #243754 0, transparent 42%), linear-gradient(180deg, #111827 0%, #141d2b 100%) !important;
+  background-attachment: scroll !important;
+}
+@media (max-width: 640px) {
+  html:not(.dark) .nk-app-shell { background-attachment: scroll !important; }
+}
+
+.nk-app-shell .nk-nav-cta {
+  background: var(--mpl-accent) !important;
+  border-color: var(--mpl-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, .18) !important;
+}
+.nk-app-shell .nk-nav-cta:hover {
+  background: var(--mpl-accent-strong) !important;
+  border-color: var(--mpl-accent-strong) !important;
+}
+.nk-shell-main a:not([class*="bg-"]):not(.nk-nav-cta) { color: var(--mpl-accent-strong); }
+
+.nk-app-shell input,
+.nk-app-shell select,
+.nk-app-shell textarea { border-radius: 9px !important; }
+.nk-app-shell button[class*="bg-"],
+.nk-app-shell a[class*="bg-"],
+.nk-app-shell .nk-nav-cta { border-radius: 9px !important; }
+.nk-app-shell [class*="rounded-2xl"],
+.nk-app-shell [class*="rounded-3xl"] { border-radius: 18px !important; }
+
+/* Replace the old orange brand accents with the same blue used by the sign-in button. */
+.nk-app-shell .bg-orange-50,
+.nk-app-shell .bg-orange-100 { background-color: var(--mpl-accent-soft) !important; color: var(--mpl-accent-strong) !important; }
+.nk-app-shell .bg-orange-400,
+.nk-app-shell .bg-orange-500,
+.nk-app-shell .bg-orange-600,
+.nk-app-shell .bg-orange-700,
+.nk-app-shell .bg-amber-400,
+.nk-app-shell .bg-amber-500,
+.nk-app-shell .bg-amber-600 { background-color: var(--mpl-accent) !important; color: #fff !important; }
+.nk-app-shell [class~="bg-orange-500/15"] { background-color: rgba(37, 99, 235, .15) !important; color: var(--mpl-accent-strong) !important; }
+.nk-app-shell .text-orange-500,
+.nk-app-shell .text-orange-600,
+.nk-app-shell .text-orange-700 { color: var(--mpl-accent-strong) !important; }
+.nk-app-shell .border-orange-200,
+.nk-app-shell .border-orange-300 { border-color: var(--mpl-line) !important; }
+.nk-app-shell .border-orange-400,
+.nk-app-shell .border-orange-500,
+.nk-app-shell .border-orange-600 { border-color: var(--mpl-accent) !important; }
+.nk-app-shell .ring-orange-200,
+.nk-app-shell .ring-orange-300 { --tw-ring-color: var(--mpl-accent-soft) !important; }
+.nk-app-shell .ring-orange-400,
+.nk-app-shell .ring-orange-500,
+.nk-app-shell .ring-amber-400 { --tw-ring-color: var(--mpl-accent) !important; }
+.nk-app-shell .hover\:bg-orange-500:hover,
+.nk-app-shell .hover\:bg-orange-600:hover,
+.nk-app-shell .hover\:bg-amber-500:hover { background-color: var(--mpl-accent-strong) !important; }
+.nk-app-shell .from-orange-400,
+.nk-app-shell .from-orange-500,
+.nk-app-shell .from-orange-600,
+.nk-app-shell .from-amber-400,
+.nk-app-shell .from-amber-500,
+.nk-app-shell .from-violet-600 {
+  --tw-gradient-from: var(--mpl-accent) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(37 99 235 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.nk-app-shell .via-orange-500,
+.nk-app-shell .via-fuchsia-600 { --tw-gradient-stops: var(--tw-gradient-from), var(--mpl-accent), var(--tw-gradient-to) !important; }
+.nk-app-shell .to-orange-500,
+.nk-app-shell .to-orange-600,
+.nk-app-shell .to-amber-500,
+.nk-app-shell .to-fuchsia-600 { --tw-gradient-to: var(--mpl-accent-strong) var(--tw-gradient-to-position) !important; }
+
 /* Router/simulator console: retain the familiar dark terminal surface in the light site theme. */
 .nk-scroll-managed:has(> pre.nk-term-out) {
   background: #05080d !important;
