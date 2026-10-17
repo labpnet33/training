@@ -19,6 +19,16 @@ function redirectToLogin() {
   window.location.replace(`/login${query}`);
 }
 
+function hasCachedSession() {
+  try {
+    const raw = window.localStorage.getItem('sb-nkqsgqjprijmgmkzychf-auth-token');
+    const cached = raw ? JSON.parse(raw) : null;
+    return !!(cached && (cached.access_token || cached.refresh_token));
+  } catch (error) {
+    return false;
+  }
+}
+
 async function enforceSession() {
   if (AUTH_PAGES.has(path)) {
     document.documentElement.style.visibility = '';
@@ -27,10 +37,19 @@ async function enforceSession() {
 
   try {
     const { supabase } = await import('/supabase-config.js');
-    const { data, error } = await Promise.race([
+    const result = await Promise.race([
       supabase.auth.getSession(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication check timed out.')), 10000))
+      new Promise(resolve => setTimeout(() => resolve({ timedOut: true }), 10000))
     ]);
+    if (result?.timedOut) {
+      if (hasCachedSession() && typeof window.__MYPNET_AUTH_SESSION_READY__ === 'function') {
+        console.warn('Authentication check timed out; continuing with the cached session.');
+        window.__MYPNET_AUTH_SESSION_READY__();
+        return;
+      }
+      throw new Error('Authentication check timed out.');
+    }
+    const { data, error } = result;
     if (error) throw error;
 
     if (!data.session) {
